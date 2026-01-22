@@ -1,0 +1,32 @@
+---
+interface Props {
+  class?: string;
+  as?: string;
+}
+
+const { class: className = "", as: Element = "div" } = Astro.props;
+---
+
+<Element class:list={["inline-flex flex-col leading-none select-none w-fit", className]}>
+  <!-- 
+    TOP LINE:
+    1. font-century: Uses the Regular font file.
+    2. font-bold: Turns on browser synthetic bold (base thickness).
+    3. [-webkit-text-stroke:...]: Adds micro-thickness. 
+       - If still too thin, change 0.015em to 0.02em.
+       - If too thick, change to 0.01em.
+    4. tracking-[0.01em]: Custom spacing (tighter than 'wide', looser than 'normal').
+  -->
+  <span class="font-century font-bold text-[1em] tracking-[0.01em] [-webkit-text-stroke:0.015em_currentColor] whitespace-nowrap">
+    M. Schiketanz
+  </span>
+  
+  <!-- 
+    BOTTOM LINE:
+    1. Reduced tracking from [0.2em] to [0.14em].
+    2. Adjusted right margin slightly to account for new width.
+  -->
+  <span class="font-century text-[0.36em] tracking-[0.14em] text-right -mt-[0.05em] mr-[0.02em] opacity-90">
+    real estate inc.
+  </span>
+</Element>

@@ -1,0 +1,55 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { Image } from 'astro:assets';
+// You'll need to add a placeholder image or remove this Image component until you have one
+// import forestHillImg from '../assets/commercial/forest-hill.jpg'; 
+---
+
+<Layout title="Commercial Leasing | Schiketanz Real Estate">
+  <div class="container mx-auto px-4 py-8 md:py-12">
+    <PageHeader 
+      title="Commercial Properties" 
+      subtitle="Retail and office space management in the Kitchener-Waterloo region."
+      breadcrumb={[{ text: 'Commercial', href: '/commercial' }]}
+    />
+
+    <article class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <!-- Image Placeholder -->
+        <div class="bg-gray-200 h-80 lg:h-auto w-full rounded-sm flex items-center justify-center text-gray-500 border border-gray-300">
+            <!-- <Image src={forestHillImg} alt="Forest Hill Shopping Centre" class="w-full h-full object-cover" /> -->
+            <span class="font-century">Forest Hill Shopping Centre Photo</span>
+        </div>
+
+        <!-- Content -->
+        <div class="flex flex-col justify-center">
+            <h2 class="font-century font-bold text-3xl text-gray-800 mb-2">Forest Hill Shopping Centre</h2>
+            <p class="text-gray-500 text-lg mb-6">582 Frederick Street, Kitchener, ON</p>
+
+            <div class="prose text-gray-700 mb-8">
+                <p>
+                    Centrally located at the intersection of Frederick Street and Edna Street, the Forest Hill Shopping Centre serves as a hub for the local community.
+                </p>
+                <p>
+                    The plaza features a diverse mix of tenants, including medical offices, retail stores, and M. Schiketanz Real Estate's own headquarters.
+                </p>
+                <ul class="list-disc pl-5 space-y-2 mt-4">
+                    <li>High traffic visibility</li>
+                    <li>Ample parking for customers</li>
+                    <li>Professional property management on-site</li>
+                </ul>
+            </div>
+
+            <div class="bg-gray-50 p-6 border-l-4 border-[var(--color-schiketanz-red)]">
+                <h3 class="font-bold text-gray-800 mb-2">Leasing Inquiries</h3>
+                <p class="text-gray-600 mb-4">
+                    Interested in establishing your business here? Contact us to discuss current availability and rates.
+                </p>
+                <a href="/contact" class="text-[var(--color-schiketanz-red)] font-bold hover:underline">
+                    Contact Leasing Office &rarr;
+                </a>
+            </div>
+        </div>
+    </article>
+  </div>
+</Layout>

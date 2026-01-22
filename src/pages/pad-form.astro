@@ -1,0 +1,43 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+---
+
+<Layout title="Pre-Authorized Debit Form | Schiketanz Real Estate">
+  <div class="container mx-auto px-4 py-8 md:py-12">
+    <PageHeader 
+      title="Pre-Authorized Debit (PAD)" 
+      subtitle="Set up automatic rent payments directly from your bank account."
+      breadcrumb={[{ text: 'PAD Form', href: '/pad-form' }]}
+    />
+
+    <div class="max-w-3xl mx-auto">
+        
+        <div class="bg-white p-8 rounded-sm shadow-sm border border-gray-200 mb-8">
+            <h2 class="font-century font-bold text-2xl text-gray-800 mb-4">How it works</h2>
+            <p class="text-gray-700 mb-4">
+                Pre-Authorized Debit (PAD) is the most convenient way to pay your rent. Payments are automatically withdrawn from your account on the first business day of every month, ensuring you never miss a payment deadline.
+            </p>
+            <p class="text-gray-700 mb-6">
+                To enroll or update your banking information, please complete the form below.
+            </p>
+
+            <div class="bg-gray-100 p-4 rounded text-sm text-gray-600 mb-6 border-l-4 border-gray-400">
+                <strong>Important:</strong> You must attach a "Void Cheque" or a Direct Deposit/Pre-Authorized Debit form provided by your bank to verify account details.
+            </div>
+
+            <div class="flex justify-center">
+                 <!-- Ensure you put the actual PDF in public/forms/pad-form.pdf -->
+                <a href="/forms/pad-form.pdf" target="_blank" class="inline-flex items-center bg-[var(--color-schiketanz-red)] text-white font-bold px-6 py-3 rounded hover:bg-red-700 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Download PAD Agreement
+                </a>
+            </div>
+        </div>
+
+        <div class="text-center text-gray-600">
+            <p>Please return signed forms and void cheques to the Superintendent or the Main Office.</p>
+        </div>
+    </div>
+  </div>
+</Layout>

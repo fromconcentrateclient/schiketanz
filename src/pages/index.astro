@@ -1,0 +1,106 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import heroImage from '../assets/hero.png';
+import { getCollection } from 'astro:content';
+
+// fetch and sort news chronologically
+const newsEntries = await getCollection('news');
+const latestNews = newsEntries
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+    .slice(0, 3); // limit to top 3 notices
+---
+
+<Layout title="Home | Schiketanz Real Estate" logoAs="h1">
+	<!-- Hero Section -->
+	<section class="relative w-full h-[500px] md:h-[600px] bg-gray-100 overflow-hidden">
+		<Image 
+            src={heroImage} 
+            alt="Interior of M. Schiketanz apartment"
+            class="absolute inset-0 w-full h-full object-cover"
+            quality="high"
+            loading="eager" 
+        />
+        <!-- Darker overlay for better text contrast -->
+        <div class="absolute inset-0 bg-black/40"></div>
+		<!-- Text Overlay Container -->
+		<div class="absolute inset-0 container mx-auto px-4 flex flex-col justify-center pointer-events-none">
+			<div class="max-w-3xl drop-shadow-lg">
+                <h2 class="font-century text-xl md:text-3xl text-white mb-4 pl-1 drop-shadow-md leading-relaxed">
+                    Your Property Management Company Since 1953
+                </h2>
+                <!-- Main Text -->
+                <p class="font-century font-bold text-4xl md:text-6xl text-white pl-1 drop-shadow-md tracking-tight">
+                    At Your Service
+                </p>
+			</div>
+		</div>
+	</section>
+
+    <!-- Main Content Grid -->
+    <section class="container mx-auto px-4 py-12 md:py-16">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+            
+            <!-- LEFT COLUMN: Welcome Text (2/3 width) -->
+            <div class="lg:col-span-2">
+                <h3 class="text-2xl font-bold text-schiketanz-red mb-6 border-b-2 border-gray-200 pb-2 inline-block">
+                    Welcome
+                </h3>
+                <div class="prose max-w-none text-gray-700 leading-relaxed font-sans text-lg">
+                    <p class="mb-4">
+                        Schiketanz is a Real Estate Management Company located in the Kitchener-Waterloo area. We are dedicated to providing quality service to our tenants and ensuring our properties are maintained to the highest standards.
+                    </p>
+                    <p class="mb-4">
+                        We manage a diverse portfolio of residential and commercial properties. Whether you are looking for a bachelor apartment or a family home, our dedicated team is here to assist you in finding your next residence.
+                    </p>
+                    <p>
+                        Please browse our available rentals or contact our office for more information regarding upcoming vacancies.
+                    </p>
+                </div>
+                
+                <div class="mt-8">
+                    <a href="/rentals" class="inline-block bg-schiketanz-red text-white px-6 py-3 font-century font-bold hover:bg-schiketanz-red-dark transition-colors rounded-sm shadow-sm">
+                        View Available Rentals &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: News & Notices (1/3 width) -->
+            <div class="lg:col-span-1 w-full">
+                <!-- "Notice Board" Container -->
+                <div class="bg-gray-50 border border-gray-200 p-6 rounded-sm shadow-sm">
+                    <h3 class="text-xl font-bold text-gray-800 mb-5 flex items-center border-b border-gray-200 pb-3">
+                        <!-- Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-schiketanz-red" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clip-rule="evenodd" />
+                        </svg>
+                        News & Notices
+                    </h3>
+                    
+                    {latestNews.length > 0 ? (
+                        <div class="space-y-6">
+                            {latestNews.map(news => (
+                                <article class="relative pl-4 border-l-4 border-schiketanz-red">
+                                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
+                                        {news.data.date.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                    </p>
+                                    <h4 class="font-century font-bold text-gray-900 leading-tight mb-2 text-lg">
+                                        {news.data.title}
+                                    </h4>
+                                    <div class="text-sm text-gray-600 line-clamp-4">
+                                        {news.body}
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    ) : (
+                        <div class="text-center py-8 text-gray-500 italic">
+                            No current notices at this time.
+                        </div>
+                    )}
+                </div>
+            </div>
+
+        </div>
+    </section>
+</Layout>

@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Century Gothic";
+  src: url("/fonts/CenturyGothic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Century Gothic Bold";
+  src: url("/fonts/CenturyGothicBold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+@layer utilities {
+  .antialiased-crisp {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+@theme {
+  /* Colors */
+  --color-schiketanz-red: rgba(236, 28, 28, 1);
+  --color-schiketanz-red-dark: rgba(200, 24, 24, 1);
+  /* Fonts */
+  --font-century: "Century Gothic", sans-serif;
+  --font-centurybold: "Century Gothic Bold", sans-serif;
+  --font-sans: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* can still write normal CSS here if there are issues with tailwind */
+body {
+    /* ensure scrollbar doesn't shift layout on some windows */
+    overflow-y: scroll; 
+}

@@ -1,0 +1,93 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+
+// Building data extracted from old site
+const buildings = [
+    { name: "Bluebird Apartments", group: 1 },
+    { name: "Bridge Apts", group: 1 },
+    { name: "Chicopee Court", group: 2 },
+    { name: "Chicopee Terrace", group: 2 },
+    { name: "Confederation Apts", group: 1 },
+    { name: "Heritage Apts", group: 1 },
+    { name: "Hickory Apts", group: 2 },
+    { name: "Holborn Apts", group: 2 },
+    { name: "Kloster Court", group: 1 },
+    { name: "Lorraine Apts", group: 1 },
+    { name: "Margaret Apartment", group: 1 },
+    { name: "Panorama Terrace", group: 1 },
+    { name: "Parkview Apartments", group: 1 },
+    { name: "Princess Apartments", group: 2 },
+    { name: "Richelieu Apartments", group: 1 },
+    { name: "Stanley Park Apts", group: 1 },
+    { name: "Traynor Avenue", group: 2 },
+].sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<Layout title="Maintenance Request | Schiketanz Real Estate">
+  <div class="container mx-auto px-4 py-8 md:py-12">
+    <PageHeader 
+      title="Maintenance Request" 
+      subtitle="Please select your building below to find the correct contact information for your Superintendent."
+      breadcrumb={[{ text: 'Maintenance', href: '/maintenance' }]}
+    />
+
+    <div class="max-w-xl mx-auto bg-gray-50 border border-gray-200 p-8 rounded-sm shadow-sm">
+        
+        <label for="building-select" class="block text-lg font-bold text-gray-700 mb-2">
+            I live in:
+        </label>
+        <select id="building-select" class="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] focus:border-[var(--color-schiketanz-red)] outline-none bg-white mb-6">
+            <option value="" disabled selected>-- Select your building --</option>
+            {buildings.map(b => (
+                <option value={b.group}>{b.name}</option>
+            ))}
+        </select>
+
+        <!-- Result Containers (Hidden by default) -->
+        <div id="group-1-info" class="hidden text-center animate-fade-in">
+            <div class="bg-blue-50 text-blue-900 p-4 rounded mb-4">
+                <p class="font-bold text-lg">Your Property Manager (Group 1)</p>
+            </div>
+            <p class="mb-4 text-gray-600">Please email your maintenance request to:</p>
+            <a href="mailto:group1@schiketanz.ca" class="inline-block bg-[var(--color-schiketanz-red)] text-white font-bold py-3 px-6 rounded hover:bg-opacity-90 transition-all">
+                Email Group 1 Maintenance
+            </a>
+            <p class="mt-4 text-sm text-gray-500">Or call the office at (519) 742-4477</p>
+        </div>
+
+        <div id="group-2-info" class="hidden text-center animate-fade-in">
+             <div class="bg-green-50 text-green-900 p-4 rounded mb-4">
+                <p class="font-bold text-lg">Your Property Manager (Group 2)</p>
+            </div>
+            <p class="mb-4 text-gray-600">Please email your maintenance request to:</p>
+            <a href="mailto:group2@schiketanz.ca" class="inline-block bg-[var(--color-schiketanz-red)] text-white font-bold py-3 px-6 rounded hover:bg-opacity-90 transition-all">
+                Email Group 2 Maintenance
+            </a>
+            <p class="mt-4 text-sm text-gray-500">Or call the office at (519) 742-4477</p>
+        </div>
+
+    </div>
+  </div>
+</Layout>
+
+<script>
+    document.addEventListener('astro:page-load', () => {
+        const select = document.getElementById('building-select') as HTMLSelectElement;
+        const g1 = document.getElementById('group-1-info');
+        const g2 = document.getElementById('group-2-info');
+
+        if(select && g1 && g2) {
+            select.addEventListener('change', (e) => {
+                const val = (e.target as HTMLSelectElement).value;
+                
+                // Reset
+                g1.classList.add('hidden');
+                g2.classList.add('hidden');
+
+                if(val === '1') g1.classList.remove('hidden');
+                if(val === '2') g2.classList.remove('hidden');
+            });
+        }
+    });
+</script>

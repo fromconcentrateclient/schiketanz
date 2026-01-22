@@ -1,0 +1,143 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '@fontsource/open-sans';
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import Logo from '../components/Logo.astro';
+
+interface Props {
+	title: string;
+	description?: string;
+	image?: string;
+	canonicalURL?: string;
+    type?: 'website' | 'article';
+    // allow pages to control semantic tag of logo (default: div)
+    logoAs?: 'h1' | 'div';
+}
+
+// Default SEO values extracted from original site
+const defaultDesc = "Apartment Rentals in Kitchener Waterloo Ontario. M. Schiketanz Real Estate Inc. providing quality service to tenants since 1953.";
+const siteName = "M. Schiketanz Real Estate Inc.";
+
+const { 
+    title, 
+    description = defaultDesc, 
+    image = '/images/og-default.jpg', // TODO: Ensure we have a default share image in public/images
+    canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+    type = 'website',
+    logoAs = 'div' // default to 'div' so only homepage overrides to 'h1'
+} = Astro.props;
+
+// Schema extracted from CURL data
+const businessSchema = {
+  "@context": "https://schema.org/",
+  "@type": "LocalBusiness",
+  "name": "M. Schiketanz Real Estate Inc.",
+  "url": Astro.site,
+  "logo": new URL('/favicon.svg', Astro.site).href,
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "CA",
+    "addressLocality": "Kitchener",
+    "addressRegion": "ON",
+    "postalCode": "N2B 2A9",
+    "streetAddress": "582 Frederick Street"
+  },
+  "telephone": "519-742-4477",
+  "description": description
+};
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+        <link rel="canonical" href={canonicalURL} />
+
+        <!-- Primary Meta Tags -->
+		<title>{title}</title>
+		<meta name="description" content={description} />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content={type} />
+        <meta property="og:url" content={canonicalURL} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={new URL(image, Astro.site)} />
+        <meta property="og:site_name" content={siteName} />
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={canonicalURL} />
+        <meta property="twitter:title" content={title} />
+        <meta property="twitter:description" content={description} />
+        <meta property="twitter:image" content={new URL(image, Astro.site)} />
+
+        <!-- Schema.org JSON-LD -->
+        <script type="application/ld+json" set:html={JSON.stringify(businessSchema)} />
+
+		<ClientRouter />
+	</head>
+	
+	<body class="bg-white flex flex-col min-h-screen text-gray-800 font-sans antialiased-crisp">
+		
+        <!-- Accessibility: Skip to Content -->
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] bg-white text-blue-800 p-4 border border-blue-800 rounded">
+            Skip to main content
+        </a>
+
+		<!-- HEADER -->
+		<header class="bg-schiketanz-red shadow-md sticky top-0 z-50">
+			
+			<div class="container mx-auto px-4 pt-6 pb-2">
+				<!-- Top Row: Logo/Title -->
+				<div class="flex justify-between items-start mb-2">
+					<a href="/" class="block text-white hover:text-gray-100 transition-colors decoration-0 group" aria-label="Go to Homepage">
+                        <!-- Dynamic Logo Tag (h1 on home, div elsewhere) -->
+						<Logo as={logoAs} class="text-4xl md:text-5xl group-hover:opacity-95 transition-opacity" />
+					</a>
+
+					<!-- Mobile Menu Button -->
+					<button 
+                        id="menu-btn" 
+                        class="lg:hidden text-white p-2 border border-white/30 rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white cursor-pointer"
+                        aria-label="Toggle Navigation Menu"
+                        aria-expanded="false"
+                        aria-controls="mobile-menu"
+                    >
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+						</svg>
+					</button>
+				</div>
+
+				<Navbar />
+			</div>
+		</header>
+
+		<main id="main-content" class="flex-grow w-full">
+			<slot />
+		</main>
+
+		<Footer />
+	</body>
+</html>
+
+<script>
+    // Handles Mobile Menu Toggle with ARIA updates for accessibility
+	document.addEventListener('astro:page-load', () => {
+		const btn = document.getElementById('menu-btn');
+		const menu = document.getElementById('mobile-menu');
+		
+		if(btn && menu) {
+			btn.addEventListener('click', () => {
+				const isHidden = menu.classList.toggle('hidden');
+                btn.setAttribute('aria-expanded', (!isHidden).toString());
+			});
+		}
+	});
+</script>

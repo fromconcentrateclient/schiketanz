@@ -1,0 +1,143 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  images: ImageMetadata[];
+  title: string;
+}
+
+const { images, title } = Astro.props;
+---
+
+<div class="relative w-full group border-2 border-[var(--color-schiketanz-red)] rounded-sm bg-gray-50" id="gallery-container">
+  
+  <!-- Scrollable Container -->
+  <div 
+    id="carousel-track"
+    class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth aspect-video relative"
+  >
+    {images.map((imgObj, index) => (
+      <div class="flex-none w-full h-full snap-center relative flex items-center justify-center bg-gray-100 gallery-slide">
+        <Image 
+          src={imgObj} 
+          alt={`${title} - Photo ${index + 1}`}
+          class="w-full h-full object-cover"
+        />
+      </div>
+    ))}
+  </div>
+
+  <!-- Navigation Arrows & Dots (Only show if more than 1 image) -->
+  {images.length > 1 && (
+    <>
+      <button 
+        id="prev-btn"
+        class="absolute left-2 top-1/2 -translate-y-1/2 bg-[var(--color-schiketanz-red)]/90 hover:bg-[var(--color-schiketanz-red)] text-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 translate-x-[-10px] group-hover:translate-x-0 cursor-pointer z-10"
+        aria-label="Previous image"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </button>
+      <button 
+        id="next-btn"
+        class="absolute right-2 top-1/2 -translate-y-1/2 bg-[var(--color-schiketanz-red)]/90 hover:bg-[var(--color-schiketanz-red)] text-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 translate-x-[10px] group-hover:translate-x-0 cursor-pointer z-10"
+        aria-label="Next image"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
+      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 bg-black/20 px-3 py-1 rounded-full backdrop-blur-[2px] z-10">
+         {images.map((_, index) => (
+            <button 
+                class="indicator-dot w-2 h-2 rounded-full shadow-sm transition-all duration-300 bg-white/70" 
+                data-index={index}
+                aria-label={`Go to slide ${index + 1}`}
+            ></button>
+         ))}
+      </div>
+    </>
+  )}
+</div>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+  }
+  .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+      const track = document.getElementById('carousel-track');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const slides = document.querySelectorAll('.gallery-slide');
+      const dots = document.querySelectorAll('.indicator-dot');
+
+      if (!track) return; // guard clause
+
+    // update which dot is active
+    const updateDots = (activeIndex: number) => {
+      dots.forEach((dot, index) => {
+        if (index === activeIndex) {
+          // active: schiketanz red + slightly larger
+          dot.classList.remove('bg-white/70');
+          dot.classList.add('bg-[var(--color-schiketanz-red)]');
+          dot.classList.add('scale-125');
+        } else {
+          // inactive: white/70
+          dot.classList.add('bg-white/70');
+          dot.classList.remove('bg-[var(--color-schiketanz-red)]');
+          dot.classList.remove('scale-125');
+        }
+      });
+    };
+
+    // set up IntersectionObserver to watch which slide is visible
+    if (track && slides.length > 0) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // find index of slide that just appeared
+            // convert NodeList to an Array to use .indexOf
+            const index = Array.from(slides).indexOf(entry.target as Element);
+            updateDots(index);
+          }
+        });
+      }, {
+        root: track,
+        threshold: 0.5 // trigger when 50% of the image is visible
+      });
+      // observe every slide
+      slides.forEach(slide => observer.observe(slide));
+    }
+
+    // previous/next button logic
+    if (track && prevBtn && nextBtn) {
+      prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' });
+      });
+      nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: track.clientWidth, behavior: 'smooth' });
+      });
+    }
+
+    // dot click logic
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        if(track && slides[index]) {
+          slides[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        }
+      });
+    });
+
+    // initialize first dot as active on load
+    updateDots(0);
+  }); 
+</script>
