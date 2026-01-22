@@ -6,15 +6,14 @@ import keystatic from '@keystatic/astro';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import netlify from '@astrojs/netlify';
 
 // https://astro.build/config
 export default defineConfig({
   // TODO: switch site URL
   site: 'https://schiketanz.fromconcentrate.ca',
 
-  adapter: node({
-    mode: 'standalone',
-  }),
+  adapter: netlify(),
 
   integrations: [react(), keystatic(), mdx(), sitemap()],
 

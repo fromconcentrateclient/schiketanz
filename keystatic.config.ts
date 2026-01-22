@@ -2,8 +2,7 @@ import { config, fields, collection } from '@keystatic/core';
 
 export default config({
   storage: {
-    kind: 'local', // local for dev. in production swap to:
- // kind: 'github', repo: 'fromconcentrate/schiketanz' }
+    kind: 'github', repo: 'sitesfromconcentrate/schiketanz'
   },
   
   collections: {
