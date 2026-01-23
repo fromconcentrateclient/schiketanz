@@ -20,7 +20,7 @@ const rentals = await getCollection('rentals');
     <!-- Grid Layout -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {rentals.map(rental => (
-        <article class="bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+        <article class="relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
 
            <!-- Image Section -->
            <div class="h-64 bg-gray-100 relative overflow-hidden group">
