@@ -5,10 +5,9 @@ import keystatic from '@keystatic/astro';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import netlify from '@astrojs/netlify';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  // TODO: switch site URL
   site: 'https://schiketanz.fromconcentrate.ca',
   output: 'server',
   adapter: netlify(),
@@ -17,6 +16,8 @@ export default defineConfig({
     keystatic(),
     mdx(),
     sitemap(),
-    tailwind(),
   ],
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });

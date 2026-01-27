@@ -24,7 +24,7 @@
 }
 
 @theme {
-  /* Colors */
+  /* Colours */
   --color-schiketanz-red: rgba(236, 28, 28, 1);
   --color-schiketanz-red-dark: rgba(200, 24, 24, 1);
   /* Fonts */
@@ -34,6 +34,14 @@
 }
 
 /* can still write normal CSS here if there are issues with tailwind */
+@layer utilities {
+  .antialiased-crisp {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
 body {
     /* ensure scrollbar doesn't shift layout on some windows */
     overflow-y: scroll; 
