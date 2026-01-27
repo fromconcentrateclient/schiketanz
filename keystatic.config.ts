@@ -1,10 +1,13 @@
 import { config, fields, collection } from '@keystatic/core';
 
 export default config({
-  storage: {
-    kind: 'github', repo: 'sitesfromconcentrate/schiketanz'
+  cloud: {
+    project: 'sitesfromconcentrate/schiketanz',
   },
-  
+  storage: {
+    kind: 'github',
+    repo: 'sitesfromconcentrate/schiketanz',
+  },
   collections: {
     rentals: collection({
     label: 'Rental Properties',
