@@ -8,7 +8,7 @@ export default config({
     ? {
         // PRODUCTION: Use GitHub storage + Keystatic Cloud for Auth
         kind: 'github',
-        repo: 'sitesfromconcentrate/schiketanz',
+        repo: 'fromconcentrateclient/schiketanz',
       }
     : {
         // LOCAL: Use local file system
@@ -16,7 +16,7 @@ export default config({
       },
   // This connects your project to the Keystatic Cloud dashboard for Auth
   cloud: {
-    project: 'sitesfromconcentrate/schiketanz',
+    project: 'schiketanz/schiketanz',
   },
   collections: {
     rentals: collection({
