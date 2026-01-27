@@ -1,22 +1,31 @@
 import { config, fields, collection } from '@keystatic/core';
 
+// Check if we are running in production (Netlify) or local dev
+const isProd = import.meta.env.PROD;
+
 export default config({
+  storage: isProd
+    ? {
+        // PRODUCTION: Use GitHub storage + Keystatic Cloud for Auth
+        kind: 'github',
+        repo: 'sitesfromconcentrate/schiketanz',
+      }
+    : {
+        // LOCAL: Use local file system
+        kind: 'local',
+      },
+  // This connects your project to the Keystatic Cloud dashboard for Auth
   cloud: {
     project: 'sitesfromconcentrate/schiketanz',
   },
-  storage: {
-    kind: 'github',
-    repo: 'sitesfromconcentrate/schiketanz',
-  },
   collections: {
     rentals: collection({
-    label: 'Rental Properties',
-    slugField: 'title',
-    path: 'src/content/rentals/*',
-    format: { contentField: 'content' },
-    schema: {
+      label: 'Rental Properties',
+      slugField: 'title',
+      path: 'src/content/rentals/*',
+      format: { contentField: 'content' },
+      schema: {
         title: fields.slug({ name: { label: 'Property Name/Address' } }),
-
         vacancyStatus: fields.select({
             label: 'Vacancy Status',
             description: 'This determines what shows on the website.',
@@ -27,20 +36,16 @@ export default config({
             ],
             defaultValue: 'occupied'
         }),
-
         address: fields.text({ label: 'Full Address' }),
-        
         coverImage: fields.image({
             label: 'Building Photo',
             directory: 'src/assets/rentals', 
             publicPath: '../../assets/rentals/', 
         }),
-
         iGuideUrl: fields.url({
             label: 'iGuide Virtual Tour URL',
             description: 'If this property has an iGuide/3D tour, paste the link here.',
         }),
-
         gallery: fields.array(
             fields.image({
                 label: 'Gallery Image',
@@ -52,14 +57,12 @@ export default config({
                 itemLabel: (props) => 'Photo',
             }
         ),
-
         content: fields.mdx({
             label: 'Description & Amenities',
         }),
-    },
-  }),
+      },
+    }),
 
-    // News / Notices (middle column on homepage)
     news: collection({
         label: 'News & Notices',
         slugField: 'title',

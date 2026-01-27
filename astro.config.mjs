@@ -13,7 +13,12 @@ export default defineConfig({
   site: 'https://schiketanz.fromconcentrate.ca',
   output: 'server',
   adapter: netlify(),
-  integrations: [react(), keystatic(), mdx(), sitemap()],
+  integrations: [
+    react(), 
+    keystatic(), 
+    mdx(), 
+    sitemap()
+  ],
   vite: {
     plugins: [tailwindcss()],
   },
