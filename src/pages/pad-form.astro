@@ -1,5 +1,6 @@
 ---
 // src/pages/pad-form.astro
+export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 ---
@@ -35,7 +36,7 @@ import PageHeader from '../components/PageHeader.astro';
                 </p>
 
                 <input type="hidden" name="subject" value="New PAD Enrollment Submission" />
-                
+
                 <!-- Personal Information -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
