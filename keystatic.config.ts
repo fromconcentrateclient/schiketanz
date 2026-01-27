@@ -1,22 +1,11 @@
 import { config, fields, collection } from '@keystatic/core';
 
-// Check if we are running in production (Netlify) or local dev
-const isProd = import.meta.env.PROD;
-
 export default config({
-  storage: isProd
-    ? {
-        // PRODUCTION: Use GitHub storage + Keystatic Cloud for Auth
-        kind: 'github',
-        repo: 'fromconcentrateclient/schiketanz',
-      }
-    : {
-        // LOCAL: Use local file system
-        kind: 'local',
-      },
-  // This connects your project to the Keystatic Cloud dashboard for Auth
+  storage: {
+    kind: 'cloud',
+  },
   cloud: {
-    project: 'schiketanz/schiketanz',
+    project: 'fromconcentrateclien/schiketanz',
   },
   collections: {
     rentals: collection({
