@@ -7,14 +7,19 @@ import sitemap from '@astrojs/sitemap';
 import netlify from '@astrojs/netlify';
 import tailwindcss from '@tailwindcss/vite';
 
+// determine if we are running 'astro build'
+const isBuild = process.argv.includes('build');
+
 export default defineConfig({
   site: 'https://schiketanz.fromconcentrate.ca',
   output: 'server',
-  adapter: netlify(),
+  // Netlify adapter when building for production
+  // Astro's own Node server in dev
+  adapter: isBuild ? netlify() : undefined,
   integrations: [
     react(),
-    keystatic(),
     mdx(),
+    keystatic(),
     sitemap(),
   ],
   vite: {

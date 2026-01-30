@@ -1,9 +1,13 @@
 import { config, fields, collection } from '@keystatic/core';
 
+// check if dev mode
+const isDev = process.env.NODE_ENV === 'development';
+
 export default config({
-  storage: {
-    kind: 'cloud',
-  },
+  // use local files in dev, cloud in production
+  storage: isDev 
+    ? { kind: 'local' } 
+    : { kind: 'cloud' },
   cloud: {
     project: 'fromconcentrateclien/schiketanz',
   },
