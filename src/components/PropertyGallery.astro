@@ -18,12 +18,22 @@ const { images, title } = Astro.props;
     class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth aspect-video relative"
   >
     {images.map((imgObj, index) => (
-      <div class="flex-none w-full h-full snap-center relative flex items-center justify-center bg-gray-100 gallery-slide">
+      <div class="flex-none w-full h-full snap-center relative flex items-center justify-center bg-gray-900 gallery-slide overflow-hidden">
+        <!-- 1. Background Layer: Blurred & Zoomed to fill space -->
+        <div class="absolute inset-0 w-full h-full">
+            <Image 
+              src={imgObj} 
+              alt="" 
+              class="w-full h-full object-cover opacity-50 blur-xl scale-110"
+            />
+        </div>
+        <!-- 2. Foreground Layer: The clear image, fully visible -->
         <Image 
           src={imgObj} 
           alt={`${title} - Photo ${index + 1}`}
-          class="w-full h-full object-cover"
+          class="relative z-10 w-full h-full object-contain shadow-lg"
         />
+        
       </div>
     ))}
   </div>

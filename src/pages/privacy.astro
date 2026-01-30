@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+---
+
+<Layout title="Privacy Policy | Schiketanz Real Estate">
+  <div class="container mx-auto px-4 py-8 md:py-12">
+    <PageHeader 
+      title="Privacy Policy" 
+      breadcrumb={[{ text: 'Privacy Policy', href: '/privacy' }]}
+    />
+
+    <div class="prose max-w-3xl mx-auto text-gray-700">
+      <p class="italic text-sm text-gray-500 mb-6">Last Updated: {new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+
+      <h3>1. General Policy</h3>
+      <p>
+        At M. Schiketanz Real Estate Inc., we are committed to maintaining the accuracy, confidentiality, and security of your personally identifiable information ("Personal Information"). As part of this commitment, our privacy policy governs our actions as they relate to the collection, use, and disclosure of Personal Information.
+      </p>
+
+      <h3>2. Collection of Personal Information</h3>
+      <p>
+        We collect personal information (such as names, contact details, and financial information) primarily for the purpose of evaluating rental applications, managing tenancy agreements, and processing payments. We collect only the amount of information that is necessary for the purposes identified.
+      </p>
+
+      <h3>3. Use and Disclosure</h3>
+      <p>
+        Your personal information is used only for the purposes for which it was collected or as required by law. We do not sell, trade, or rent your personal information to third parties.
+      </p>
+      
+      <h3>4. Contact Us</h3>
+      <p>
+        If you have any questions regarding this Privacy Policy or the personal information we hold about you, please contact our office at:
+      </p>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:office@schiketanz.ca" class="text-[var(--color-schiketanz-red)] hover:underline">office@schiketanz.ca</a></li>
+        <li><strong>Phone:</strong> (519) 742-4477</li>
+      </ul>
+    </div>
+  </div>
+</Layout>
