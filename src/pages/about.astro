@@ -1,10 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
 ---
 
 <Layout title="About Us | Schiketanz Real Estate">
-  <div class="container mx-auto px-4 py-8 md:py-12">
+  <PageContainer>
     <PageHeader 
       title="About Us" 
       subtitle="We are the small company doing big things."
@@ -22,8 +23,8 @@ import PageHeader from '../components/PageHeader.astro';
         </p>
       </div>
 
-      <div class="bg-gray-50 p-8 border-l-4 border-[var(--color-schiketanz-red)] rounded-sm">
-        <h3 class="font-century font-bold text-xl text-[var(--color-schiketanz-red)] mb-4">
+      <div class="bg-gray-50 p-8 border-l-4 border-schiketanz-red rounded-sm h-fit">
+        <h3 class="font-century font-bold text-xl text-schiketanz-red mb-4">
           Our Commitment
         </h3>
         <p class="italic text-gray-600 mb-4">
@@ -34,5 +35,5 @@ import PageHeader from '../components/PageHeader.astro';
         </p>
       </div>
     </div>
-  </div>
+  </PageContainer>
 </Layout>

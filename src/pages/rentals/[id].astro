@@ -4,6 +4,8 @@ export const prerender = true; // pre-build pages to generate links
 import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import PropertyGallery from '../../components/PropertyGallery.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import PageContainer from '../../components/PageContainer.astro';
 
 export async function getStaticPaths() {
   const rentals = await getCollection('rentals');
@@ -18,80 +20,54 @@ export async function getStaticPaths() {
 const { rental } = Astro.props;
 const { Content } = await render(rental);
 // get gallery images
-const galleryImages = rental.data.gallery || [];
-// cover image
-const coverImage = rental.data.coverImage;
+const allImages = [...(rental.data.gallery || [])];
+if (rental.data.coverImage) allImages.push(rental.data.coverImage);
 
-// MERGE: Gallery first, then cover image tacked onto the end
-const allImages = [...galleryImages];
-if (coverImage) {
-    allImages.push(coverImage);
-}
+// Logic for the badge color
+const statusStyles = {
+    vacant: "bg-green-600",
+    waitlist: "bg-yellow-500",
+    occupied: "bg-gray-600"
+};
+const statusLabels = {
+    vacant: "Vacancies Available",
+    waitlist: "Waitlist Open",
+    occupied: "No Vacancy"
+};
 ---
 
 <Layout title={`${rental.data.title} | Schiketanz Rentals`}>
-  
-  <div class="container mx-auto px-4 py-8">
-    
-    <!-- Breadcrumb -->
-    <a href="/rentals" class="inline-flex items-center text-sm text-gray-500 hover:text-schiketanz-red mb-6 transition-colors">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
-      Back to Rentals
-    </a>
+  <PageContainer>
+    <PageHeader 
+        title={rental.data.title} 
+        subtitle={rental.data.address}
+        breadcrumb={[
+            { text: 'Rentals', href: '/rentals' },
+            { text: rental.data.title, href: `#` }
+        ]}
+    >
+        <!-- Use the slot to place the Status Badge -->
+        <div slot="after-title" class:list={[
+            "px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-sm shadow-sm text-white text-center h-fit md:mb-1",
+            statusStyles[rental.data.vacancyStatus]
+        ]}>
+            {statusLabels[rental.data.vacancyStatus]}
+        </div>
+    </PageHeader>
 
-    <!-- Header Section -->
-    <header class="flex flex-col md:flex-row md:justify-between md:items-start mb-6 gap-4">
-      <div>
-        <h1 class="font-century text-3xl md:text-4xl text-gray-900 mb-2 leading-tight">
-            {rental.data.title}
-        </h1>
-        <p class="text-xl text-gray-600 font-light">
-            {rental.data.address}
-        </p>
-      </div>
-
-      <!-- Vacancy Status Badge -->
-      <div class:list={[
-         "px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-sm shadow-sm text-white inline-block text-center",
-         {
-            "bg-green-600": rental.data.vacancyStatus === 'vacant',
-            "bg-yellow-500": rental.data.vacancyStatus === 'waitlist',
-            "bg-gray-600": rental.data.vacancyStatus === 'occupied'
-         }
-      ]}>
-        {rental.data.vacancyStatus === 'vacant' ? 'Vacancies Available' : 
-         rental.data.vacancyStatus === 'waitlist' ? 'Waitlist Open' : 'No Vacancy'}
-      </div>
-    </header>
-
-    <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
       
       <!-- Left Column: Gallery & iGuide -->
       <div class="lg:col-span-2 space-y-6">
-        
-        <!-- Gallery Carousel (Shows Gallery + Cover at the end) -->
         {allImages.length > 0 ? (
-            <div>
-                <PropertyGallery images={allImages} title={rental.data.title} />
-            </div>
+            <PropertyGallery images={allImages} title={rental.data.title} />
         ) : (
-            <div class="w-full h-96 flex items-center justify-center bg-gray-100 text-gray-400 border border-gray-200">
-                No Images Available
-            </div>
+            <div class="w-full h-96 flex items-center justify-center bg-gray-100 text-gray-400 border border-gray-200">No Images Available</div>
         )}
 
-        <!-- iGuide Button -->
         {rental.data.iGuideUrl && (
             <div class="mt-2">
-                <a 
-                    href={rental.data.iGuideUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    class="flex items-center justify-center w-full bg-[#003057] hover:bg-[#002542] text-white font-century py-4 px-6 rounded shadow-md transition-all group"
-                >
+                <a href={rental.data.iGuideUrl} target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full bg-[#003057] hover:bg-[#002542] text-white font-century py-4 px-6 rounded shadow-md transition-all group">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-cyan-400 group-hover:rotate-180 transition-transform duration-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -110,9 +86,7 @@ if (coverImage) {
         
         <div class="bg-gray-50 border border-gray-200 p-6 rounded-sm shadow-sm">
             <h3 class="font-century text-lg font-bold text-schiketanz-red mb-3">Interested?</h3>
-            <p class="text-sm text-gray-600 mb-4">
-                Please contact our office to schedule a viewing or request an application.
-            </p>
+            <p class="text-sm text-gray-600 mb-4">Please contact our office to schedule a viewing.</p>
             <ul class="text-sm space-y-2 mb-6">
                 <li class="flex items-center">
                     <svg class="w-4 h-4 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
@@ -125,5 +99,5 @@ if (coverImage) {
         </div>
       </div>
     </div>
-  </div>
+  </PageContainer>
 </Layout>

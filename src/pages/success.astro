@@ -1,15 +1,35 @@
 ---
 export const prerender = true;
 import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
 ---
 
 <Layout title="Thank You | Schiketanz Real Estate">
-  <div class="container mx-auto px-4 h-[60vh] flex flex-col items-center justify-center text-center">
-    <div class="bg-green-100 p-4 rounded-full mb-6">
-        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+  <PageContainer narrow class="min-h-[60vh] flex flex-col justify-center text-center">
+    <PageHeader title="Submission Received">
+        <!-- using slot to place icon next to title -->
+        <div slot="after-title" class="bg-green-100 p-2 rounded-full hidden md:block">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+    </PageHeader>
+    <div class="space-y-8">
+        <!-- mobile-only icon -->
+        <div class="bg-green-100 p-4 rounded-full w-fit mx-auto md:hidden">
+            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+        <p class="text-gray-600 text-xl max-w-md mx-auto leading-relaxed">
+            Thank you. Your information has been securely transmitted to our office. We will review your submission and contact you if necessary.
+        </p>
+        <div class="pt-4">
+            <a href="/" class="inline-block px-10 py-4 bg-[var(--color-schiketanz-red)] text-white font-century font-bold rounded shadow-lg hover:bg-red-700 transition-all hover:-translate-y-1">
+                Return to Homepage
+            </a>
+        </div>
     </div>
-    <h1 class="font-century font-bold text-4xl text-gray-800 mb-4">Submission Received</h1>
-    <p class="text-gray-600 text-lg mb-8 max-w-md">Thank you. Your Pre-Authorized Debit form and void cheque have been securely transmitted to our office.</p>
-    <a href="/" class="px-6 py-3 bg-[var(--color-schiketanz-red)] text-white font-bold rounded hover:bg-red-700 transition-colors">Return Home</a>
-  </div>
+  </PageContainer>
 </Layout>

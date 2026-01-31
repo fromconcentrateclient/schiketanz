@@ -1,0 +1,21 @@
+---
+interface Props {
+  narrow?: boolean;
+  class?: string;
+}
+
+const { narrow = false, class: className = "" } = Astro.props;
+---
+
+<div class:list={[
+  "container mx-auto px-4",
+  "pt-4 md:pt-6 lg:pt-8",   /* Reduced top padding */
+  "pb-8 md:pb-12 lg:pb-16", /* Keep or increase bottom padding for breathing room */
+  className
+]}>
+  <div class:list={[
+    narrow ? "max-w-3xl mx-auto" : "w-full"
+  ]}>
+    <slot />
+  </div>
+</div>
