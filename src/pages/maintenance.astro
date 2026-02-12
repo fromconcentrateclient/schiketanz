@@ -258,11 +258,30 @@ const buildings = [
     document.addEventListener('astro:page-load', () => {
         const selector = document.getElementById('building-selector') as HTMLSelectElement;
         const msg = document.getElementById('no-selection-msg');
-        const form1 = document.getElementById('form-group-1');
-        const form2 = document.getElementById('form-group-2');
+        const form1 = document.getElementById('form-group-1') as HTMLFormElement;
+        const form2 = document.getElementById('form-group-2') as HTMLFormElement;
         
         // Inputs inside the forms that need to be updated with the building name
         const hiddenInputs = document.querySelectorAll('.selected-building-input');
+
+        // Helper to toggle form visibility AND disabled state
+        // We disable inputs on hidden forms so browser validation (required) doesn't block submission
+        const toggleForm = (form: HTMLFormElement | null, shouldShow: boolean) => {
+            if (!form) return;
+            if (shouldShow) {
+                form.classList.remove('hidden');
+                // Enable all elements
+                Array.from(form.elements).forEach((el: any) => el.disabled = false);
+            } else {
+                form.classList.add('hidden');
+                // Disable all elements
+                Array.from(form.elements).forEach((el: any) => el.disabled = true);
+            }
+        };
+
+        // Initialize forms as disabled on load (since they are hidden by default in HTML)
+        if (form1) toggleForm(form1, false);
+        if (form2) toggleForm(form2, false);
 
         if(selector) {
             selector.addEventListener('change', (e) => {
@@ -271,22 +290,17 @@ const buildings = [
                 const group = option.dataset.group;
                 const buildingName = target.value;
 
-                // 1. Hide everything initially
+                // 1. Hide Welcome Message
                 if(msg) msg.classList.add('hidden');
-                if(form1) form1.classList.add('hidden');
-                if(form2) form2.classList.add('hidden');
 
                 // 2. Update hidden fields in BOTH forms (just in case)
                 hiddenInputs.forEach((input) => {
                     (input as HTMLInputElement).value = buildingName;
                 });
 
-                // 3. Show the correct form
-                if (group === '1' && form1) {
-                    form1.classList.remove('hidden');
-                } else if (group === '2' && form2) {
-                    form2.classList.remove('hidden');
-                }
+                // 3. Toggle Forms based on group
+                toggleForm(form1, group === '1');
+                toggleForm(form2, group === '2');
             });
         }
     });
