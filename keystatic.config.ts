@@ -1,11 +1,9 @@
 import { config, fields, collection } from '@keystatic/core';
 
-// check if dev mode
-const isDev = process.env.NODE_ENV === 'development';
+const isLocal = process.env.NODE_ENV === 'development' || !process.env.NETLIFY;
 
 export default config({
-  // use local files in dev, cloud in production
-  storage: isDev 
+  storage: isLocal 
     ? { kind: 'local' } 
     : { kind: 'cloud' },
   cloud: {
