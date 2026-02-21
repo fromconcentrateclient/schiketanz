@@ -3,6 +3,7 @@ export const prerender = true; // to ensure form is detected
 
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
 
 // Building Data (Group 1 vs Group 2)
 const buildings = [
@@ -24,25 +25,29 @@ const buildings = [
     { name: "Stanley Park Apts", group: 1 },
     { name: "Traynor Avenue", group: 2 },
 ].sort((a, b) => a.name.localeCompare(b.name));
+
+// Reusable Tailwind classes for form inputs to ensure pixel-perfect consistency
+const inputClasses = "w-full px-4 py-2.5 border border-gray-300 rounded-sm focus:ring-2 focus:ring-schiketanz-red focus:border-schiketanz-red outline-none transition-all bg-white";
+const labelClasses = "block text-sm font-bold text-gray-700 mb-1.5";
 ---
 
 <Layout title="Maintenance Request | Schiketanz Real Estate">
-  <div class="container mx-auto px-4 py-8 md:py-12">
+  <PageContainer>
     <PageHeader 
       title="Maintenance Request" 
       subtitle="Submit a work order directly to your building superintendent."
       breadcrumb={[{ text: 'Maintenance', href: '/maintenance' }]}
     />
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-3xl mx-auto space-y-6">
         
-        <!-- STEP 1: Building Selection -->
-        <div class="bg-gray-50 p-6 rounded-t-sm border border-gray-200 border-b-0">
-            <label for="building-selector" class="block text-lg font-bold text-gray-800 mb-2">
-                First, select your building:
+        <!-- Building Selection Card -->
+        <div class="bg-gray-50 p-6 rounded-sm border border-gray-200 shadow-sm">
+            <label for="building-selector" class="block text-lg font-bold text-gray-800 mb-3">
+                Select your building:
             </label>
             <div class="relative">
-                <select id="building-selector" class="w-full p-4 text-lg border-2 border-gray-300 rounded focus:border-[var(--color-schiketanz-red)] outline-none bg-white cursor-pointer">
+                <select id="building-selector" class={inputClasses + " cursor-pointer text-lg"}>
                     <option value="" disabled selected>-- Choose Building --</option>
                     {buildings.map(b => (
                         <option value={b.name} data-group={b.group}>{b.name}</option>
@@ -51,18 +56,16 @@ const buildings = [
             </div>
         </div>
 
-        <!-- CONTAINER FOR FORMS -->
-        <div class="bg-white p-8 rounded-b-sm shadow-sm border border-gray-200 min-h-[400px]">
-            
+        <!-- FORM CONTAINER -->
+        <div class="bg-white p-6 md:p-10 rounded-sm shadow-sm border border-gray-200 min-h-[400px]">
             <!-- Default State: No Building Selected -->
-            <div id="no-selection-msg" class="text-center text-gray-500 py-12">
-                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                <p class="text-lg">Please select your building above to load the correct form.</p>
+            <div id="no-selection-msg" class="text-center text-gray-400 py-16">
+                <svg class="w-16 h-16 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <p class="text-xl font-medium">Select a building to load the request form.</p>
             </div>
-
-            <!-- ============================================== -->
-            <!-- FORM A: GROUP 1 (Hidden by default)            -->
-            <!-- ============================================== -->
+            <!-- GROUP 1 FORM -->
             <form 
                 id="form-group-1"
                 name="maintenance-group-1" 
@@ -73,73 +76,70 @@ const buildings = [
                 action="/success"
                 class="space-y-6 hidden animate-fade-in"
             >
-                <div class="bg-blue-50 border-l-4 border-blue-600 p-3 mb-6">
-                    <p class="text-sm text-blue-900 font-bold">Routing to: Maintenance Group 1</p>
+                <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mb-6">
+                    <p class="text-sm text-blue-800 font-bold uppercase tracking-tight">Request Routing: Group 1 Management</p>
                 </div>
 
-                <!-- Netlify Required Hidden Fields -->
                 <input type="hidden" name="form-name" value="maintenance-group-1" />
                 <p class="hidden"><label>Bot: <input name="bot-field" /></label></p>
-                
-                <!-- We inject the building name here automatically via JS -->
                 <input type="hidden" name="building_name" class="selected-building-input" />
-                <input type="hidden" name="subject" value="New Group 1 Maintenance Request" />
+                <input type="hidden" name="subject" value="New Maintenance Request (Group 1)" />
 
-                <!-- FORM FIELDS (Group 1) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="g1-fullName" class="block text-sm font-bold text-gray-700 mb-1">Full Name *</label>
-                        <input type="text" id="g1-fullName" name="fullName" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                        <label for="g1-fullName" class={labelClasses}>Full Name *</label>
+                        <input type="text" id="g1-fullName" name="fullName" required class={inputClasses} />
                     </div>
                     <div>
-                        <label for="g1-phone" class="block text-sm font-bold text-gray-700 mb-1">Phone Number *</label>
-                        <input type="tel" id="g1-phone" name="phone" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                        <label for="g1-phone" class={labelClasses}>Phone Number *</label>
+                        <input type="tel" id="g1-phone" name="phone" required class={inputClasses} />
                     </div>
                 </div>
 
                 <div>
-                    <label for="g1-email" class="block text-sm font-bold text-gray-700 mb-1">Email Address *</label>
-                    <input type="email" id="g1-email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                    <label for="g1-email" class={labelClasses}>Email Address *</label>
+                    <input type="email" id="g1-email" name="email" required class={inputClasses} />
+                </div>
+
+                <div class="w-full md:w-1/3">
+                    <label for="g1-unit" class={labelClasses}>Unit Number *</label>
+                    <input type="text" id="g1-unit" name="unit" required class={inputClasses} />
                 </div>
 
                 <div>
-                    <label for="g1-unit" class="block text-sm font-bold text-gray-700 mb-1">Unit Number *</label>
-                    <input type="text" id="g1-unit" name="unit" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                    <label for="g1-issue" class={labelClasses}>Description of Request *</label>
+                    <textarea id="g1-issue" name="issue" rows="4" required placeholder="Please provide details about the repair needed..." class={inputClasses}></textarea>
                 </div>
 
-                <div>
-                    <label for="g1-issue" class="block text-sm font-bold text-gray-700 mb-1">Description of Request *</label>
-                    <textarea id="g1-issue" name="issue" rows="4" required placeholder="Describe the problem..." class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none"></textarea>
+                <div class="bg-gray-50 p-5 border border-gray-200 rounded-sm">
+                    <label for="g1-photos" class={labelClasses}>Upload Photo (Optional)</label>
+                    <input type="file" id="g1-photos" name="photos" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-sm file:font-bold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer" />
                 </div>
 
-                <div>
-                    <label for="g1-photos" class="block text-sm font-bold text-gray-700 mb-2">Upload Photo (Optional)</label>
-                    <input type="file" id="g1-photos" name="photos" accept="image/*" class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer" />
-                </div>
-
-                <div class="bg-gray-50 p-4 border border-gray-200 rounded space-y-4">
-                    <p class="text-sm font-bold text-gray-700 uppercase tracking-wide">Entry Permission</p>
+                <div class="bg-gray-50 p-6 border border-gray-200 rounded-sm space-y-5">
+                    <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Entry Permission & Security</p>
                     <div class="flex items-start">
                         <div class="flex items-center h-5">
-                            <input id="g1-entry" name="entry_permission" type="checkbox" value="yes" class="w-4 h-4 text-[var(--color-schiketanz-red)] border-gray-300 rounded focus:ring-[var(--color-schiketanz-red)]" />
+                            <input id="g1-entry" name="entry_permission" type="checkbox" value="yes" class="w-5 h-5 text-schiketanz-red border-gray-300 rounded-sm focus:ring-schiketanz-red" />
                         </div>
                         <div class="ml-3 text-sm">
-                            <label for="g1-entry" class="font-medium text-gray-900">
+                            <label for="g1-entry" class="font-bold text-gray-800">
                                 I grant permission for the Landlord/Agent to enter my unit to perform this repair.
                             </label>
+                            <p class="text-gray-500">Entry will be made during standard business hours.</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                         <div>
-                            <label for="g1-pets" class="block text-sm font-bold text-gray-700 mb-1">Do you have pets?</label>
-                            <select id="g1-pets" name="pets" class="w-full border border-gray-300 rounded px-2 py-1">
+                            <label for="g1-pets" class={labelClasses}>Do you have pets?</label>
+                            <select id="g1-pets" name="pets" class={inputClasses}>
                                 <option value="No">No</option>
                                 <option value="Yes">Yes</option>
                             </select>
                         </div>
                         <div>
-                            <label for="g1-alarm" class="block text-sm font-bold text-gray-700 mb-1">Is there an alarm?</label>
-                            <select id="g1-alarm" name="alarm" class="w-full border border-gray-300 rounded px-2 py-1">
+                            <label for="g1-alarm" class={labelClasses}>Is there an alarm?</label>
+                            <select id="g1-alarm" name="alarm" class={inputClasses}>
                                 <option value="No">No</option>
                                 <option value="Yes">Yes</option>
                             </select>
@@ -147,17 +147,14 @@ const buildings = [
                     </div>
                 </div>
 
-                <div class="pt-2">
-                    <button type="submit" class="w-full md:w-auto px-8 py-3 bg-[var(--color-schiketanz-red)] text-white font-century font-bold rounded shadow-md hover:bg-red-700 transition-colors">
-                        Submit Request (Group 1)
+                <div class="pt-4">
+                    <button type="submit" class="w-full md:w-auto px-10 py-4 bg-schiketanz-red text-white font-bold rounded-sm shadow-md hover:bg-schiketanz-red-dark transition-all hover:-translate-y-0.5 active:translate-y-0">
+                        Submit Maintenance Request
                     </button>
                 </div>
             </form>
 
-
-            <!-- ============================================== -->
-            <!-- FORM B: GROUP 2 (Hidden by default)            -->
-            <!-- ============================================== -->
+            <!-- GROUP 2 FORM -->
             <form 
                 id="form-group-2"
                 name="maintenance-group-2" 
@@ -168,73 +165,70 @@ const buildings = [
                 action="/success"
                 class="space-y-6 hidden animate-fade-in"
             >
-                <div class="bg-green-50 border-l-4 border-green-600 p-3 mb-6">
-                    <p class="text-sm text-green-900 font-bold">Routing to: Maintenance Group 2</p>
+                <div class="bg-green-50 border-l-4 border-green-600 p-4 mb-6">
+                    <p class="text-sm text-green-800 font-bold uppercase tracking-tight">Request Routing: Group 2 Management</p>
                 </div>
 
-                <!-- Netlify Required Hidden Fields -->
                 <input type="hidden" name="form-name" value="maintenance-group-2" />
                 <p class="hidden"><label>Bot: <input name="bot-field" /></label></p>
-
-                <!-- We inject the building name here automatically via JS -->
                 <input type="hidden" name="building_name" class="selected-building-input" />
-                <input type="hidden" name="subject" value="New Group 2 Maintenance Request" />
+                <input type="hidden" name="subject" value="New Maintenance Request (Group 2)" />
 
-                <!-- FORM FIELDS (Group 2) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="g2-fullName" class="block text-sm font-bold text-gray-700 mb-1">Full Name *</label>
-                        <input type="text" id="g2-fullName" name="fullName" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                        <label for="g2-fullName" class={labelClasses}>Full Name *</label>
+                        <input type="text" id="g2-fullName" name="fullName" required class={inputClasses} />
                     </div>
                     <div>
-                        <label for="g2-phone" class="block text-sm font-bold text-gray-700 mb-1">Phone Number *</label>
-                        <input type="tel" id="g2-phone" name="phone" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                        <label for="g2-phone" class={labelClasses}>Phone Number *</label>
+                        <input type="tel" id="g2-phone" name="phone" required class={inputClasses} />
                     </div>
                 </div>
 
                 <div>
-                    <label for="g2-email" class="block text-sm font-bold text-gray-700 mb-1">Email Address *</label>
-                    <input type="email" id="g2-email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                    <label for="g2-email" class={labelClasses}>Email Address *</label>
+                    <input type="email" id="g2-email" name="email" required class={inputClasses} />
+                </div>
+
+                <div class="w-full md:w-1/3">
+                    <label for="g2-unit" class={labelClasses}>Unit Number *</label>
+                    <input type="text" id="g2-unit" name="unit" required class={inputClasses} />
                 </div>
 
                 <div>
-                    <label for="g2-unit" class="block text-sm font-bold text-gray-700 mb-1">Unit Number *</label>
-                    <input type="text" id="g2-unit" name="unit" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                    <label for="g2-issue" class={labelClasses}>Description of Request *</label>
+                    <textarea id="g2-issue" name="issue" rows="4" required placeholder="Please provide details about the repair needed..." class={inputClasses}></textarea>
                 </div>
 
-                <div>
-                    <label for="g2-issue" class="block text-sm font-bold text-gray-700 mb-1">Description of Request *</label>
-                    <textarea id="g2-issue" name="issue" rows="4" required placeholder="Describe the problem..." class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none"></textarea>
+                <div class="bg-gray-50 p-5 border border-gray-200 rounded-sm">
+                    <label for="g2-photos" class={labelClasses}>Upload Photo (Optional)</label>
+                    <input type="file" id="g2-photos" name="photos" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-sm file:font-bold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer" />
                 </div>
 
-                <div>
-                    <label for="g2-photos" class="block text-sm font-bold text-gray-700 mb-2">Upload Photo (Optional)</label>
-                    <input type="file" id="g2-photos" name="photos" accept="image/*" class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer" />
-                </div>
-
-                <div class="bg-gray-50 p-4 border border-gray-200 rounded space-y-4">
-                    <p class="text-sm font-bold text-gray-700 uppercase tracking-wide">Entry Permission</p>
+                <div class="bg-gray-50 p-6 border border-gray-200 rounded-sm space-y-5">
+                    <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Entry Permission & Security</p>
                     <div class="flex items-start">
                         <div class="flex items-center h-5">
-                            <input id="g2-entry" name="entry_permission" type="checkbox" value="yes" class="w-4 h-4 text-[var(--color-schiketanz-red)] border-gray-300 rounded focus:ring-[var(--color-schiketanz-red)]" />
+                            <input id="g2-entry" name="entry_permission" type="checkbox" value="yes" class="w-5 h-5 text-schiketanz-red border-gray-300 rounded-sm focus:ring-schiketanz-red" />
                         </div>
                         <div class="ml-3 text-sm">
-                            <label for="g2-entry" class="font-medium text-gray-900">
+                            <label for="g2-entry" class="font-bold text-gray-800">
                                 I grant permission for the Landlord/Agent to enter my unit to perform this repair.
                             </label>
+                            <p class="text-gray-500">Entry will be made during standard business hours.</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                         <div>
-                            <label for="g2-pets" class="block text-sm font-bold text-gray-700 mb-1">Do you have pets?</label>
-                            <select id="g2-pets" name="pets" class="w-full border border-gray-300 rounded px-2 py-1">
+                            <label for="g2-pets" class={labelClasses}>Do you have pets?</label>
+                            <select id="g2-pets" name="pets" class={inputClasses}>
                                 <option value="No">No</option>
                                 <option value="Yes">Yes</option>
                             </select>
                         </div>
                         <div>
-                            <label for="g2-alarm" class="block text-sm font-bold text-gray-700 mb-1">Is there an alarm?</label>
-                            <select id="g2-alarm" name="alarm" class="w-full border border-gray-300 rounded px-2 py-1">
+                            <label for="g2-alarm" class={labelClasses}>Is there an alarm?</label>
+                            <select id="g2-alarm" name="alarm" class={inputClasses}>
                                 <option value="No">No</option>
                                 <option value="Yes">Yes</option>
                             </select>
@@ -242,16 +236,16 @@ const buildings = [
                     </div>
                 </div>
 
-                <div class="pt-2">
-                    <button type="submit" class="w-full md:w-auto px-8 py-3 bg-[var(--color-schiketanz-red)] text-white font-century font-bold rounded shadow-md hover:bg-red-700 transition-colors">
-                        Submit Request (Group 2)
+                <div class="pt-4">
+                    <button type="submit" class="w-full md:w-auto px-10 py-4 bg-schiketanz-red text-white font-bold rounded-sm shadow-md hover:bg-schiketanz-red-dark transition-all hover:-translate-y-0.5 active:translate-y-0">
+                        Submit Maintenance Request
                     </button>
                 </div>
             </form>
 
         </div>
     </div>
-  </div>
+  </PageContainer>
 </Layout>
 
 <script>
@@ -260,45 +254,29 @@ const buildings = [
         const msg = document.getElementById('no-selection-msg');
         const form1 = document.getElementById('form-group-1') as HTMLFormElement;
         const form2 = document.getElementById('form-group-2') as HTMLFormElement;
-        
-        // Inputs inside the forms that need to be updated with the building name
         const hiddenInputs = document.querySelectorAll('.selected-building-input');
 
-        // Helper to toggle form visibility AND disabled state
-        // We disable inputs on hidden forms so browser validation (required) doesn't block submission
         const toggleForm = (form: HTMLFormElement | null, shouldShow: boolean) => {
             if (!form) return;
             if (shouldShow) {
                 form.classList.remove('hidden');
-                // Enable all elements
                 Array.from(form.elements).forEach((el: any) => el.disabled = false);
             } else {
                 form.classList.add('hidden');
-                // Disable all elements
                 Array.from(form.elements).forEach((el: any) => el.disabled = true);
             }
         };
-
-        // Initialize forms as disabled on load (since they are hidden by default in HTML)
+        // init
         if (form1) toggleForm(form1, false);
         if (form2) toggleForm(form2, false);
-
         if(selector) {
             selector.addEventListener('change', (e) => {
                 const target = e.target as HTMLSelectElement;
                 const option = target.options[target.selectedIndex];
                 const group = option.dataset.group;
                 const buildingName = target.value;
-
-                // 1. Hide Welcome Message
                 if(msg) msg.classList.add('hidden');
-
-                // 2. Update hidden fields in BOTH forms (just in case)
-                hiddenInputs.forEach((input) => {
-                    (input as HTMLInputElement).value = buildingName;
-                });
-
-                // 3. Toggle Forms based on group
+                hiddenInputs.forEach((input) => { (input as HTMLInputElement).value = buildingName; });
                 toggleForm(form1, group === '1');
                 toggleForm(form2, group === '2');
             });
@@ -308,10 +286,10 @@ const buildings = [
 
 <style>
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(8px); }
         to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in {
-        animation: fadeIn 0.4s ease-out forwards;
+        animation: fadeIn 0.3s ease-out forwards;
     }
 </style>
