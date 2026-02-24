@@ -15,7 +15,12 @@ const rentals = defineCollection({
                 }))
             }),
         ]),
-        address: z.string(),
+        address: z.object({
+            street: z.string(),
+            city: z.string(),
+            province: z.string(),
+            postalCode: z.string(),
+        }),
         // cover image
         coverImage: image().optional(),        
         // iGuide Link: Optional string, validated as a URL

@@ -40,8 +40,12 @@ export default config({
             )
           }
         ),
-
-        address: fields.text({ label: 'Full Address' }),
+        address: fields.object({
+          street: fields.text({ label: 'Street Address (e.g. 195 Natchez Rd.)' }),
+          city: fields.text({ label: 'City', defaultValue: 'Kitchener' }),
+          province: fields.text({ label: 'Province', defaultValue: 'Ontario' }),
+          postalCode: fields.text({ label: 'Postal Code' }),
+        }),
         coverImage: fields.image({
           label: 'Building Photo',
           directory: 'src/assets/rentals', 

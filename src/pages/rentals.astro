@@ -20,58 +20,57 @@ const rentals = allRentals.sort((a, b) => {
   <PageContainer>
     <PageHeader 
       title="Rental Properties" 
-      subtitle="Browse our residential and commercial listings. Contact our office for current availability and application details."
+      subtitle="Browse our residential and commercial listings. Contact our office for current availability."
       breadcrumb={[{ text: 'Rentals', href: '/rentals' }]}
     />
     <!-- Standardized Grid Gap: Matching the visual rhythm of other pages -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
       {rentals.map(rental => (
-        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-schiketanz-red/20 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+          <!-- Entire card is clickable -->
           <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
-            <span class="sr-only">View Details for {rental.data.title}</span>
+            <span class="sr-only">View {rental.data.title}</span>
           </a>
-          <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-sm border-b border-gray-100">
+
+          <!-- Image Container -->
+          <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-sm">
              {rental.data.coverImage ? (
                 <Image 
                     src={rental.data.coverImage} 
                     alt={rental.data.title} 
-                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                 />
              ) : (
-                <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gray-50 uppercase tracking-widest text-xs font-bold">
-                    <svg class="w-8 h-8 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    Image Coming Soon
+                <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50 text-[10px] font-bold uppercase tracking-widest">
+                    No Image
                 </div>
              )}
-             <!-- Unified Status Badge -->
+             
+             <!-- Badge -->
              <div class:list={[
-                 "absolute top-4 right-4 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.1em] text-white z-30 shadow-sm rounded-sm",
+                 "absolute top-3 right-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white z-30 shadow-sm rounded-sm",
                  {
                     "bg-green-600": rental.data.vacancyStatus.discriminant === 'vacant',
                     "bg-gray-700/90": rental.data.vacancyStatus.discriminant === 'occupied'
                  }
              ]}>
-                {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacancies Available' : 'No Vacancy'}
+                {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacant' : 'No Vacancy'}
              </div>
           </div>
-          <!-- Content Section -->
-          <div class="p-6 flex flex-col flex-grow">
-            <h2 class="text-xl font-bold text-gray-900 mb-1.5 group-hover:text-schiketanz-red transition-colors duration-300">
+
+          <!-- Text Content -->
+          <div class="p-5 border-t border-gray-50">
+            <h2 class="text-lg font-bold text-gray-900 group-hover:text-schiketanz-red transition-colors duration-300 leading-tight mb-1">
               {rental.data.title}
             </h2>
+            
             <div class="flex items-start text-gray-500">
-                <svg class="w-4 h-4 mr-1.5 mt-0.5 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5 mr-1.5 mt-0.5 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
-                <p class="text-sm leading-snug">{rental.data.address}</p>
-            </div>
-            <!-- Call to Action Indicator -->
-            <div class="mt-auto pt-6 flex items-center text-xs font-bold text-schiketanz-red uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                View Property Details
-                <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                </svg>
+                {/* Displaying only the Street portion of the address object */}
+                <p class="text-xs font-medium">{rental.data.address.street}</p>
             </div>
           </div>
         </article>
@@ -79,9 +78,8 @@ const rentals = allRentals.sort((a, b) => {
     </div>
     <!-- Empty State -->
     {rentals.length === 0 && (
-        <div class="py-20 text-center bg-gray-50 border border-dashed border-gray-300 rounded-sm">
-            <p class="text-gray-500 font-medium">No properties match your current criteria.</p>
-            <a href="/contact" class="text-schiketanz-red font-bold hover:underline mt-2 inline-block">Contact us for upcoming listings</a>
+        <div class="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
+            <p class="text-gray-400 font-medium">No rental properties found.</p>
         </div>
     )}
   </PageContainer>

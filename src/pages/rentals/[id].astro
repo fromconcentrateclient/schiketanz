@@ -19,14 +19,17 @@ export async function getStaticPaths() {
 // get specific property data for this page
 const { rental } = Astro.props;
 const { Content } = await render(rental);
-// get gallery images
+
+// Destructure structured address for easier use
+const { street, city, province, postalCode } = rental.data.address;
+const fullFormattedAddress = `${street}, ${city}, ${province} ${postalCode}`;
+
 const allImages = [...(rental.data.gallery || [])];
 if (rental.data.coverImage) allImages.push(rental.data.coverImage);
 
 // FIX 1: Access the status directly and use TypeScript's narrowing properly
 const status = rental.data.vacancyStatus;
 const isVacant = status.discriminant === 'vacant';
-
 // This safely extracts the array if it exists, otherwise returns an empty array
 const availableUnits = status.discriminant === 'vacant' ? status.value : [];
 
@@ -38,7 +41,7 @@ const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
   <PageContainer>
     <PageHeader 
         title={rental.data.title} 
-        subtitle={rental.data.address}
+        subtitle={fullFormattedAddress}
         breadcrumb={[
             { text: 'Rentals', href: '/rentals' },
             { text: rental.data.title, href: `#` }

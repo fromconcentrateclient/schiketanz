@@ -1328,326 +1328,6 @@ import PageContainer from '../components/PageContainer.astro';
 </Layout>
 </file>
 
-<file path="src/pages/maintenance.astro">
----
-export const prerender = true; // to ensure form is detected
-
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-
-// Building Data (Group 1 vs Group 2)
-const buildings = [
-    { name: "Bluebird Apartments", group: 1 },
-    { name: "Bridge Apts", group: 1 },
-    { name: "Chicopee Court", group: 2 },
-    { name: "Chicopee Terrace", group: 2 },
-    { name: "Confederation Apts", group: 1 },
-    { name: "Heritage Apts", group: 1 },
-    { name: "Hickory Apts", group: 2 },
-    { name: "Holborn Apts", group: 2 },
-    { name: "Kloster Court", group: 1 },
-    { name: "Lorraine Apts", group: 1 },
-    { name: "Margaret Apartment", group: 1 },
-    { name: "Panorama Terrace", group: 1 },
-    { name: "Parkview Apartments", group: 1 },
-    { name: "Princess Apartments", group: 2 },
-    { name: "Richelieu Apartments", group: 1 },
-    { name: "Stanley Park Apts", group: 1 },
-    { name: "Traynor Avenue", group: 2 },
-].sort((a, b) => a.name.localeCompare(b.name));
----
-
-<Layout title="Maintenance Request | Schiketanz Real Estate">
-  <div class="container mx-auto px-4 py-8 md:py-12">
-    <PageHeader 
-      title="Maintenance Request" 
-      subtitle="Submit a work order directly to your building superintendent."
-      breadcrumb={[{ text: 'Maintenance', href: '/maintenance' }]}
-    />
-
-    <div class="max-w-3xl mx-auto">
-        
-        <!-- STEP 1: Building Selection -->
-        <div class="bg-gray-50 p-6 rounded-t-sm border border-gray-200 border-b-0">
-            <label for="building-selector" class="block text-lg font-bold text-gray-800 mb-2">
-                First, select your building:
-            </label>
-            <div class="relative">
-                <select id="building-selector" class="w-full p-4 text-lg border-2 border-gray-300 rounded focus:border-[var(--color-schiketanz-red)] outline-none bg-white cursor-pointer">
-                    <option value="" disabled selected>-- Choose Building --</option>
-                    {buildings.map(b => (
-                        <option value={b.name} data-group={b.group}>{b.name}</option>
-                    ))}
-                </select>
-            </div>
-        </div>
-
-        <!-- CONTAINER FOR FORMS -->
-        <div class="bg-white p-8 rounded-b-sm shadow-sm border border-gray-200 min-h-[400px]">
-            
-            <!-- Default State: No Building Selected -->
-            <div id="no-selection-msg" class="text-center text-gray-500 py-12">
-                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                <p class="text-lg">Please select your building above to load the correct form.</p>
-            </div>
-
-            <!-- ============================================== -->
-            <!-- FORM A: GROUP 1 (Hidden by default)            -->
-            <!-- ============================================== -->
-            <form 
-                id="form-group-1"
-                name="maintenance-group-1" 
-                method="POST" 
-                data-netlify="true" 
-                netlify-honeypot="bot-field"
-                enctype="multipart/form-data"
-                action="/success"
-                class="space-y-6 hidden animate-fade-in"
-            >
-                <div class="bg-blue-50 border-l-4 border-blue-600 p-3 mb-6">
-                    <p class="text-sm text-blue-900 font-bold">Routing to: Maintenance Group 1</p>
-                </div>
-
-                <!-- Netlify Required Hidden Fields -->
-                <input type="hidden" name="form-name" value="maintenance-group-1" />
-                <p class="hidden"><label>Bot: <input name="bot-field" /></label></p>
-                
-                <!-- We inject the building name here automatically via JS -->
-                <input type="hidden" name="building_name" class="selected-building-input" />
-                <input type="hidden" name="subject" value="New Group 1 Maintenance Request" />
-
-                <!-- FORM FIELDS (Group 1) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="g1-fullName" class="block text-sm font-bold text-gray-700 mb-1">Full Name *</label>
-                        <input type="text" id="g1-fullName" name="fullName" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
-                    </div>
-                    <div>
-                        <label for="g1-phone" class="block text-sm font-bold text-gray-700 mb-1">Phone Number *</label>
-                        <input type="tel" id="g1-phone" name="phone" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
-                    </div>
-                </div>
-
-                <div>
-                    <label for="g1-email" class="block text-sm font-bold text-gray-700 mb-1">Email Address *</label>
-                    <input type="email" id="g1-email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
-                </div>
-
-                <div>
-                    <label for="g1-unit" class="block text-sm font-bold text-gray-700 mb-1">Unit Number *</label>
-                    <input type="text" id="g1-unit" name="unit" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
-                </div>
-
-                <div>
-                    <label for="g1-issue" class="block text-sm font-bold text-gray-700 mb-1">Description of Request *</label>
-                    <textarea id="g1-issue" name="issue" rows="4" required placeholder="Describe the problem..." class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none"></textarea>
-                </div>
-
-                <div>
-                    <label for="g1-photos" class="block text-sm font-bold text-gray-700 mb-2">Upload Photo (Optional)</label>
-                    <input type="file" id="g1-photos" name="photos" accept="image/*" class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer" />
-                </div>
-
-                <div class="bg-gray-50 p-4 border border-gray-200 rounded space-y-4">
-                    <p class="text-sm font-bold text-gray-700 uppercase tracking-wide">Entry Permission</p>
-                    <div class="flex items-start">
-                        <div class="flex items-center h-5">
-                            <input id="g1-entry" name="entry_permission" type="checkbox" value="yes" class="w-4 h-4 text-[var(--color-schiketanz-red)] border-gray-300 rounded focus:ring-[var(--color-schiketanz-red)]" />
-                        </div>
-                        <div class="ml-3 text-sm">
-                            <label for="g1-entry" class="font-medium text-gray-900">
-                                I grant permission for the Landlord/Agent to enter my unit to perform this repair.
-                            </label>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="g1-pets" class="block text-sm font-bold text-gray-700 mb-1">Do you have pets?</label>
-                            <select id="g1-pets" name="pets" class="w-full border border-gray-300 rounded px-2 py-1">
-                                <option value="No">No</option>
-                                <option value="Yes">Yes</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="g1-alarm" class="block text-sm font-bold text-gray-700 mb-1">Is there an alarm?</label>
-                            <select id="g1-alarm" name="alarm" class="w-full border border-gray-300 rounded px-2 py-1">
-                                <option value="No">No</option>
-                                <option value="Yes">Yes</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-2">
-                    <button type="submit" class="w-full md:w-auto px-8 py-3 bg-[var(--color-schiketanz-red)] text-white font-century font-bold rounded shadow-md hover:bg-red-700 transition-colors">
-                        Submit Request (Group 1)
-                    </button>
-                </div>
-            </form>
-
-
-            <!-- ============================================== -->
-            <!-- FORM B: GROUP 2 (Hidden by default)            -->
-            <!-- ============================================== -->
-            <form 
-                id="form-group-2"
-                name="maintenance-group-2" 
-                method="POST" 
-                data-netlify="true" 
-                netlify-honeypot="bot-field"
-                enctype="multipart/form-data"
-                action="/success"
-                class="space-y-6 hidden animate-fade-in"
-            >
-                <div class="bg-green-50 border-l-4 border-green-600 p-3 mb-6">
-                    <p class="text-sm text-green-900 font-bold">Routing to: Maintenance Group 2</p>
-                </div>
-
-                <!-- Netlify Required Hidden Fields -->
-                <input type="hidden" name="form-name" value="maintenance-group-2" />
-                <p class="hidden"><label>Bot: <input name="bot-field" /></label></p>
-
-                <!-- We inject the building name here automatically via JS -->
-                <input type="hidden" name="building_name" class="selected-building-input" />
-                <input type="hidden" name="subject" value="New Group 2 Maintenance Request" />
-
-                <!-- FORM FIELDS (Group 2) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="g2-fullName" class="block text-sm font-bold text-gray-700 mb-1">Full Name *</label>
-                        <input type="text" id="g2-fullName" name="fullName" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
-                    </div>
-                    <div>
-                        <label for="g2-phone" class="block text-sm font-bold text-gray-700 mb-1">Phone Number *</label>
-                        <input type="tel" id="g2-phone" name="phone" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
-                    </div>
-                </div>
-
-                <div>
-                    <label for="g2-email" class="block text-sm font-bold text-gray-700 mb-1">Email Address *</label>
-                    <input type="email" id="g2-email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
-                </div>
-
-                <div>
-                    <label for="g2-unit" class="block text-sm font-bold text-gray-700 mb-1">Unit Number *</label>
-                    <input type="text" id="g2-unit" name="unit" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
-                </div>
-
-                <div>
-                    <label for="g2-issue" class="block text-sm font-bold text-gray-700 mb-1">Description of Request *</label>
-                    <textarea id="g2-issue" name="issue" rows="4" required placeholder="Describe the problem..." class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none"></textarea>
-                </div>
-
-                <div>
-                    <label for="g2-photos" class="block text-sm font-bold text-gray-700 mb-2">Upload Photo (Optional)</label>
-                    <input type="file" id="g2-photos" name="photos" accept="image/*" class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer" />
-                </div>
-
-                <div class="bg-gray-50 p-4 border border-gray-200 rounded space-y-4">
-                    <p class="text-sm font-bold text-gray-700 uppercase tracking-wide">Entry Permission</p>
-                    <div class="flex items-start">
-                        <div class="flex items-center h-5">
-                            <input id="g2-entry" name="entry_permission" type="checkbox" value="yes" class="w-4 h-4 text-[var(--color-schiketanz-red)] border-gray-300 rounded focus:ring-[var(--color-schiketanz-red)]" />
-                        </div>
-                        <div class="ml-3 text-sm">
-                            <label for="g2-entry" class="font-medium text-gray-900">
-                                I grant permission for the Landlord/Agent to enter my unit to perform this repair.
-                            </label>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="g2-pets" class="block text-sm font-bold text-gray-700 mb-1">Do you have pets?</label>
-                            <select id="g2-pets" name="pets" class="w-full border border-gray-300 rounded px-2 py-1">
-                                <option value="No">No</option>
-                                <option value="Yes">Yes</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="g2-alarm" class="block text-sm font-bold text-gray-700 mb-1">Is there an alarm?</label>
-                            <select id="g2-alarm" name="alarm" class="w-full border border-gray-300 rounded px-2 py-1">
-                                <option value="No">No</option>
-                                <option value="Yes">Yes</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-2">
-                    <button type="submit" class="w-full md:w-auto px-8 py-3 bg-[var(--color-schiketanz-red)] text-white font-century font-bold rounded shadow-md hover:bg-red-700 transition-colors">
-                        Submit Request (Group 2)
-                    </button>
-                </div>
-            </form>
-
-        </div>
-    </div>
-  </div>
-</Layout>
-
-<script>
-    document.addEventListener('astro:page-load', () => {
-        const selector = document.getElementById('building-selector') as HTMLSelectElement;
-        const msg = document.getElementById('no-selection-msg');
-        const form1 = document.getElementById('form-group-1') as HTMLFormElement;
-        const form2 = document.getElementById('form-group-2') as HTMLFormElement;
-        
-        // Inputs inside the forms that need to be updated with the building name
-        const hiddenInputs = document.querySelectorAll('.selected-building-input');
-
-        // Helper to toggle form visibility AND disabled state
-        // We disable inputs on hidden forms so browser validation (required) doesn't block submission
-        const toggleForm = (form: HTMLFormElement | null, shouldShow: boolean) => {
-            if (!form) return;
-            if (shouldShow) {
-                form.classList.remove('hidden');
-                // Enable all elements
-                Array.from(form.elements).forEach((el: any) => el.disabled = false);
-            } else {
-                form.classList.add('hidden');
-                // Disable all elements
-                Array.from(form.elements).forEach((el: any) => el.disabled = true);
-            }
-        };
-
-        // Initialize forms as disabled on load (since they are hidden by default in HTML)
-        if (form1) toggleForm(form1, false);
-        if (form2) toggleForm(form2, false);
-
-        if(selector) {
-            selector.addEventListener('change', (e) => {
-                const target = e.target as HTMLSelectElement;
-                const option = target.options[target.selectedIndex];
-                const group = option.dataset.group;
-                const buildingName = target.value;
-
-                // 1. Hide Welcome Message
-                if(msg) msg.classList.add('hidden');
-
-                // 2. Update hidden fields in BOTH forms (just in case)
-                hiddenInputs.forEach((input) => {
-                    (input as HTMLInputElement).value = buildingName;
-                });
-
-                // 3. Toggle Forms based on group
-                toggleForm(form1, group === '1');
-                toggleForm(form2, group === '2');
-            });
-        }
-    });
-</script>
-
-<style>
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in {
-        animation: fadeIn 0.4s ease-out forwards;
-    }
-</style>
-</file>
-
 <file path="src/pages/rentals/[id].astro">
 ---
 export const prerender = true;
@@ -1799,28 +1479,333 @@ const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
 </Layout>
 </file>
 
+<file path="src/pages/maintenance.astro">
+---
+export const prerender = true; // to ensure form is detected
+
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+
+// Building Data (Group 1 vs Group 2)
+const buildings = [
+    { name: "Bluebird Apartments", group: 1 },
+    { name: "Bridge Apts", group: 1 },
+    { name: "Chicopee Court", group: 2 },
+    { name: "Chicopee Terrace", group: 2 },
+    { name: "Confederation Apts", group: 1 },
+    { name: "Heritage Apts", group: 1 },
+    { name: "Hickory Apts", group: 2 },
+    { name: "Holborn Apts", group: 2 },
+    { name: "Kloster Court", group: 1 },
+    { name: "Lorraine Apts", group: 1 },
+    { name: "Margaret Apartment", group: 1 },
+    { name: "Panorama Terrace", group: 1 },
+    { name: "Parkview Apartments", group: 1 },
+    { name: "Princess Apartments", group: 2 },
+    { name: "Richelieu Apartments", group: 1 },
+    { name: "Stanley Park Apts", group: 1 },
+    { name: "Traynor Avenue", group: 2 },
+].sort((a, b) => a.name.localeCompare(b.name));
+
+// Reusable Tailwind classes for form inputs to ensure pixel-perfect consistency
+const inputClasses = "w-full px-4 py-2.5 border border-gray-300 rounded-sm focus:ring-2 focus:ring-schiketanz-red focus:border-schiketanz-red outline-none transition-all bg-white";
+const labelClasses = "block text-sm font-bold text-gray-700 mb-1.5";
+---
+
+<Layout title="Maintenance Request | Schiketanz Real Estate">
+  <PageContainer>
+    <PageHeader 
+      title="Maintenance Request" 
+      subtitle="Submit a work order directly to your building superintendent."
+      breadcrumb={[{ text: 'Maintenance', href: '/maintenance' }]}
+    />
+
+    <div class="max-w-3xl mx-auto space-y-6">
+        
+        <!-- Building Selection Card -->
+        <div class="bg-gray-50 p-6 rounded-sm border border-gray-200 shadow-sm">
+            <label for="building-selector" class="block text-lg font-bold text-gray-800 mb-3">
+                Select your building:
+            </label>
+            <div class="relative">
+                <select id="building-selector" class={inputClasses + " cursor-pointer text-lg"}>
+                    <option value="" disabled selected>-- Choose Building --</option>
+                    {buildings.map(b => (
+                        <option value={b.name} data-group={b.group}>{b.name}</option>
+                    ))}
+                </select>
+            </div>
+        </div>
+
+        <!-- FORM CONTAINER -->
+        <div class="bg-white p-6 md:p-10 rounded-sm shadow-sm border border-gray-200 min-h-[400px]">
+            <!-- Default State: No Building Selected -->
+            <div id="no-selection-msg" class="text-center text-gray-400 py-16">
+                <svg class="w-16 h-16 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <p class="text-xl font-medium">Select a building to load the request form.</p>
+            </div>
+            <!-- GROUP 1 FORM -->
+            <form 
+                id="form-group-1"
+                name="maintenance-group-1" 
+                method="POST" 
+                data-netlify="true" 
+                netlify-honeypot="bot-field"
+                enctype="multipart/form-data"
+                action="/success"
+                class="space-y-6 hidden animate-fade-in"
+            >
+                <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mb-6">
+                    <p class="text-sm text-blue-800 font-bold uppercase tracking-tight">Request Routing: Group 1 Management</p>
+                </div>
+
+                <input type="hidden" name="form-name" value="maintenance-group-1" />
+                <p class="hidden"><label>Bot: <input name="bot-field" /></label></p>
+                <input type="hidden" name="building_name" class="selected-building-input" />
+                <input type="hidden" name="subject" value="New Maintenance Request (Group 1)" />
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="g1-fullName" class={labelClasses}>Full Name *</label>
+                        <input type="text" id="g1-fullName" name="fullName" required class={inputClasses} />
+                    </div>
+                    <div>
+                        <label for="g1-phone" class={labelClasses}>Phone Number *</label>
+                        <input type="tel" id="g1-phone" name="phone" required class={inputClasses} />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="g1-email" class={labelClasses}>Email Address *</label>
+                    <input type="email" id="g1-email" name="email" required class={inputClasses} />
+                </div>
+
+                <div class="w-full md:w-1/3">
+                    <label for="g1-unit" class={labelClasses}>Unit Number *</label>
+                    <input type="text" id="g1-unit" name="unit" required class={inputClasses} />
+                </div>
+
+                <div>
+                    <label for="g1-issue" class={labelClasses}>Description of Request *</label>
+                    <textarea id="g1-issue" name="issue" rows="4" required placeholder="Please provide details about the repair needed..." class={inputClasses}></textarea>
+                </div>
+
+                <div class="bg-gray-50 p-5 border border-gray-200 rounded-sm">
+                    <label for="g1-photos" class={labelClasses}>Upload Photo (Optional)</label>
+                    <input type="file" id="g1-photos" name="photos" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-sm file:font-bold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer" />
+                </div>
+
+                <div class="bg-gray-50 p-6 border border-gray-200 rounded-sm space-y-5">
+                    <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Entry Permission & Security</p>
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="g1-entry" name="entry_permission" type="checkbox" value="yes" class="w-5 h-5 text-schiketanz-red border-gray-300 rounded-sm focus:ring-schiketanz-red" />
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="g1-entry" class="font-bold text-gray-800">
+                                I grant permission for the Landlord/Agent to enter my unit to perform this repair.
+                            </label>
+                            <p class="text-gray-500">Entry will be made during standard business hours.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div>
+                            <label for="g1-pets" class={labelClasses}>Do you have pets?</label>
+                            <select id="g1-pets" name="pets" class={inputClasses}>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="g1-alarm" class={labelClasses}>Is there an alarm?</label>
+                            <select id="g1-alarm" name="alarm" class={inputClasses}>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full md:w-auto px-10 py-4 bg-schiketanz-red text-white font-bold rounded-sm shadow-md hover:bg-schiketanz-red-dark transition-all hover:-translate-y-0.5 active:translate-y-0">
+                        Submit Maintenance Request
+                    </button>
+                </div>
+            </form>
+
+            <!-- GROUP 2 FORM -->
+            <form 
+                id="form-group-2"
+                name="maintenance-group-2" 
+                method="POST" 
+                data-netlify="true" 
+                netlify-honeypot="bot-field"
+                enctype="multipart/form-data"
+                action="/success"
+                class="space-y-6 hidden animate-fade-in"
+            >
+                <div class="bg-green-50 border-l-4 border-green-600 p-4 mb-6">
+                    <p class="text-sm text-green-800 font-bold uppercase tracking-tight">Request Routing: Group 2 Management</p>
+                </div>
+
+                <input type="hidden" name="form-name" value="maintenance-group-2" />
+                <p class="hidden"><label>Bot: <input name="bot-field" /></label></p>
+                <input type="hidden" name="building_name" class="selected-building-input" />
+                <input type="hidden" name="subject" value="New Maintenance Request (Group 2)" />
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="g2-fullName" class={labelClasses}>Full Name *</label>
+                        <input type="text" id="g2-fullName" name="fullName" required class={inputClasses} />
+                    </div>
+                    <div>
+                        <label for="g2-phone" class={labelClasses}>Phone Number *</label>
+                        <input type="tel" id="g2-phone" name="phone" required class={inputClasses} />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="g2-email" class={labelClasses}>Email Address *</label>
+                    <input type="email" id="g2-email" name="email" required class={inputClasses} />
+                </div>
+
+                <div class="w-full md:w-1/3">
+                    <label for="g2-unit" class={labelClasses}>Unit Number *</label>
+                    <input type="text" id="g2-unit" name="unit" required class={inputClasses} />
+                </div>
+
+                <div>
+                    <label for="g2-issue" class={labelClasses}>Description of Request *</label>
+                    <textarea id="g2-issue" name="issue" rows="4" required placeholder="Please provide details about the repair needed..." class={inputClasses}></textarea>
+                </div>
+
+                <div class="bg-gray-50 p-5 border border-gray-200 rounded-sm">
+                    <label for="g2-photos" class={labelClasses}>Upload Photo (Optional)</label>
+                    <input type="file" id="g2-photos" name="photos" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-sm file:font-bold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer" />
+                </div>
+
+                <div class="bg-gray-50 p-6 border border-gray-200 rounded-sm space-y-5">
+                    <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Entry Permission & Security</p>
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="g2-entry" name="entry_permission" type="checkbox" value="yes" class="w-5 h-5 text-schiketanz-red border-gray-300 rounded-sm focus:ring-schiketanz-red" />
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="g2-entry" class="font-bold text-gray-800">
+                                I grant permission for the Landlord/Agent to enter my unit to perform this repair.
+                            </label>
+                            <p class="text-gray-500">Entry will be made during standard business hours.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div>
+                            <label for="g2-pets" class={labelClasses}>Do you have pets?</label>
+                            <select id="g2-pets" name="pets" class={inputClasses}>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="g2-alarm" class={labelClasses}>Is there an alarm?</label>
+                            <select id="g2-alarm" name="alarm" class={inputClasses}>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full md:w-auto px-10 py-4 bg-schiketanz-red text-white font-bold rounded-sm shadow-md hover:bg-schiketanz-red-dark transition-all hover:-translate-y-0.5 active:translate-y-0">
+                        Submit Maintenance Request
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+  </PageContainer>
+</Layout>
+
+<script>
+    document.addEventListener('astro:page-load', () => {
+        const selector = document.getElementById('building-selector') as HTMLSelectElement;
+        const msg = document.getElementById('no-selection-msg');
+        const form1 = document.getElementById('form-group-1') as HTMLFormElement;
+        const form2 = document.getElementById('form-group-2') as HTMLFormElement;
+        const hiddenInputs = document.querySelectorAll('.selected-building-input');
+
+        const toggleForm = (form: HTMLFormElement | null, shouldShow: boolean) => {
+            if (!form) return;
+            if (shouldShow) {
+                form.classList.remove('hidden');
+                Array.from(form.elements).forEach((el: any) => el.disabled = false);
+            } else {
+                form.classList.add('hidden');
+                Array.from(form.elements).forEach((el: any) => el.disabled = true);
+            }
+        };
+        // init
+        if (form1) toggleForm(form1, false);
+        if (form2) toggleForm(form2, false);
+        if(selector) {
+            selector.addEventListener('change', (e) => {
+                const target = e.target as HTMLSelectElement;
+                const option = target.options[target.selectedIndex];
+                const group = option.dataset.group;
+                const buildingName = target.value;
+                if(msg) msg.classList.add('hidden');
+                hiddenInputs.forEach((input) => { (input as HTMLInputElement).value = buildingName; });
+                toggleForm(form1, group === '1');
+                toggleForm(form2, group === '2');
+            });
+        }
+    });
+</script>
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+</style>
+</file>
+
 <file path="src/pages/pad-form.astro">
 ---
-// src/pages/pad-form.astro
 export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+
+// Reusable Tailwind classes for form consistency
+const inputClasses = "w-full px-4 py-2.5 border border-gray-300 rounded-sm focus:ring-2 focus:ring-schiketanz-red focus:border-schiketanz-red outline-none transition-all bg-white placeholder:text-gray-400";
+const labelClasses = "block text-sm font-bold text-gray-700 mb-1.5";
 ---
 
 <Layout title="Pre-Authorized Debit Form | Schiketanz Real Estate">
-  <div class="container mx-auto px-4 py-8 md:py-12">
+  <PageContainer>
     <PageHeader 
       title="Pre-Authorized Debit (PAD)" 
-      subtitle="Set up automatic rent payments directly from your bank account."
+      subtitle="Enroll in automatic rent payments directly from your bank account."
       breadcrumb={[{ text: 'PAD Form', href: '/pad-form' }]}
     />
 
     <div class="max-w-3xl mx-auto">
-        <div class="bg-white p-8 rounded-sm shadow-sm border border-gray-200 mb-8">
-            <h2 class="font-century font-bold text-2xl text-gray-800 mb-4">Enrollment Form</h2>
-            <p class="text-gray-700 mb-6">
-                Please complete the form below. Payments are automatically withdrawn from your account on the first business day of every month.
-            </p>
+        <!-- Main Form Card -->
+        <div class="bg-white p-6 md:p-10 rounded-sm shadow-sm border border-gray-200">
+            <div class="mb-8 border-b border-gray-100 pb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Enrollment Form</h2>
+                <p class="text-gray-600">
+                    Payments are automatically withdrawn from your account on the <span class="font-bold text-gray-800">first business day</span> of every month.
+                </p>
+            </div>
 
             <!-- NETLIFY FORM -->
             <form 
@@ -1832,65 +1817,86 @@ import PageHeader from '../components/PageHeader.astro';
                 class="space-y-6"
                 action="/success"
             >
-                <!-- Hidden honeypot field for spam bots -->
+                <!-- Anti-Spam -->
                 <p class="hidden">
-                    <label>Don’t fill this out if you're human: <input name="bot-field" /></label>
+                    <label>Bot Field: <input name="bot-field" /></label>
                 </p>
-
                 <input type="hidden" name="subject" value="New PAD Enrollment Submission" />
 
-                <!-- Personal Information -->
+                <!-- Section: Personal Information -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="fullName" class="block text-sm font-bold text-gray-700 mb-1">Full Name *</label>
-                        <input type="text" id="fullName" name="fullName" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                        <label for="fullName" class={labelClasses}>Full Name *</label>
+                        <input type="text" id="fullName" name="fullName" required placeholder="John Doe" class={inputClasses} />
                     </div>
                     <div>
-                        <label for="email" class="block text-sm font-bold text-gray-700 mb-1">Email Address *</label>
-                        <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                        <label for="email" class={labelClasses}>Email Address *</label>
+                        <input type="email" id="email" name="email" required placeholder="email@example.com" class={inputClasses} />
                     </div>
                 </div>
 
-                <!-- Rental Details -->
+                <!-- Section: Rental Details -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="building" class="block text-sm font-bold text-gray-700 mb-1">Building Address *</label>
-                        <input type="text" id="building" name="building" required placeholder="e.g. 123 King St" class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                        <label for="building" class={labelClasses}>Building Address *</label>
+                        <input type="text" id="building" name="building" required placeholder="e.g. 582 Frederick St" class={inputClasses} />
                     </div>
-                    <div>
-                        <label for="unit" class="block text-sm font-bold text-gray-700 mb-1">Unit / Apt # *</label>
-                        <input type="text" id="unit" name="unit" required class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-schiketanz-red)] outline-none" />
+                    <div class="w-full md:w-1/2">
+                        <label for="unit" class={labelClasses}>Unit / Apt # *</label>
+                        <input type="text" id="unit" name="unit" required placeholder="101" class={inputClasses} />
                     </div>
                 </div>
 
-                <!-- Void Cheque Upload -->
-                <div class="bg-gray-50 p-4 border border-gray-200 rounded">
-                    <label for="voidCheque" class="block text-sm font-bold text-gray-700 mb-2">Upload Void Cheque or Bank Direct Deposit Form *</label>
-                    <p class="text-xs text-gray-500 mb-2">Accepted formats: PDF, JPG, PNG (Max 5MB)</p>
-                    <input type="file" id="voidCheque" name="voidCheque" accept=".pdf,.jpg,.jpeg,.png" required class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[var(--color-schiketanz-red)] file:text-white hover:file:bg-red-700 cursor-pointer" />
+                <!-- Section: Banking Document -->
+                <div class="bg-gray-50 p-6 border border-gray-200 rounded-sm">
+                    <label for="voidCheque" class={labelClasses}>Upload Void Cheque or Direct Deposit Form *</label>
+                    <p class="text-xs text-gray-500 mb-4 uppercase tracking-wider font-bold">PDF, JPG, or PNG (Max 5MB)</p>
+                    <input 
+                        type="file" 
+                        id="voidCheque" 
+                        name="voidCheque" 
+                        accept=".pdf,.jpg,.jpeg,.png" 
+                        required 
+                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-6 file:rounded-sm file:border-0 file:text-sm file:font-bold file:bg-gray-800 file:text-white hover:file:bg-gray-700 cursor-pointer transition-colors" 
+                    />
                 </div>
 
-                <!-- Consent Checkbox -->
-                <div class="flex items-start">
-                    <div class="flex items-center h-5">
-                        <input id="consent" name="consent" type="checkbox" required class="w-4 h-4 border border-gray-300 rounded text-[var(--color-schiketanz-red)] focus:ring-[var(--color-schiketanz-red)]" />
-                    </div>
-                    <div class="ml-3 text-sm">
-                        <label for="consent" class="font-medium text-gray-700">I Authorize M. Schiketanz Real Estate Inc. to debit my account.</label>
-                        <p class="text-gray-500">I understand that the rental amount will be withdrawn on the first business day of every month.</p>
+                <!-- Section: Authorization -->
+                <div class="bg-blue-50/50 p-6 border border-blue-100 rounded-sm">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-6">
+                            <input 
+                                id="consent" 
+                                name="consent" 
+                                type="checkbox" 
+                                required 
+                                class="w-5 h-5 border border-gray-300 rounded-sm text-schiketanz-red focus:ring-schiketanz-red cursor-pointer" 
+                            />
+                        </div>
+                        <div class="ml-4">
+                            <label for="consent" class="text-sm font-bold text-gray-900 block mb-1">
+                                I Authorize M. Schiketanz Real Estate Inc. to debit my account.
+                            </label>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                I understand that the rental amount will be withdrawn automatically on the first business day of every month. I have the right to cancel this authorization at any time with written notice.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="pt-4 border-t border-gray-100">
-                    <button type="submit" class="w-full md:w-auto px-8 py-3 bg-[var(--color-schiketanz-red)] text-white font-century font-bold rounded shadow-md hover:bg-red-700 transition-colors">
+                    <button type="submit" class="w-full md:w-auto px-10 py-4 bg-schiketanz-red text-white font-bold rounded-sm shadow-md hover:bg-schiketanz-red-dark transition-all hover:-translate-y-0.5 active:translate-y-0">
                         Submit PAD Agreement
                     </button>
+                    <p class="text-[10px] text-gray-400 mt-4 uppercase tracking-widest font-medium">
+                        Securely transmitted to Schiketanz Property Management
+                    </p>
                 </div>
             </form>
         </div>
     </div>
-  </div>
+  </PageContainer>
 </Layout>
 </file>
 
@@ -1902,68 +1908,80 @@ import { Image } from 'astro:assets';
 import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
 
-// fetch rentals
+// 1. Fetch and Sort Logic
 const allRentals = await getCollection('rentals');
-
-// Define sorting priority: vacant first (1), then occupied (2)
+// Sort: Vacant (1) first, then Occupied (2), then alphabetical
 const rentals = allRentals.sort((a, b) => {
   const statusA = a.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
   const statusB = b.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
-  
   // If status is same, sort alphabetically by title
   return statusA !== statusB ? statusA - statusB : a.data.title.localeCompare(b.data.title);
 });
 ---
 
-<Layout title="Rentals | Schiketanz Real Estate">
+<Layout title="Rental Properties | Schiketanz Real Estate">
   <PageContainer>
     <PageHeader 
       title="Rental Properties" 
-      subtitle="Browse our current residential and commercial listings below. Please contact our office for application details."
+      subtitle="Browse our residential and commercial listings. Contact our office for current availability."
       breadcrumb={[{ text: 'Rentals', href: '/rentals' }]}
     />
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Standardized Grid Gap: Matching the visual rhythm of other pages -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
       {rentals.map(rental => (
-        <article class="relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md transition-shadow flex flex-col h-full group">
-           <!-- CLICKABLE OVERLAY LINK -->
-          <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-10 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2">
-            <span class="sr-only">View Details for {rental.data.title}</span>
+        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+          <!-- Entire card is clickable -->
+          <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
+            <span class="sr-only">View {rental.data.title}</span>
           </a>
-           <!-- Image Section -->
-          <div class="h-64 bg-gray-100 relative overflow-hidden">
+
+          <!-- Image Container -->
+          <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-sm">
              {rental.data.coverImage ? (
-                <Image src={rental.data.coverImage} alt={rental.data.title} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <Image 
+                    src={rental.data.coverImage} 
+                    alt={rental.data.title} 
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                />
              ) : (
-                <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-200 font-century">No Image Available</div>
+                <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50 text-[10px] font-bold uppercase tracking-widest">
+                    No Image
+                </div>
              )}
              
-             {/* Status Badge */}
+             <!-- Badge -->
              <div class:list={[
-                 "absolute top-4 right-4 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white z-20 shadow-md",
+                 "absolute top-3 right-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white z-30 shadow-sm rounded-sm",
                  {
                     "bg-green-600": rental.data.vacancyStatus.discriminant === 'vacant',
-                    "bg-gray-600": rental.data.vacancyStatus.discriminant === 'occupied'
+                    "bg-gray-700/90": rental.data.vacancyStatus.discriminant === 'occupied'
                  }
              ]}>
-                {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacancies Available' : 'No Vacancy'}
+                {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacant' : 'No Vacancy'}
              </div>
           </div>
 
-          <!-- Content Section -->
-          <div class="p-6 flex flex-col flex-grow">
-            <h2 class="text-xl font-bold text-gray-800 mb-1 font-century group-hover:text-schiketanz-red transition-colors">
+          <!-- Text Content -->
+          <div class="p-5 border-t border-gray-50">
+            <h2 class="text-lg font-bold text-gray-900 group-hover:text-schiketanz-red transition-colors duration-300 leading-tight mb-1">
               {rental.data.title}
             </h2>
-            <p class="text-gray-500 text-sm">{rental.data.address}</p>
+            
+            <div class="flex items-start text-gray-500">
+                <svg class="w-3.5 h-3.5 mr-1.5 mt-0.5 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <p class="text-xs font-medium">{rental.data.address}</p>
+            </div>
           </div>
         </article>
       ))}
     </div>
-
+    <!-- Empty State -->
     {rentals.length === 0 && (
-        <div class="p-12 text-center bg-gray-50 border border-gray-200 rounded text-gray-500 font-century">
-            <p>No rental properties found in the system.</p>
+        <div class="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
+            <p class="text-gray-400 font-medium">No rental properties found.</p>
         </div>
     )}
   </PageContainer>
