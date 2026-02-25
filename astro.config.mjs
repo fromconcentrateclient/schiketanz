@@ -10,9 +10,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://schiketanz.fromconcentrate.ca',
   output: 'static',
-  adapter: netlify({
-    imageCDN: false 
-  }),
+  adapter: netlify(),
   integrations: [
     react(),
     mdx(),
