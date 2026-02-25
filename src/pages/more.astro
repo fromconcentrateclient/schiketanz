@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
 import { getCollection } from 'astro:content';
 
 const newsEntries = await getCollection('news');
@@ -8,7 +9,7 @@ const sortedNews = newsEntries.sort((a, b) => b.data.date.valueOf() - a.data.dat
 ---
 
 <Layout title="News & Resources | Schiketanz Real Estate">
-  <div class="container mx-auto px-4 py-8 md:py-12">
+  <PageContainer>
     <PageHeader 
       title="News & Resources" 
       breadcrumb={[{ text: 'More', href: '/more' }]}
@@ -68,5 +69,5 @@ const sortedNews = newsEntries.sort((a, b) => b.data.date.valueOf() - a.data.dat
         </div>
 
     </div>
-  </div>
+  </PageContainer>
 </Layout>

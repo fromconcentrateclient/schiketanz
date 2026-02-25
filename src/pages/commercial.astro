@@ -1,13 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
 import { Image } from 'astro:assets';
 // You'll need to add a placeholder image or remove this Image component until you have one
 // import forestHillImg from '../assets/commercial/forest-hill.jpg'; 
 ---
 
 <Layout title="Commercial Leasing | Schiketanz Real Estate">
-  <div class="container mx-auto px-4 py-8 md:py-12">
+  <PageContainer>
     <PageHeader 
       title="Commercial Properties" 
       subtitle="Retail and office space management in the Kitchener-Waterloo region."
@@ -40,7 +41,7 @@ import { Image } from 'astro:assets';
                 </ul>
             </div>
 
-            <div class="bg-gray-50 p-6 border-l-4 border-[var(--color-schiketanz-red)]">
+            <div class="bg-gray-50 p-6 border-l-4 border-[var(--color-schiketanz-red)] max-w-md">
                 <h3 class="font-bold text-gray-800 mb-2">Leasing Inquiries</h3>
                 <p class="text-gray-600 mb-4">
                     Interested in establishing your business here? Contact us to discuss current availability and rates.
@@ -51,5 +52,5 @@ import { Image } from 'astro:assets';
             </div>
         </div>
     </article>
-  </div>
+  </PageContainer>
 </Layout>
