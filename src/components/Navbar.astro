@@ -20,7 +20,6 @@ const currentPath = Astro.url.pathname;
         id="mobile-menu" 
         class="hidden lg:hidden absolute top-full left-0 w-full bg-schiketanz-red shadow-xl border-t border-white/20 pb-4 z-50"
     >
-        <!-- Added a container div here so the links align with your logo -->
         <div class="container mx-auto px-4">
             <ul class="flex flex-col">
                 {navLinks.map(link => (
@@ -36,7 +35,6 @@ const currentPath = Astro.url.pathname;
             </ul>
         </div>
     </div>
-
     <!-- Desktop Menu (Left Aligned) -->
     <div class="hidden lg:block w-full">
         <ul class="flex justify-start space-x-6">
@@ -46,7 +44,7 @@ const currentPath = Astro.url.pathname;
                         href={link.href} 
                         class:list={[
                             "block text-white py-3 text-[15px] font-normal hover:text-gray-200 hover:underline transition-all",
-                            // subtle underline for the active page
+                            // underline for active page
                             { "underline decoration-2 decoration-white underline-offset-4": currentPath === link.href }
                         ]}
                     >
