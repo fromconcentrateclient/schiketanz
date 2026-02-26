@@ -10,111 +10,102 @@ const labelClasses = "block text-sm font-bold text-gray-700 mb-1.5";
 ---
 
 <Layout title="Pre-Authorized Debit Form | Schiketanz Real Estate">
-  <PageContainer>
+  <PageContainer narrow>
     <PageHeader 
       title="Pre-Authorized Debit (PAD)" 
       subtitle="Enroll in automatic rent payments directly from your bank account."
       breadcrumb={[{ text: 'PAD Form', href: '/pad-form' }]}
     />
 
-    <div class="max-w-3xl">
-        <!-- Main Form Card -->
-        <div class="bg-white p-6 md:p-10 rounded-sm shadow-sm border border-gray-200">
-            <div class="mb-8 border-b border-gray-100 pb-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Enrollment Form</h2>
-                <p class="text-gray-600">
-                    Payments are automatically withdrawn from your account on the <span class="font-bold text-gray-800">first business day</span> of every month.
-                </p>
+    <!-- Main Form Card -->
+    <div class="bg-white p-6 md:p-10 rounded-sm shadow-sm border border-gray-200">
+        <div class="mb-8 border-b border-gray-100 pb-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Enrollment Form</h2>
+            <p class="text-gray-600">
+                Payments are automatically withdrawn from your account on the <span class="font-bold text-gray-800">first business day</span> of every month.
+            </p>
+        </div>
+
+        <!-- NETLIFY FORM -->
+        <form 
+            name="pad-enrollment" 
+            method="POST" 
+            data-netlify="true" 
+            netlify-honeypot="bot-field"
+            enctype="multipart/form-data"
+            class="space-y-6"
+            action="/success"
+        >
+            <!-- Anti-Spam -->
+            <p class="hidden">
+                <label>Bot Field: <input name="bot-field" /></label>
+            </p>
+            <input type="hidden" name="subject" value="New PAD Enrollment Submission" />
+
+            <!-- Section: Personal Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="fullName" class={labelClasses}>Full Name *</label>
+                    <input type="text" id="fullName" name="fullName" required placeholder="John Doe" class={inputClasses} />
+                </div>
+                <div>
+                    <label for="email" class={labelClasses}>Email Address *</label>
+                    <input type="email" id="email" name="email" required placeholder="email@example.com" class={inputClasses} />
+                </div>
             </div>
 
-            <!-- NETLIFY FORM -->
-            <form 
-                name="pad-enrollment" 
-                method="POST" 
-                data-netlify="true" 
-                netlify-honeypot="bot-field"
-                enctype="multipart/form-data"
-                class="space-y-6"
-                action="/success"
-            >
-                <!-- Anti-Spam -->
-                <p class="hidden">
-                    <label>Bot Field: <input name="bot-field" /></label>
-                </p>
-                <input type="hidden" name="subject" value="New PAD Enrollment Submission" />
-
-                <!-- Section: Personal Information -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="fullName" class={labelClasses}>Full Name *</label>
-                        <input type="text" id="fullName" name="fullName" required placeholder="John Doe" class={inputClasses} />
-                    </div>
-                    <div>
-                        <label for="email" class={labelClasses}>Email Address *</label>
-                        <input type="email" id="email" name="email" required placeholder="email@example.com" class={inputClasses} />
-                    </div>
+            <!-- Section: Rental Details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="building" class={labelClasses}>Building Address *</label>
+                    <input type="text" id="building" name="building" required placeholder="e.g. 582 Frederick St" class={inputClasses} />
                 </div>
-
-                <!-- Section: Rental Details -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="building" class={labelClasses}>Building Address *</label>
-                        <input type="text" id="building" name="building" required placeholder="e.g. 582 Frederick St" class={inputClasses} />
-                    </div>
-                    <div class="w-full md:w-1/2">
-                        <label for="unit" class={labelClasses}>Unit / Apt # *</label>
-                        <input type="text" id="unit" name="unit" required placeholder="101" class={inputClasses} />
-                    </div>
+                <div class="w-full md:w-1/2">
+                    <label for="unit" class={labelClasses}>Unit / Apt # *</label>
+                    <input type="text" id="unit" name="unit" required placeholder="101" class={inputClasses} />
                 </div>
+            </div>
 
-                <!-- Section: Banking Document -->
-                <div class="bg-gray-50 p-6 border border-gray-200 rounded-sm">
-                    <label for="voidCheque" class={labelClasses}>Upload Void Cheque or Direct Deposit Form *</label>
-                    <p class="text-xs text-gray-500 mb-4 uppercase tracking-wider font-bold">PDF, JPG, or PNG (Max 5MB)</p>
-                    <input 
-                        type="file" 
-                        id="voidCheque" 
-                        name="voidCheque" 
-                        accept=".pdf,.jpg,.jpeg,.png" 
-                        required 
-                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-6 file:rounded-sm file:border-0 file:text-sm file:font-bold file:bg-gray-800 file:text-white hover:file:bg-gray-700 cursor-pointer transition-colors" 
-                    />
-                </div>
+            <!-- Section: Banking Document -->
+            <div class="bg-gray-50 p-6 border border-gray-200 rounded-sm">
+                <label for="voidCheque" class={labelClasses}>Upload Void Cheque or Direct Deposit Form *</label>
+                <p class="text-xs text-gray-500 mb-4 uppercase tracking-wider font-bold">PDF, JPG, or PNG (Max 5MB)</p>
+                <input 
+                    type="file" 
+                    id="voidCheque" 
+                    name="voidCheque" 
+                    accept=".pdf,.jpg,.jpeg,.png" 
+                    required 
+                    class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-6 file:rounded-sm file:border-0 file:text-sm file:font-bold file:bg-gray-800 file:text-white hover:file:bg-gray-700 cursor-pointer transition-colors" 
+                />
+            </div>
 
-                <!-- Section: Authorization -->
-                <div class="bg-blue-50/50 p-6 border border-blue-100 rounded-sm">
-                    <div class="flex items-start">
-                        <div class="flex items-center h-6">
-                            <input 
-                                id="consent" 
-                                name="consent" 
-                                type="checkbox" 
-                                required 
-                                class="w-5 h-5 border border-gray-300 rounded-sm text-schiketanz-red focus:ring-schiketanz-red cursor-pointer" 
-                            />
-                        </div>
-                        <div class="ml-4">
-                            <label for="consent" class="text-sm font-bold text-gray-900 block mb-1">
-                                I Authorize M. Schiketanz Real Estate Inc. to debit my account.
-                            </label>
-                            <p class="text-xs text-gray-600 leading-relaxed">
-                                I understand that the rental amount will be withdrawn automatically on the first business day of every month. I have the right to cancel this authorization at any time with written notice.
-                            </p>
-                        </div>
+            <!-- Section: Authorization -->
+            <div class="bg-blue-50/50 p-6 border border-blue-100 rounded-sm">
+                <div class="flex items-start">
+                    <div class="flex items-center h-6">
+                        <input 
+                            id="consent" 
+                            name="consent" 
+                            type="checkbox" 
+                            required 
+                            class="w-5 h-5 border border-gray-300 rounded-sm text-schiketanz-red focus:ring-schiketanz-red cursor-pointer" 
+                        />
+                    </div>
+                    <div class="ml-4">
+                        <label for="consent" class="text-sm font-bold text-gray-900 block mb-1">
+                            I Authorize M. Schiketanz Real Estate Inc. to debit my account.
+                        </label>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            I understand that the rental amount will be withdrawn automatically on the first business day of every month. I have the right to cancel this authorization at any time with written notice.
+                        </p>
                     </div>
                 </div>
+            </div>
 
-                <!-- Submit Button -->
-                <div class="pt-4 border-t border-gray-100">
-                    <button type="submit" class="w-full md:w-auto px-10 py-4 bg-schiketanz-red text-white font-bold rounded-sm shadow-md hover:bg-schiketanz-red-dark transition-all hover:-translate-y-0.5 active:translate-y-0">
-                        Submit PAD Agreement
-                    </button>
-                    <p class="text-[10px] text-gray-400 mt-4 uppercase tracking-widest font-medium">
-                        Securely transmitted to Schiketanz Property Management
-                    </p>
-                </div>
-            </form>
-        </div>
-    </div>
-  </PageContainer>
-</Layout>
+            <!-- Submit Button -->
+            <div class="pt-4 border-t border-gray-100">
+                <button type="submit" class="w-full md:w-auto px-10 py-4 bg-schiketanz-red text-white font-bold rounded-sm shadow-md hover:bg-schiketanz-red-dark transition-all hover:-translate-y-0.5 active:translate-y-0">
+                    Submit PAD Agreement
+                </button>
+                <p class="text-[10px] text-gray-400 mt-4 uppercase tracking-widest font-medium">

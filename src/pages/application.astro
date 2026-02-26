@@ -7,63 +7,61 @@ import PageContainer from '../components/PageContainer.astro';
 ---
 
 <Layout title="Rental Application | Schiketanz Real Estate">
-  <PageContainer>
+  <PageContainer narrow>
     <PageHeader 
       title="Rental Application" 
       breadcrumb={[{ text: 'Application', href: '/application' }]}
     />
 
-    <div class="max-w-3xl">
-        <div class="prose max-w-none text-gray-700 mb-8">
-            <p class="text-lg">
-                Thank you for your interest in our properties. To apply for a rental unit, please download the application form below. 
-            </p>
-            <p>
-                Please ensure all sections are completed legibly. Incomplete applications may result in processing delays.
-            </p>
-        </div>
+    <div class="prose max-w-none text-gray-700 mb-8">
+        <p class="text-lg">
+            Thank you for your interest in our properties. To apply for a rental unit, please download the application form below. 
+        </p>
+        <p>
+            Please ensure all sections are completed legibly. Incomplete applications may result in processing delays.
+        </p>
+    </div>
 
-        <!-- Checklist -->
-        <div class="bg-blue-50 border border-blue-200 p-6 rounded-sm mb-8">
-            <h3 class="font-century font-bold text-xl text-blue-900 mb-4">Required Documents</h3>
-            <ul class="space-y-3">
-                <li class="flex items-start">
-                    <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Completed and signed Application Form</span>
-                </li>
-                <li class="flex items-start">
-                    <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Proof of Income (e.g., recent pay stub, employment letter)</span>
-                </li>
-                <li class="flex items-start">
-                    <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Photo Identification (Driver's License or Passport)</span>
-                </li>
-                <li class="flex items-start">
-                    <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Last Month's Rent Deposit (Upon approval)</span>
-                </li>
-            </ul>
-        </div>
+    <!-- Checklist -->
+    <div class="bg-blue-50 border border-blue-200 p-6 rounded-sm mb-8">
+        <h3 class="font-century font-bold text-xl text-blue-900 mb-4">Required Documents</h3>
+        <ul class="space-y-3">
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Completed and signed Application Form</span>
+            </li>
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Proof of Income (e.g., recent pay stub, employment letter)</span>
+            </li>
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Photo Identification (Driver's License or Passport)</span>
+            </li>
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Last Month's Rent Deposit (Upon approval)</span>
+            </li>
+        </ul>
+    </div>
 
-        <!-- Download Section -->
-        <div class="text-left py-8 border-t border-b border-gray-200 mb-8">
-            <a href="/forms/application.pdf" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
-                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                Download Application PDF
-            </a>
-            <p class="text-sm text-gray-500 mt-4">
-                Right-click and "Save Link As" to download to your computer.
-            </p>
-        </div>
+    <!-- Download Section -->
+    <div class="text-left py-8 border-t border-b border-gray-200 mb-8">
+        <a href="/forms/application.pdf" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Download Application PDF
+        </a>
+        <p class="text-sm text-gray-500 mt-4">
+            Right-click and "Save Link As" to download to your computer.
+        </p>
+    </div>
 
-        <div class="text-left">
-            <h3 class="font-bold text-gray-800 mb-2">Submission</h3>
-            <p class="text-gray-600">
-                Please email your completed application to <a href="mailto:office@schiketanz.ca" class="text-schiketanz-red hover:underline">office@schiketanz.ca</a><br/>
-                or drop it off at our office during business hours.
-            </p>
-        </div>
+    <div class="text-left">
+        <h3 class="font-bold text-gray-800 mb-2">Submission</h3>
+        <p class="text-gray-600">
+            Please email your completed application to <a href="mailto:office@schiketanz.ca" class="text-schiketanz-red hover:underline">office@schiketanz.ca</a><br/>
+            or drop it off at our office during business hours.
+        </p>
     </div>
   </PageContainer>
 </Layout>
