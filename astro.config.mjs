@@ -20,7 +20,11 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
+      include: ['lodash/debounce'],
       exclude: ['@keystatic/astro', '@keystatic/core']
+    },
+    ssr: {
+      noExternal: ['@keystatic/core', '@keystatic/astro', 'lodash']
     }
   },
 });
