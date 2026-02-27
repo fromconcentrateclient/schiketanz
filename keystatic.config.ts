@@ -1,9 +1,11 @@
 import { config, fields, collection } from '@keystatic/core';
 
-const isLocal = process.env.NODE_ENV === 'development' || !process.env.NETLIFY;
+const isLocal = import.meta.env.DEV; 
 
 export default config({
-  storage: isLocal ? { kind: 'local' } : { kind: 'cloud' },
+  storage: {
+    kind: 'cloud',
+  },
   cloud: {
     project: 'fromconcentrateclien/schiketanz',
   },
