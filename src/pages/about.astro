@@ -2,6 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
+import { Image } from 'astro:assets';
+import aboutImage from '../assets/about.avif'; 
 ---
 
 <Layout title="About Us | Schiketanz Real Estate">
@@ -11,10 +13,10 @@ import PageContainer from '../components/PageContainer.astro';
       subtitle="We are the small company doing big things!"
       breadcrumb={[{ text: 'About', href: '/about' }]}
     />
-
+    <!-- Text Information Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-lg text-gray-700 leading-relaxed font-sans">
       <div>
-        <p>
+        <p class="mb-6">
           Schiketanz Real Estate manages many residential and commercial properties located in KW Region.
           Our buildings are well maintained and cared for by a truly dedicated team of individuals - many of which are long, long term employees.
         </p>
@@ -24,6 +26,7 @@ import PageContainer from '../components/PageContainer.astro';
           Our personalized service will "help you make your apartment into a home."
         </p>
       </div>
+      
       <div class="bg-gray-50 p-8 border-l-4 border-schiketanz-red rounded-sm h-fit">
         <h3 class="font-century font-bold text-xl text-schiketanz-red mb-4">
           Our History
@@ -33,6 +36,15 @@ import PageContainer from '../components/PageContainer.astro';
           Our office operated from the same premises at 189 King Street East in Kitchener for 68 years and have since moved to our current office on Frederick Street.
         </p>
       </div>
+    </div>
+    <!-- Image Section -->
+    <div class="mt-12 md:mt-16">
+        <Image 
+            src={aboutImage} 
+            alt="M. Schiketanz Real Estate office building" 
+            class="w-full h-auto rounded-sm shadow-md"
+            quality="high"
+        />
     </div>
   </PageContainer>
 </Layout>
