@@ -14,7 +14,6 @@ const currentPath = Astro.url.pathname;
 ---
 
 <nav class="w-full border-t border-white/20">
-    
     <!-- Mobile Menu -->
     <div 
         id="mobile-menu" 
@@ -35,7 +34,7 @@ const currentPath = Astro.url.pathname;
             </ul>
         </div>
     </div>
-    <!-- Desktop Menu (Left Aligned) -->
+    <!-- Desktop Menu -->
     <div class="hidden lg:block w-full">
         <ul class="flex justify-start space-x-6">
             {navLinks.map(link => (
@@ -44,7 +43,7 @@ const currentPath = Astro.url.pathname;
                         href={link.href} 
                         class:list={[
                             "block text-white py-3 text-[15px] font-normal hover:text-gray-200 hover:underline transition-all",
-                            // underline for active page
+                            // underline active page
                             { "underline decoration-2 decoration-white underline-offset-4": currentPath === link.href }
                         ]}
                     >

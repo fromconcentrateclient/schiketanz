@@ -15,8 +15,7 @@ interface Props {
     // allow pages to control semantic tag of logo (default: div)
     logoAs?: 'h1' | 'div';
 }
-
-// Default SEO values extracted from original site
+// default SEO values extracted from original site
 const defaultDesc = "Apartment Rentals in Kitchener Waterloo Ontario. M. Schiketanz Real Estate Inc. providing quality service to tenants since 1953.";
 const siteName = "M. Schiketanz Real Estate Inc.";
 
@@ -57,11 +56,9 @@ const businessSchema = {
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
         <link rel="canonical" href={canonicalURL} />
-
         <!-- Primary Meta Tags -->
 		<title>{title}</title>
 		<meta name="description" content={description} />
-
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content={type} />
         <meta property="og:url" content={canonicalURL} />
@@ -69,30 +66,24 @@ const businessSchema = {
         <meta property="og:description" content={description} />
         <meta property="og:image" content={new URL(image, Astro.site)} />
         <meta property="og:site_name" content={siteName} />
-
         <!-- Twitter -->
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content={canonicalURL} />
         <meta property="twitter:title" content={title} />
         <meta property="twitter:description" content={description} />
         <meta property="twitter:image" content={new URL(image, Astro.site)} />
-
         <!-- Schema.org JSON-LD -->
         <script type="application/ld+json" set:html={JSON.stringify(businessSchema)} />
-
 		<ClientRouter />
 	</head>
 	
 	<body class="bg-white flex flex-col min-h-screen text-gray-800 font-sans antialiased-crisp">
-		
         <!-- Accessibility: Skip to Content -->
         <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] bg-white text-blue-800 p-4 border border-blue-800 rounded">
             Skip to main content
         </a>
-
 		<!-- HEADER -->
 		<header class="bg-schiketanz-red shadow-md sticky top-0 z-50">
-			
 			<div class="container mx-auto px-4 pt-6 pb-2">
 				<!-- Top Row: Logo/Title -->
 				<div class="flex justify-between items-start mb-2">
@@ -100,7 +91,6 @@ const businessSchema = {
                         <!-- Dynamic Logo Tag (h1 on home, div elsewhere) -->
 						<Logo as={logoAs} class="text-4xl md:text-5xl group-hover:opacity-95 transition-opacity" />
 					</a>
-
 					<!-- Mobile Menu Button -->
 					<button 
                         id="menu-btn" 
@@ -114,25 +104,21 @@ const businessSchema = {
 						</svg>
 					</button>
 				</div>
-
 				<Navbar />
 			</div>
 		</header>
-
 		<main id="main-content" class="flex-grow w-full">
 			<slot />
 		</main>
-
 		<Footer />
 	</body>
 </html>
 
 <script>
-    // Handles Mobile Menu Toggle with ARIA updates for accessibility
+    // handles mobile menu toggle with ARIA updates for accessibility
 	document.addEventListener('astro:page-load', () => {
 		const btn = document.getElementById('menu-btn');
 		const menu = document.getElementById('mobile-menu');
-		
 		if(btn && menu) {
 			btn.addEventListener('click', () => {
 				const isHidden = menu.classList.toggle('hidden');

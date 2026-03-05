@@ -25,6 +25,6 @@ const { title, subtitle, breadcrumb } = Astro.props;
       <h1 class="font-century font-bold text-[clamp(2rem,5vw,2.5rem)] text-balance text-schiketanz-red">{title}</h1>
       {subtitle && <p class="text-gray-600 text-lg mt-2 text-pretty">{subtitle}</p>}
     </div>
-    <slot name="after-title" /> <!-- Allow badges or extra buttons here -->
+    <slot name="after-title" /> <!-- extra badges or buttons here -->
   </div>
 </div>

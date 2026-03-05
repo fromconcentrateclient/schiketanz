@@ -11,7 +11,6 @@ const { images, title } = Astro.props;
 ---
 
 <div class="relative w-full group border-2 border-schiketanz-red rounded-sm bg-gray-50" id="gallery-container">
-  
   <!-- Scrollable Container -->
   <div 
     id="carousel-track"
@@ -37,8 +36,7 @@ const { images, title } = Astro.props;
       </div>
     ))}
   </div>
-
-  <!-- Navigation Arrows & Dots (Only show if more than 1 image) -->
+  <!-- Navigation Arrows & Dots (only show if more than one image) -->
   {images.length > 1 && (
     <>
       <button 
@@ -84,14 +82,13 @@ const { images, title } = Astro.props;
 
 <script>
   document.addEventListener('astro:page-load', () => {
-      const track = document.getElementById('carousel-track');
-      const prevBtn = document.getElementById('prev-btn');
-      const nextBtn = document.getElementById('next-btn');
-      const slides = document.querySelectorAll('.gallery-slide');
-      const dots = document.querySelectorAll('.indicator-dot');
-
-      if (!track) return; // guard clause
-
+    const track = document.getElementById('carousel-track');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const slides = document.querySelectorAll('.gallery-slide');
+    const dots = document.querySelectorAll('.indicator-dot');
+    // guard clause
+    if (!track) return;
     // update which dot is active
     const updateDots = (activeIndex: number) => {
       dots.forEach((dot, index) => {
@@ -108,14 +105,13 @@ const { images, title } = Astro.props;
         }
       });
     };
-
     // set up IntersectionObserver to watch which slide is visible
     if (track && slides.length > 0) {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             // find index of slide that just appeared
-            // convert NodeList to an Array to use .indexOf
+            // convert NodeList to an array to use .indexOf
             const index = Array.from(slides).indexOf(entry.target as Element);
             updateDots(index);
           }
@@ -127,7 +123,6 @@ const { images, title } = Astro.props;
       // observe every slide
       slides.forEach(slide => observer.observe(slide));
     }
-
     // previous/next button logic
     if (track && prevBtn && nextBtn) {
       prevBtn.addEventListener('click', () => {
@@ -137,7 +132,6 @@ const { images, title } = Astro.props;
         track.scrollBy({ left: track.clientWidth, behavior: 'smooth' });
       });
     }
-
     // dot click logic
     dots.forEach((dot, index) => {
       dot.addEventListener('click', () => {
@@ -146,7 +140,6 @@ const { images, title } = Astro.props;
         }
       });
     });
-
     // initialize first dot as active on load
     updateDots(0);
   }); 

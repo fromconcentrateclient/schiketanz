@@ -1,3 +1,7 @@
 # Schiketanz Real Estate
 
-The Astro-based codebase for schiketanz.ca!
+To modify the site:
+
+npm add astro
+npm install
+. code

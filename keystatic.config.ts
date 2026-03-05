@@ -10,6 +10,7 @@ export default config({
     project: 'fromconcentrateclien/schiketanz',
   },
   collections: {
+    // RENTALS
     rentals: collection({
       label: 'Rental Properties',
       slugField: 'title',
@@ -17,7 +18,7 @@ export default config({
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Property Name/Address' } }),
-        // Binary Vacancy Status with conditional fields for pricing
+        // binary vacancy status with conditional fields for pricing
         vacancyStatus: fields.conditional(
           fields.select({
             label: 'Availability',
@@ -57,8 +58,7 @@ export default config({
           label: 'iGuide Virtual Tour URL',
           description: 'If this property has an iGuide/3D tour, paste the link here.',
         }),
-
-        // Structured specs that will only show if filled out
+        // structured specs that will only show if filled out
         specs: fields.object({
           stories: fields.text({ label: 'Stories (e.g. 9)' }),
           totalUnits: fields.text({ label: 'Number of Units' }),
@@ -67,7 +67,6 @@ export default config({
           sqft: fields.text({ label: 'Unit Sq. Footage' }),
           utilities: fields.text({ label: 'Utilities Note (e.g. Rent includes utilities)' }),
         }),
-
         gallery: fields.array(
           fields.image({
             label: 'Gallery Image',
@@ -84,7 +83,7 @@ export default config({
         }),
       },
     }),
-
+    // NOTICES
     news: collection({
       label: 'News & Notices',
       slugField: 'title',
