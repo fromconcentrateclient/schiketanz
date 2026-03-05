@@ -26,12 +26,11 @@ const rentals = allRentals.sort((a, b) => {
     <!-- Standardized Grid Gap: Matching the visual rhythm of other pages -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
       {rentals.map(rental => (
-        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full @container">
           <!-- Entire card is clickable -->
           <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
             <span class="sr-only">View {rental.data.title}</span>
           </a>
-
           <!-- Image Container -->
           <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-sm">
              {rental.data.coverImage ? (
@@ -45,7 +44,6 @@ const rentals = allRentals.sort((a, b) => {
                     No Image
                 </div>
              )}
-             
              <!-- Badge -->
              <div class:list={[
                  "absolute top-3 right-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white z-30 shadow-sm rounded-sm",
@@ -57,13 +55,11 @@ const rentals = allRentals.sort((a, b) => {
                 {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacant' : 'No Vacancy'}
              </div>
           </div>
-
           <!-- Text Content -->
           <div class="p-5 border-t border-gray-50">
-            <h2 class="text-lg font-bold text-gray-900 group-hover:text-schiketanz-red transition-colors duration-300 leading-tight mb-1">
+            <h2 class="text-[clamp(1.125rem,6cqi,1.5rem)] font-bold text-gray-900 group-hover:text-schiketanz-red transition-colors duration-300 leading-tight mb-1 text-balance">
               {rental.data.title}
             </h2>
-            
             <div class="flex items-start text-gray-500">
                 <p class="text-xs font-medium">{rental.data.address.street}</p>
             </div>
