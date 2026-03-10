@@ -28,14 +28,6 @@
   --font-centurybold: "Century Gothic Bold", sans-serif;
   --font-sans: "Open Sans", ui-sans-serif, system-ui, sans-serif;
 }
-/* write normal CSS here if there are issues with tailwind */
-@layer utilities {
-  .antialiased-crisp {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-  }
-}
 body {
     /* ensure scrollbar doesn't shift layout on some windows */
     overflow-y: scroll; 
