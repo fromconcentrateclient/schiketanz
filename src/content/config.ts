@@ -1,3 +1,4 @@
+// src/content/config.ts - Updated
 import { defineCollection, z } from 'astro:content';
 
 const rentals = defineCollection({
@@ -27,6 +28,11 @@ const rentals = defineCollection({
         iGuideUrl: z.string().url().optional(),
         // Gallery: Optional array of images
         // Structured specs are optional strings
+        superintendent: z.object({
+            name: z.string().optional(),
+            phone: z.string().optional(),
+            hours: z.string().optional(),
+        }).optional(),
         specs: z.object({
             stories: z.string().optional(),
             totalUnits: z.string().optional(),
@@ -34,6 +40,8 @@ const rentals = defineCollection({
             laundry: z.string().optional(),
             sqft: z.string().optional(),
             utilities: z.string().optional(),
+            pets: z.string().optional(),
+            smoking: z.string().optional(),
         }).optional(),
         gallery: z.array(image()).optional(),
     }),

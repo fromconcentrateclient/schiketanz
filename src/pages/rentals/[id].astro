@@ -1,4 +1,5 @@
 ---
+// src/pages/rentals/[id].astro
 export const prerender = true;
 
 import { getCollection, render } from 'astro:content';
@@ -63,38 +64,70 @@ const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
         ) : (
             <div class="w-full h-96 flex items-center justify-center bg-gray-100 text-gray-400 border border-gray-200">No Images Available</div>
         )}
-
         <div class="prose prose-red max-w-none text-gray-700">
            <Content />
         </div>
       </div>
 
-      <!-- Right Column: Availability, Specs, and Contact -->
+      <!-- RIGHT SIDEBAR -->
       <div class="lg:col-span-1 space-y-6">
         
-        {/* Pricing Card: Only shows if building is Vacant */}
-        {isVacant && (
+        <!-- 1. ACTION CARD (Top) -->
+        {isVacant ? (
             <div class="bg-green-50 border-2 border-green-600 p-6 rounded-sm shadow-sm">
                 <h3 class="font-century text-xl font-bold text-green-800 mb-4 flex items-center">
                     <span class="w-3 h-3 bg-green-600 rounded-full mr-2 animate-pulse"></span>
                     Now Renting
                 </h3>
                 <div class="space-y-4 mb-6">
-                    {/* FIX 2: Added explicit type to 'unit' parameter */}
-                    {availableUnits.map((unit: { unitType: string; price: string }) => (
+                    {availableUnits.map((unit: any) => (
                         <div class="border-b border-green-200 pb-2 last:border-0">
                             <p class="font-bold text-gray-900">{unit.unitType}</p>
                             <p class="text-green-700 font-medium">{unit.price}</p>
                         </div>
                     ))}
                 </div>
+                
+                {/* Superintendent Info shown when vacant */}
+                {rental.data.superintendent?.phone && (
+                    <div class="bg-white/50 p-4 rounded-sm border border-green-200 mb-6">
+                        <p class="text-xs font-bold text-green-800 uppercase tracking-widest mb-2">Contact to View</p>
+                        <p class="font-bold text-gray-900">{rental.data.superintendent.name || 'Superintendent'}</p>
+                        <a href={`tel:${rental.data.superintendent.phone}`} class="text-lg font-bold text-green-700 hover:underline block">{rental.data.superintendent.phone}</a>
+                        {rental.data.superintendent.hours && <p class="text-xs text-gray-600 mt-1">{rental.data.superintendent.hours}</p>}
+                    </div>
+                )}
+
                 <a href="/application" class="block w-full text-center bg-green-600 text-white font-bold py-3 px-4 rounded hover:bg-green-700 transition-colors shadow-md">
                     Apply for This Unit
                 </a>
             </div>
+        ) : (
+            <div class="bg-white border border-gray-300 p-6 rounded-sm text-center shadow-sm">
+                <h3 class="font-century text-lg font-bold text-schiketanz-red mb-2">Interested?</h3>
+                <p class="text-xs text-gray-600 mb-4 font-bold uppercase tracking-tight">Currently Full — Contact for upcoming vacancies</p>
+                <div class="space-y-1 mb-6">
+                    <p class="text-xs text-gray-500 uppercase font-bold">Main Office</p>
+                    <a href="tel:5197424477" class="text-xl font-bold text-gray-800 hover:text-schiketanz-red transition-colors block underline">(519) 742-4477</a>
+                </div>
+                <a href="/application" class="block w-full text-center border-2 border-schiketanz-red text-schiketanz-red font-bold py-2 px-4 rounded hover:bg-red-50 transition-colors">
+                    Get Application
+                </a>
+            </div>
         )}
 
-        {/* Building Details Card: Only shows rows with data */}
+        <!-- 2. TOUR (Middle) -->
+        {rental.data.iGuideUrl && (
+            <a href={rental.data.iGuideUrl} target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full bg-[#003057] hover:bg-[#002542] text-white font-century py-3 px-4 rounded shadow transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span>3D Virtual Tour</span>
+            </a>
+        )}
+
+        <!-- 3. DETAILS (Bottom) -->
         <div class="bg-gray-50 border border-gray-200 p-6 rounded-sm">
             <h3 class="font-century text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">Building Details</h3>
             <dl class="space-y-3 text-sm">
@@ -113,38 +146,17 @@ const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
                 {hasSpec(rental.data.specs?.sqft) && (
                     <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Unit Sq. Footage</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.sqft}</dd></div>
                 )}
+                
+                {/* Lifestyle Details (Pets/Smoking) */}
+                <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Pets</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.pets || 'No Pets'}</dd></div>
+                <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Smoking</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.smoking || 'No Smoking'}</dd></div>
+
                 {hasSpec(rental.data.specs?.utilities) && (
-                    <div class="pt-2 italic text-gray-600 text-xs">
-                        {rental.data.specs?.utilities}
-                    </div>
+                    <div class="pt-2 italic text-gray-600 text-xs">{rental.data.specs?.utilities}</div>
                 )}
             </dl>
         </div>
         
-        {/* iGuide Button */}
-        {rental.data.iGuideUrl && (
-            <div class="mt-2">
-                <a href={rental.data.iGuideUrl} target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full bg-[#003057] hover:bg-[#002542] text-white font-century py-3 px-4 rounded shadow transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    <span>3D Virtual Tour</span>
-                </a>
-            </div>
-        )}
-
-        {/* Contact fallback for non-vacant properties */}
-        {!isVacant && (
-            <div class="bg-white border border-dashed border-gray-300 p-6 rounded-sm text-center">
-                <h3 class="font-century text-lg font-bold text-schiketanz-red mb-2">Interested?</h3>
-                <p class="text-xs text-gray-600 mb-4 font-bold uppercase tracking-tight">Currently Full — Contact for upcoming vacancies</p>
-                <a href="tel:5197424477" class="text-lg font-bold text-gray-800 hover:text-schiketanz-red transition-colors block mb-4 underline">(519) 742-4477</a>
-                <a href="/application" class="block w-full text-center border-2 border-schiketanz-red text-schiketanz-red font-bold py-2 px-4 rounded hover:bg-red-50 transition-colors">
-                    Get Application
-                </a>
-            </div>
-        )}
       </div>
     </div>
   </PageContainer>

@@ -7,7 +7,7 @@ import PageContainer from '../components/PageContainer.astro';
 ---
 
 <Layout title="Rental Application | Schiketanz Real Estate">
-  <PageContainer narrow>
+  <PageContainer>
     <PageHeader 
       title="Rental Application" 
       breadcrumb={[{ text: 'Application', href: '/application' }]}
@@ -15,14 +15,14 @@ import PageContainer from '../components/PageContainer.astro';
 
     <div class="prose max-w-none text-gray-700 mb-8">
         <p class="text-lg">
-            Thank you for your interest in our properties. To apply for a rental unit, please download the application form below. 
-        </p>
-        <p>
-            Please ensure all sections are completed legibly. Incomplete applications may result in processing delays.
+            Thank you for your interest in our properties.
+            To view one of our rental units, please submit the required documents to <a href="mailto:leasing@schiketanz.ca" class="text-schiketanz-red hover:underline">leasing@schiketanz.ca</a>
+            or bring it to our office during business hours.
         </p>
     </div>
+    
     <!-- Checklist -->
-    <div class="bg-blue-50 border border-blue-200 p-6 rounded-sm mb-8">
+    <div class="bg-blue-50 border border-blue-200 p-6 rounded-sm mb-6">
         <h3 class="font-century font-bold text-xl text-blue-900 mb-4">Required Documents</h3>
         <ul class="space-y-3">
             <li class="flex items-start">
@@ -43,23 +43,13 @@ import PageContainer from '../components/PageContainer.astro';
             </li>
         </ul>
     </div>
-    <!-- Download Section -->
-    <div class="text-left py-8 border-t border-b border-gray-200 mb-8">
-        <a href="/forms/application.pdf" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
-            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Download Application PDF
-        </a>
-        <p class="text-sm text-gray-500 mt-4">
-            Right-click and "Save Link As" to download to your computer.
-        </p>
-    </div>
 
-    <div class="text-left">
-        <h3 class="font-bold text-gray-800 mb-2">Submission</h3>
-        <p class="text-gray-600">
-            Please email your completed application to <a href="mailto:leasing@schiketanz.ca" class="text-schiketanz-red hover:underline">leasing@schiketanz.ca</a>
-            <br/>or drop it off at our office during business hours.
-        </p>
+    <!-- Download Section -->
+    <div class="text-left pt-8 border-t border-gray-200">
+        <a href="/forms/application.doc" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Download PDF
+        </a>
     </div>
   </PageContainer>
 </Layout>
