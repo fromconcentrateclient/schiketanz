@@ -368,59 +368,6 @@ const year = new Date().getFullYear();
 </footer>
 </file>
 
-<file path="src/content/config.ts">
-import { defineCollection, z } from 'astro:content';
-
-const rentals = defineCollection({
-    type: 'content',
-    schema: ({ image }) => z.object({
-        title: z.string(),
-        // Validates the Keystatic conditional field structure
-        vacancyStatus: z.discriminatedUnion('discriminant', [
-            z.object({ discriminant: z.literal('occupied') }),
-            z.object({ 
-                discriminant: z.literal('vacant'), 
-                value: z.array(z.object({
-                    unitType: z.string(),
-                    price: z.string()
-                }))
-            }),
-        ]),
-        address: z.object({
-            street: z.string(),
-            city: z.string(),
-            province: z.string(),
-            postalCode: z.string(),
-        }),
-        // cover image
-        coverImage: image().optional(),        
-        // iGuide Link: Optional string, validated as a URL
-        iGuideUrl: z.string().url().optional(),
-        // Gallery: Optional array of images
-        // Structured specs are optional strings
-        specs: z.object({
-            stories: z.string().optional(),
-            totalUnits: z.string().optional(),
-            elevators: z.string().optional(),
-            laundry: z.string().optional(),
-            sqft: z.string().optional(),
-            utilities: z.string().optional(),
-        }).optional(),
-        gallery: z.array(image()).optional(),
-    }),
-});
-
-const news = defineCollection({
-    type: 'content',
-    schema: z.object({
-        title: z.string(),
-        date: z.coerce.date(),
-    }),
-});
-
-export const collections = { rentals, news };
-</file>
-
 <file path="src/content/rentals/confederation-apartments.mdx">
 ---
 title: Confederation Apartments
@@ -824,6 +771,67 @@ const { images, title } = Astro.props;
 </script>
 </file>
 
+<file path="src/content/config.ts">
+// src/content/config.ts - Updated
+import { defineCollection, z } from 'astro:content';
+
+const rentals = defineCollection({
+    type: 'content',
+    schema: ({ image }) => z.object({
+        title: z.string(),
+        // Validates the Keystatic conditional field structure
+        vacancyStatus: z.discriminatedUnion('discriminant', [
+            z.object({ discriminant: z.literal('occupied') }),
+            z.object({ 
+                discriminant: z.literal('vacant'), 
+                value: z.array(z.object({
+                    unitType: z.string(),
+                    price: z.string()
+                }))
+            }),
+        ]),
+        address: z.object({
+            street: z.string(),
+            city: z.string(),
+            province: z.string(),
+            postalCode: z.string(),
+        }),
+        // cover image
+        coverImage: image().optional(),        
+        // iGuide Link: Optional string, validated as a URL
+        iGuideUrl: z.string().url().optional(),
+        // Gallery: Optional array of images
+        // Structured specs are optional strings
+        superintendent: z.object({
+            name: z.string().optional(),
+            phone: z.string().optional(),
+            hours: z.string().optional(),
+        }).optional(),
+        specs: z.object({
+            stories: z.string().optional(),
+            totalUnits: z.string().optional(),
+            elevators: z.string().optional(),
+            laundry: z.string().optional(),
+            sqft: z.string().optional(),
+            utilities: z.string().optional(),
+            pets: z.string().optional(),
+            smoking: z.string().optional(),
+        }).optional(),
+        gallery: z.array(image()).optional(),
+    }),
+});
+
+const news = defineCollection({
+    type: 'content',
+    schema: z.object({
+        title: z.string(),
+        date: z.coerce.date(),
+    }),
+});
+
+export const collections = { rentals, news };
+</file>
+
 <file path="src/content/rentals/bluebird-apartments.mdx">
 ---
 title: Bluebird Apartments
@@ -859,66 +867,6 @@ Parking is extra.
 Please contact Superintendent for an appointment to view.\
 Phone: 519-588-0083\
 9:00AM - 5:00PM
-</file>
-
-<file path="src/pages/commercial.astro">
----
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
-// import forestHillImg from '../assets/commercial/forest-hill.jpg'; 
----
-
-<Layout title="Commercial Leasing | Schiketanz Real Estate">
-  <PageContainer>
-    <PageHeader 
-      title="Commercial Properties" 
-      subtitle="Retail and office space management in the Kitchener-Waterloo region."
-      breadcrumb={[{ text: 'Commercial', href: '/commercial' }]}
-    />
-
-    <article class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-        <!-- Image Placeholder -->
-        <div class="bg-gray-200 h-80 lg:h-auto w-full rounded-sm flex items-center justify-center text-gray-500 border border-gray-300">
-            <!-- <Image src={forestHillImg} alt="Forest Hill Shopping Centre" class="w-full h-full object-cover" /> -->
-            <span class="font-century">Forest Hill Shopping Centre Photo</span>
-        </div>
-
-        <!-- Content -->
-        <div class="flex flex-col justify-center">
-            <h2 class="font-century font-bold text-3xl text-gray-800 mb-2">Forest Hill Shopping Centre</h2>
-            <p class="text-gray-500 text-lg mb-6">395-421 Greenbrook Drive, Kitchener, Ontario</p>
-
-            <div class="prose text-gray-700 mb-8">
-                <p>
-                    Forest Hill Shopping Centre is centrally located in the Forest Hill Area of Kitchener, Ontario. This shopping centre meets everyone's needs.
-                </p>
-                <p>
-                    It includes a Giant Tiger, pharmacy, restaurant, bakery, doctors and dentists offices and so much more!
-                </p>
-                <ul class="list-disc pl-5 space-y-2 mt-4">
-                    <li>High traffic visibility</li>
-                    <li>Ample parking for customers</li>
-                    <li>Professional property management on-site</li>
-                </ul>
-            </div>
-
-            <div class="bg-gray-50 p-6 border-l-4 border-schiketanz-red max-w-md">
-                <h3 class="font-bold text-gray-800 mb-2">Leasing Inquiries</h3>
-                <p class="text-gray-600 mb-4">
-                    For information on space available for rent, please contact Sue.
-                </p>
-                <div class="space-y-2">
-                    <a href="tel:5197424477" class="block font-bold text-gray-800 hover:text-schiketanz-red transition-colors">(519) 742-4477</a>
-                    <a href="mailto:sue@schiketanz.ca" class="block text-schiketanz-red font-bold hover:underline">
-                        sue@schiketanz.ca &rarr;
-                    </a>
-                </div>
-            </div>
-        </div>
-    </article>
-  </PageContainer>
-</Layout>
 </file>
 
 <file path="src/pages/more.astro">
@@ -1196,6 +1144,110 @@ import aboutImage from '../assets/about.avif';
 </Layout>
 </file>
 
+<file path="src/pages/commercial.astro">
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+import { Image } from 'astro:assets';
+// import forestHillImg from '../assets/commercial/forest-hill.jpg'; 
+---
+
+<Layout title="Commercial Leasing | Schiketanz Real Estate">
+  <PageContainer>
+    <PageHeader 
+      title="Commercial Properties" 
+      subtitle="Retail and office space management in the Kitchener-Waterloo region."
+      breadcrumb={[{ text: 'Commercial', href: '/commercial' }]}
+    />
+
+    <article class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <!-- Image Placeholder -->
+        <div class="bg-gray-200 h-80 lg:h-auto w-full rounded-sm flex items-center justify-center text-gray-500 border border-gray-300">
+            <!-- <Image src={forestHillImg} alt="Forest Hill Shopping Centre" class="w-full h-full object-cover" /> -->
+            <span class="font-century">Forest Hill Shopping Centre Photo</span>
+        </div>
+
+        <!-- Content -->
+        <div class="flex flex-col justify-center">
+            <h2 class="font-century font-bold text-3xl text-gray-800 mb-2">Forest Hill Shopping Centre</h2>
+            <p class="text-gray-500 text-lg mb-6">395-421 Greenbrook Drive, Kitchener, Ontario</p>
+
+            <div class="prose text-gray-700 mb-8">
+                <p>
+                    Forest Hill Shopping Centre is centrally located in the Forest Hill Area of Kitchener, Ontario. This shopping centre meets everyone's needs.
+                </p>
+                <p>
+                    It includes a Giant Tiger, pharmacy, restaurant, bakery, doctors and dentists offices and so much more!
+                </p>
+                <ul class="list-disc pl-5 space-y-2 mt-4">
+                    <li>High traffic visibility</li>
+                    <li>Ample parking for customers</li>
+                    <li>Professional property management on-site</li>
+                </ul>
+            </div>
+
+            <div class="bg-gray-50 p-6 border-l-4 border-schiketanz-red max-w-md">
+                <h3 class="font-bold text-gray-800 mb-2">Leasing Inquiries</h3>
+                <p class="text-gray-600 mb-4">
+                    For information on space available for rent, please contact Sue.
+                </p>
+                <div class="space-y-2">
+                    <a href="tel:5197424477" class="block font-bold text-gray-800 hover:text-schiketanz-red transition-colors">(519) 742-4477</a>
+                    <a href="mailto:sue@schiketanz.ca" class="block text-schiketanz-red font-bold hover:underline">
+                        sue@schiketanz.ca &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </article>
+  </PageContainer>
+</Layout>
+</file>
+
+<file path="src/content/rentals/chicopee-terrace.mdx">
+---
+title: Chicopee Terrace
+vacancyStatus:
+  discriminant: vacant
+  value:
+    - unitType: One Bedroom
+      price: Starting at $1550
+    - unitType: Two Bedroom
+      price: Starting at $1900
+address:
+  street: 23 Old Chicopee Drive
+  city: Kitchener
+  province: Ontario
+  postalCode: N2A 2V5
+coverImage: ../../assets/rentals/chicopee-terrace/coverImage.avif
+iGuideUrl: https://youriguide.com/v2O3AU2Z6V8DD1
+specs:
+  stories: '7'
+  totalUnits: '51'
+  elevators: '1'
+  laundry: On-Site
+  utilities: Rent Includes Utilities
+gallery:
+  - ../../assets/rentals/chicopee-terrace/gallery/0.avif
+  - ../../assets/rentals/chicopee-terrace/gallery/1.avif
+  - ../../assets/rentals/chicopee-terrace/gallery/2.avif
+---
+Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Walking distance to Stanley Park Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
+
+
+
+No pets. \
+No smoking.\
+Parking is extra.
+
+
+
+Please contact Superintendent for an appointment to view.\
+Phone: 519-893-9881\
+Weekdays 09:00AM - 5:00PM&#x20;
+</file>
+
 <file path="src/pages/contact.astro">
 ---
 export const prerender = true;
@@ -1279,261 +1331,6 @@ import PageContainer from '../components/PageContainer.astro';
             </iframe>
         </div>
       </div>
-    </div>
-  </PageContainer>
-</Layout>
-</file>
-
-<file path="src/pages/rentals/[id].astro">
----
-export const prerender = true;
-
-import { getCollection, render } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import PropertyGallery from '../../components/PropertyGallery.astro';
-import PageHeader from '../../components/PageHeader.astro';
-import PageContainer from '../../components/PageContainer.astro';
-
-export async function getStaticPaths() {
-  const rentals = await getCollection('rentals');
-  // array of objects for each property
-  return rentals.map(rental => ({
-    params: { id: rental.slug }, // URL (e.g., /rentals/123-king-st)
-    props: { rental },         // pass whole data object to page
-  }));
-}
-
-// get specific property data for this page
-const { rental } = Astro.props;
-const { Content } = await render(rental);
-
-// Destructure structured address for easier use
-const { street, city, province, postalCode } = rental.data.address;
-const fullFormattedAddress = `${street}, ${city}, ${province} ${postalCode}`;
-
-const allImages = [...(rental.data.gallery || [])];
-if (rental.data.coverImage) allImages.push(rental.data.coverImage);
-
-// FIX 1: Access the status directly and use TypeScript's narrowing properly
-const status = rental.data.vacancyStatus;
-const isVacant = status.discriminant === 'vacant';
-// This safely extracts the array if it exists, otherwise returns an empty array
-const availableUnits = status.discriminant === 'vacant' ? status.value : [];
-
-// Helper to check if a spec exists and has content
-const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
----
-
-<Layout title={`${rental.data.title} | Schiketanz Rentals`}>
-  <PageContainer>
-    <PageHeader 
-        title={rental.data.title} 
-        subtitle={fullFormattedAddress}
-        breadcrumb={[
-            { text: 'Rentals', href: '/rentals' },
-            { text: rental.data.title, href: `#` }
-        ]}
-    >
-        {!isVacant && (
-            <div slot="after-title" class="px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-sm shadow-sm text-white bg-gray-600 h-fit md:mb-1">
-                No Vacancy
-            </div>
-        )}
-    </PageHeader>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
-      
-      <!-- Left Column: Media and Description -->
-      <div class="lg:col-span-2 space-y-8">
-        {allImages.length > 0 ? (
-            <PropertyGallery images={allImages} title={rental.data.title} />
-        ) : (
-            <div class="w-full h-96 flex items-center justify-center bg-gray-100 text-gray-400 border border-gray-200">No Images Available</div>
-        )}
-
-        <div class="prose prose-red max-w-none text-gray-700">
-           <Content />
-        </div>
-      </div>
-
-      <!-- Right Column: Availability, Specs, and Contact -->
-      <div class="lg:col-span-1 space-y-6">
-        
-        {/* Pricing Card: Only shows if building is Vacant */}
-        {isVacant && (
-            <div class="bg-green-50 border-2 border-green-600 p-6 rounded-sm shadow-sm">
-                <h3 class="font-century text-xl font-bold text-green-800 mb-4 flex items-center">
-                    <span class="w-3 h-3 bg-green-600 rounded-full mr-2 animate-pulse"></span>
-                    Now Renting
-                </h3>
-                <div class="space-y-4 mb-6">
-                    {/* FIX 2: Added explicit type to 'unit' parameter */}
-                    {availableUnits.map((unit: { unitType: string; price: string }) => (
-                        <div class="border-b border-green-200 pb-2 last:border-0">
-                            <p class="font-bold text-gray-900">{unit.unitType}</p>
-                            <p class="text-green-700 font-medium">{unit.price}</p>
-                        </div>
-                    ))}
-                </div>
-                <a href="/application" class="block w-full text-center bg-green-600 text-white font-bold py-3 px-4 rounded hover:bg-green-700 transition-colors shadow-md">
-                    Apply for This Unit
-                </a>
-            </div>
-        )}
-
-        {/* Building Details Card: Only shows rows with data */}
-        <div class="bg-gray-50 border border-gray-200 p-6 rounded-sm">
-            <h3 class="font-century text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">Building Details</h3>
-            <dl class="space-y-3 text-sm">
-                {hasSpec(rental.data.specs?.stories) && (
-                    <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Stories</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.stories}</dd></div>
-                )}
-                {hasSpec(rental.data.specs?.totalUnits) && (
-                    <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Number of Units</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.totalUnits}</dd></div>
-                )}
-                {hasSpec(rental.data.specs?.elevators) && (
-                    <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Elevators</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.elevators}</dd></div>
-                )}
-                {hasSpec(rental.data.specs?.laundry) && (
-                    <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Laundry</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.laundry}</dd></div>
-                )}
-                {hasSpec(rental.data.specs?.sqft) && (
-                    <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Unit Sq. Footage</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.sqft}</dd></div>
-                )}
-                {hasSpec(rental.data.specs?.utilities) && (
-                    <div class="pt-2 italic text-gray-600 text-xs">
-                        {rental.data.specs?.utilities}
-                    </div>
-                )}
-            </dl>
-        </div>
-        
-        {/* iGuide Button */}
-        {rental.data.iGuideUrl && (
-            <div class="mt-2">
-                <a href={rental.data.iGuideUrl} target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full bg-[#003057] hover:bg-[#002542] text-white font-century py-3 px-4 rounded shadow transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    <span>3D Virtual Tour</span>
-                </a>
-            </div>
-        )}
-
-        {/* Contact fallback for non-vacant properties */}
-        {!isVacant && (
-            <div class="bg-white border border-dashed border-gray-300 p-6 rounded-sm text-center">
-                <h3 class="font-century text-lg font-bold text-schiketanz-red mb-2">Interested?</h3>
-                <p class="text-xs text-gray-600 mb-4 font-bold uppercase tracking-tight">Currently Full — Contact for upcoming vacancies</p>
-                <a href="tel:5197424477" class="text-lg font-bold text-gray-800 hover:text-schiketanz-red transition-colors block mb-4 underline">(519) 742-4477</a>
-                <a href="/application" class="block w-full text-center border-2 border-schiketanz-red text-schiketanz-red font-bold py-2 px-4 rounded hover:bg-red-50 transition-colors">
-                    Get Application
-                </a>
-            </div>
-        )}
-      </div>
-    </div>
-  </PageContainer>
-</Layout>
-</file>
-
-<file path="src/content/rentals/chicopee-terrace.mdx">
----
-title: Chicopee Terrace
-vacancyStatus:
-  discriminant: vacant
-  value:
-    - unitType: One Bedroom
-      price: Starting at $1550
-    - unitType: Two Bedroom
-      price: Starting at $1900
-address:
-  street: 23 Old Chicopee Drive
-  city: Kitchener
-  province: Ontario
-  postalCode: N2A 2V5
-coverImage: ../../assets/rentals/chicopee-terrace/coverImage.avif
-iGuideUrl: https://youriguide.com/v2O3AU2Z6V8DD1
-specs:
-  stories: '7'
-  totalUnits: '51'
-  elevators: '1'
-  laundry: On-Site
-  utilities: Rent Includes Utilities
-gallery:
-  - ../../assets/rentals/chicopee-terrace/gallery/0.avif
-  - ../../assets/rentals/chicopee-terrace/gallery/1.avif
-  - ../../assets/rentals/chicopee-terrace/gallery/2.avif
----
-Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Walking distance to Stanley Park Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
-
-
-
-No pets. \
-No smoking.\
-Parking is extra.
-
-
-
-Please contact Superintendent for an appointment to view.\
-Phone: 519-893-9881\
-Weekdays 09:00AM - 5:00PM&#x20;
-</file>
-
-<file path="src/pages/application.astro">
----
-export const prerender = true; // to ensure form is detected
-
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
----
-
-<Layout title="Rental Application | Schiketanz Real Estate">
-  <PageContainer narrow>
-    <PageHeader 
-      title="Rental Application" 
-      breadcrumb={[{ text: 'Application', href: '/application' }]}
-    />
-
-    <div class="prose max-w-none text-gray-700 mb-8">
-        <p class="text-lg">
-            Thank you for your interest in our properties.
-            To view one of our rental units, please submit the required documents to <a href="mailto:leasing@schiketanz.ca" class="text-schiketanz-red hover:underline">leasing@schiketanz.ca</a>
-            or bring it to our office during business hours.
-        </p>
-    </div>
-    
-    <!-- Checklist -->
-    <div class="bg-blue-50 border border-blue-200 p-6 rounded-sm mb-6">
-        <h3 class="font-century font-bold text-xl text-blue-900 mb-4">Required Documents</h3>
-        <ul class="space-y-3">
-            <li class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Completed and signed Application Form</span>
-            </li>
-            <li class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Proof of Income (e.g., recent pay stub, employment letter)</span>
-            </li>
-            <li class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Two Pieces of Identification (one must include your photo)</span>
-            </li>
-            <li class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Last Month's Rent Deposit</span>
-            </li>
-        </ul>
-    </div>
-
-    <!-- Download Section -->
-    <div class="text-left pt-8 border-t border-gray-200">
-        <a href="/forms/application.doc" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
-            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Download PDF
-        </a>
     </div>
   </PageContainer>
 </Layout>
@@ -1647,6 +1444,172 @@ const latestNews = newsEntries
 </Layout>
 </file>
 
+<file path="src/pages/rentals/[id].astro">
+---
+// src/pages/rentals/[id].astro
+export const prerender = true;
+
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import PropertyGallery from '../../components/PropertyGallery.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import PageContainer from '../../components/PageContainer.astro';
+
+export async function getStaticPaths() {
+  const rentals = await getCollection('rentals');
+  // array of objects for each property
+  return rentals.map(rental => ({
+    params: { id: rental.slug }, // URL (e.g., /rentals/123-king-st)
+    props: { rental },         // pass whole data object to page
+  }));
+}
+
+// get specific property data for this page
+const { rental } = Astro.props;
+const { Content } = await render(rental);
+
+// Destructure structured address for easier use
+const { street, city, province, postalCode } = rental.data.address;
+const fullFormattedAddress = `${street}, ${city}, ${province} ${postalCode}`;
+
+const allImages = [...(rental.data.gallery || [])];
+if (rental.data.coverImage) allImages.push(rental.data.coverImage);
+
+// FIX 1: Access the status directly and use TypeScript's narrowing properly
+const status = rental.data.vacancyStatus;
+const isVacant = status.discriminant === 'vacant';
+// This safely extracts the array if it exists, otherwise returns an empty array
+const availableUnits = status.discriminant === 'vacant' ? status.value : [];
+
+// Helper to check if a spec exists and has content
+const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
+---
+
+<Layout title={`${rental.data.title} | Schiketanz Rentals`}>
+  <PageContainer>
+    <PageHeader 
+        title={rental.data.title} 
+        subtitle={fullFormattedAddress}
+        breadcrumb={[
+            { text: 'Rentals', href: '/rentals' },
+            { text: rental.data.title, href: `#` }
+        ]}
+    >
+        {!isVacant && (
+            <div slot="after-title" class="px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-sm shadow-sm text-white bg-gray-600 h-fit md:mb-1">
+                No Vacancy
+            </div>
+        )}
+    </PageHeader>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+      
+      <!-- Left Column: Media and Description -->
+      <div class="lg:col-span-2 space-y-8">
+        {allImages.length > 0 ? (
+            <PropertyGallery images={allImages} title={rental.data.title} />
+        ) : (
+            <div class="w-full h-96 flex items-center justify-center bg-gray-100 text-gray-400 border border-gray-200">No Images Available</div>
+        )}
+        <div class="prose prose-red max-w-none text-gray-700">
+           <Content />
+        </div>
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="lg:col-span-1 space-y-6">
+        
+        <!-- 1. ACTION CARD (Top) -->
+        {isVacant ? (
+            <div class="bg-green-50 border-2 border-green-600 p-6 rounded-sm shadow-sm">
+                <h3 class="font-century text-xl font-bold text-green-800 mb-4 flex items-center">
+                    <span class="w-3 h-3 bg-green-600 rounded-full mr-2 animate-pulse"></span>
+                    Now Renting
+                </h3>
+                <div class="space-y-4 mb-6">
+                    {availableUnits.map((unit: any) => (
+                        <div class="border-b border-green-200 pb-2 last:border-0">
+                            <p class="font-bold text-gray-900">{unit.unitType}</p>
+                            <p class="text-green-700 font-medium">{unit.price}</p>
+                        </div>
+                    ))}
+                </div>
+                
+                {/* Superintendent Info shown when vacant */}
+                {rental.data.superintendent?.phone && (
+                    <div class="bg-white/50 p-4 rounded-sm border border-green-200 mb-6">
+                        <p class="text-xs font-bold text-green-800 uppercase tracking-widest mb-2">Contact to View</p>
+                        <p class="font-bold text-gray-900">{rental.data.superintendent.name || 'Superintendent'}</p>
+                        <a href={`tel:${rental.data.superintendent.phone}`} class="text-lg font-bold text-green-700 hover:underline block">{rental.data.superintendent.phone}</a>
+                        {rental.data.superintendent.hours && <p class="text-xs text-gray-600 mt-1">{rental.data.superintendent.hours}</p>}
+                    </div>
+                )}
+
+                <a href="/application" class="block w-full text-center bg-green-600 text-white font-bold py-3 px-4 rounded hover:bg-green-700 transition-colors shadow-md">
+                    Apply for This Unit
+                </a>
+            </div>
+        ) : (
+            <div class="bg-white border border-gray-300 p-6 rounded-sm text-center shadow-sm">
+                <h3 class="font-century text-lg font-bold text-schiketanz-red mb-2">Interested?</h3>
+                <p class="text-xs text-gray-600 mb-4 font-bold uppercase tracking-tight">Currently Full — Contact for upcoming vacancies</p>
+                <div class="space-y-1 mb-6">
+                    <p class="text-xs text-gray-500 uppercase font-bold">Main Office</p>
+                    <a href="tel:5197424477" class="text-xl font-bold text-gray-800 hover:text-schiketanz-red transition-colors block underline">(519) 742-4477</a>
+                </div>
+                <a href="/application" class="block w-full text-center border-2 border-schiketanz-red text-schiketanz-red font-bold py-2 px-4 rounded hover:bg-red-50 transition-colors">
+                    Get Application
+                </a>
+            </div>
+        )}
+
+        <!-- 2. TOUR (Middle) -->
+        {rental.data.iGuideUrl && (
+            <a href={rental.data.iGuideUrl} target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full bg-[#003057] hover:bg-[#002542] text-white font-century py-3 px-4 rounded shadow transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span>3D Virtual Tour</span>
+            </a>
+        )}
+
+        <!-- 3. DETAILS (Bottom) -->
+        <div class="bg-gray-50 border border-gray-200 p-6 rounded-sm">
+            <h3 class="font-century text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">Building Details</h3>
+            <dl class="space-y-3 text-sm">
+                {hasSpec(rental.data.specs?.stories) && (
+                    <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Stories</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.stories}</dd></div>
+                )}
+                {hasSpec(rental.data.specs?.totalUnits) && (
+                    <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Number of Units</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.totalUnits}</dd></div>
+                )}
+                {hasSpec(rental.data.specs?.elevators) && (
+                    <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Elevators</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.elevators}</dd></div>
+                )}
+                {hasSpec(rental.data.specs?.laundry) && (
+                    <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Laundry</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.laundry}</dd></div>
+                )}
+                {hasSpec(rental.data.specs?.sqft) && (
+                    <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Unit Sq. Footage</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.sqft}</dd></div>
+                )}
+                
+                {/* Lifestyle Details (Pets/Smoking) */}
+                <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Pets</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.pets || 'No Pets'}</dd></div>
+                <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Smoking</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.smoking || 'No Smoking'}</dd></div>
+
+                {hasSpec(rental.data.specs?.utilities) && (
+                    <div class="pt-2 italic text-gray-600 text-xs">{rental.data.specs?.utilities}</div>
+                )}
+            </dl>
+        </div>
+        
+      </div>
+    </div>
+  </PageContainer>
+</Layout>
+</file>
+
 <file path="src/content/rentals/bridge-apartments.mdx">
 ---
 title: Bridge Apartments
@@ -1680,6 +1643,64 @@ No smoking.
 Please contact Superintendent for an appointment to view.\
 Phone: 519-742-4477\
 Weekdays 9:00AM - 4:00PM
+</file>
+
+<file path="src/pages/application.astro">
+---
+export const prerender = true; // to ensure form is detected
+
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+---
+
+<Layout title="Rental Application | Schiketanz Real Estate">
+  <PageContainer>
+    <PageHeader 
+      title="Rental Application" 
+      breadcrumb={[{ text: 'Application', href: '/application' }]}
+    />
+
+    <div class="prose max-w-none text-gray-700 mb-8">
+        <p class="text-lg">
+            Thank you for your interest in our properties.
+            To view one of our rental units, please submit the required documents to <a href="mailto:leasing@schiketanz.ca" class="text-schiketanz-red hover:underline">leasing@schiketanz.ca</a>
+            or bring it to our office during business hours.
+        </p>
+    </div>
+    
+    <!-- Checklist -->
+    <div class="bg-blue-50 border border-blue-200 p-6 rounded-sm mb-6">
+        <h3 class="font-century font-bold text-xl text-blue-900 mb-4">Required Documents</h3>
+        <ul class="space-y-3">
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Completed and signed Application Form</span>
+            </li>
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Proof of Income (e.g., recent pay stub, employment letter)</span>
+            </li>
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Two Pieces of Identification (one must include your photo)</span>
+            </li>
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Last Month's Rent Deposit</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Download Section -->
+    <div class="text-left pt-8 border-t border-gray-200">
+        <a href="/forms/application.doc" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Download PDF
+        </a>
+    </div>
+  </PageContainer>
+</Layout>
 </file>
 
 <file path="src/pages/maintenance.astro">
@@ -1717,7 +1738,7 @@ const labelClasses = "block text-sm font-bold text-gray-700 mb-1.5";
 ---
 
 <Layout title="Maintenance Request | Schiketanz Real Estate">
-  <PageContainer narrow>
+  <PageContainer>
     <PageHeader 
       title="Maintenance Request" 
       subtitle="Submit a work order directly to your building superintendent."
@@ -1980,52 +2001,6 @@ const labelClasses = "block text-sm font-bold text-gray-700 mb-1.5";
 </style>
 </file>
 
-<file path="src/pages/pad-form.astro">
----
-export const prerender = true;
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
----
-
-<Layout title="Pre-Authorized Debit Form | Schiketanz Real Estate">
-  <PageContainer narrow>
-    <PageHeader 
-      title="Pre-Authorized Debit (PAD)" 
-      subtitle="Enroll in automatic rent payments directly from your bank account."
-      breadcrumb={[{ text: 'PAD Form', href: '/pad-form' }]}
-    />
-
-    <div class="prose max-w-none text-gray-700 mb-8">
-        <p class="text-lg">
-            If you wish to pay your rent by pre-authorized debit, please download the enrollment form below.
-        </p>
-        <p>
-            Please read the instructions carefully, fill out the form completely, and attach a void cheque or a direct deposit form from your bank. 
-            You can return the completed form to your superintendent or drop it off at our office mail slot.
-        </p>
-        <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mt-6">
-            <p class="font-bold text-blue-900 m-0">
-                Please note: We need to receive the form at least 15 days prior to the first of the month that you want the payments to commence.
-            </p>
-        </div>
-    </div>
-
-    <!-- Download Section -->
-    <div class="text-left py-8 border-t border-b border-gray-200 mb-8">
-        <!-- Make sure to place pad-form.pdf in the public/forms/ directory -->
-        <a href="/forms/pad-form.pdf" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
-            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Download PAD Form PDF
-        </a>
-        <p class="text-sm text-gray-500 mt-4">
-            Right-click and "Save Link As" to download to your computer.
-        </p>
-    </div>
-  </PageContainer>
-</Layout>
-</file>
-
 <file path="src/pages/rentals.astro">
 ---
 import Layout from '../layouts/Layout.astro';
@@ -2106,20 +2081,56 @@ const rentals = allRentals.sort((a, b) => {
 </Layout>
 </file>
 
+<file path="src/pages/pad-form.astro">
+---
+export const prerender = true;
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+---
+
+<Layout title="Pre-Authorized Debit Form | Schiketanz Real Estate">
+  <PageContainer>
+    <PageHeader 
+      title="Pre-Authorized Debit (PAD)" 
+      subtitle="Enroll in automatic rent payments directly from your bank account."
+      breadcrumb={[{ text: 'PAD Form', href: '/pad-form' }]}
+    />
+
+    <div class="prose max-w-none text-gray-700 mb-8">
+        <p class="text-lg">
+            If you wish to pay your rent by pre-authorized debit, please download the enrollment form below.
+        </p>
+        <p>
+            Please read the instructions carefully, fill out the form completely, and attach a void cheque or a direct deposit form from your bank. 
+            You can return the completed form to your superintendent or drop it off at our office mail slot.
+        </p>
+        <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mt-6">
+            <p class="font-bold text-blue-900 m-0">
+                Please note: We need to receive the form at least 15 days prior to the first of the month that you want the payments to commence.
+            </p>
+        </div>
+    </div>
+
+    <!-- Download Section -->
+    <div class="text-left pt-8 border-t border-gray-200">
+        <a href="/forms/pad-form.pdf" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Download PAD Form PDF
+        </a>
+    </div>
+  </PageContainer>
+</Layout>
+</file>
+
 <file path="keystatic.config.ts">
+// keystatic.config.ts - Updated
 import { config, fields, collection } from '@keystatic/core';
 
-const isLocal = import.meta.env.DEV; 
-
 export default config({
-  storage: {
-    kind: 'cloud',
-  },
-  cloud: {
-    project: 'fromconcentrateclien/schiketanz',
-  },
+  storage: { kind: 'cloud' },
+  cloud: { project: 'fromconcentrateclien/schiketanz' },
   collections: {
-    // RENTALS
     rentals: collection({
       label: 'Rental Properties',
       slugField: 'title',
@@ -2127,11 +2138,9 @@ export default config({
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Property Name/Address' } }),
-        // binary vacancy status with conditional fields for pricing
         vacancyStatus: fields.conditional(
           fields.select({
             label: 'Availability',
-            description: 'Is there currently space available in this building?',
             options: [
               { label: 'No Vacancy', value: 'occupied' },
               { label: 'Vacancies Available', value: 'vacant' },
@@ -2142,18 +2151,15 @@ export default config({
             occupied: fields.empty(),
             vacant: fields.array(
               fields.object({
-                unitType: fields.text({ label: 'Unit Type (e.g. 2 Bedroom)' }),
-                price: fields.text({ label: 'Starting Price (e.g. $1850.00 + Hydro)' }),
+                unitType: fields.text({ label: 'Unit Type' }),
+                price: fields.text({ label: 'Starting Price' }),
               }),
-              {
-                label: 'Available Units',
-                itemLabel: (props) => props.fields.unitType.value || 'New Unit Listing',
-              }
+              { label: 'Available Units', itemLabel: (p) => p.fields.unitType.value || 'Unit' }
             )
           }
         ),
         address: fields.object({
-          street: fields.text({ label: 'Street Address (e.g. 195 Natchez Rd.)' }),
+          street: fields.text({ label: 'Street Address' }),
           city: fields.text({ label: 'City', defaultValue: 'Kitchener' }),
           province: fields.text({ label: 'Province', defaultValue: 'Ontario' }),
           postalCode: fields.text({ label: 'Postal Code' }),
@@ -2163,18 +2169,31 @@ export default config({
           directory: 'src/assets/rentals', 
           publicPath: '../../assets/rentals/', 
         }),
-        iGuideUrl: fields.url({
-          label: 'iGuide Virtual Tour URL',
-          description: 'If this property has an iGuide/3D tour, paste the link here.',
+        iGuideUrl: fields.url({ label: 'iGuide Virtual Tour URL' }),
+        // ADDED: Superintendent Section
+        superintendent: fields.object({
+          name: fields.text({ label: 'Name (Optional)' }),
+          phone: fields.text({ label: 'Phone Number (e.g. 519-000-0000)' }),
+          hours: fields.text({ label: 'Available Hours (e.g. 9am - 5pm)' }),
         }),
-        // structured specs that will only show if filled out
         specs: fields.object({
-          stories: fields.text({ label: 'Stories (e.g. 9)' }),
+          stories: fields.text({ label: 'Stories' }),
           totalUnits: fields.text({ label: 'Number of Units' }),
           elevators: fields.text({ label: 'Elevators' }),
-          laundry: fields.text({ label: 'Laundry (e.g. On-site)' }),
+          laundry: fields.text({ label: 'Laundry' }),
           sqft: fields.text({ label: 'Unit Sq. Footage' }),
-          utilities: fields.text({ label: 'Utilities Note (e.g. Rent includes utilities)' }),
+          utilities: fields.text({ label: 'Utilities Note' }),
+          // ADDED: Standardized lifestyle fields
+          pets: fields.select({
+            label: 'Pet Policy',
+            options: [{ label: 'No Pets', value: 'No Pets' }, { label: 'Pet Friendly', value: 'Pet Friendly' }],
+            defaultValue: 'No Pets'
+          }),
+          smoking: fields.select({
+            label: 'Smoking Policy',
+            options: [{ label: 'No Smoking', value: 'No Smoking' }, { label: 'Smoking Permitted', value: 'Smoking Permitted' }],
+            defaultValue: 'No Smoking'
+          }),
         }),
         gallery: fields.array(
           fields.image({
@@ -2182,17 +2201,11 @@ export default config({
             directory: 'src/assets/rentals', 
             publicPath: '../../assets/rentals/',
           }),
-          {
-            label: 'Property Photo Gallery',
-            itemLabel: (props) => 'Photo',
-          }
+          { label: 'Property Photo Gallery' }
         ),
-        content: fields.mdx({
-          label: 'Description & Amenities',
-        }),
+        content: fields.mdx({ label: 'Description & Amenities' }),
       },
     }),
-    // NOTICES
     news: collection({
       label: 'News & Notices',
       slugField: 'title',
@@ -2201,9 +2214,7 @@ export default config({
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         date: fields.date({ label: 'Date Posted' }),
-        content: fields.mdx({
-          label: 'Content',
-        }),
+        content: fields.mdx({ label: 'Content' }),
       }
     })
   },
