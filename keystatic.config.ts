@@ -56,7 +56,6 @@ export default config({
           laundry: fields.text({ label: 'Laundry' }),
           sqft: fields.text({ label: 'Unit Sq. Footage' }),
           utilities: fields.text({ label: 'Utilities Note' }),
-          // ADDED: Standardized lifestyle fields
           pets: fields.select({
             label: 'Pet Policy',
             options: [{ label: 'No Pets', value: 'No Pets' }, { label: 'Pet Friendly', value: 'Pet Friendly' }],

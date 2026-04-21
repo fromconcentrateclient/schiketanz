@@ -15,20 +15,12 @@ const currentPath = Astro.url.pathname;
 
 <nav class="w-full border-t border-white/20">
     <!-- Mobile Menu -->
-    <div 
-        id="mobile-menu" 
-        class="hidden lg:hidden absolute top-full left-0 w-full bg-schiketanz-red shadow-xl border-t border-white/20 pb-4 z-50"
-    >
+    <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 w-full bg-schiketanz-red shadow-xl border-t border-white/20 pb-4 z-50">
         <div class="container mx-auto px-4">
             <ul class="flex flex-col">
                 {navLinks.map(link => (
                     <li>
-                        <a 
-                            href={link.href} 
-                            class="block text-white py-3 px-0 hover:text-gray-200 border-b border-white/10 text-sm font-medium"
-                        >
-                            {link.name}
-                        </a>
+                        <a href={link.href} class="block text-white py-3 px-0 hover:text-gray-200 border-b border-white/10 text-sm font-medium">{link.name}</a>
                     </li>
                 ))}
             </ul>
@@ -39,16 +31,7 @@ const currentPath = Astro.url.pathname;
         <ul class="flex justify-start space-x-6">
             {navLinks.map(link => (
                 <li>
-                    <a 
-                        href={link.href} 
-                        class:list={[
-                            "block text-white py-3 text-[15px] font-normal hover:text-gray-200 hover:underline transition-all",
-                            // underline active page
-                            { "underline decoration-2 decoration-white underline-offset-4": currentPath === link.href }
-                        ]}
-                    >
-                        {link.name}
-                    </a>
+                    <a href={link.href} class:list={["block text-white py-3 text-[15px] font-normal hover:text-gray-200 hover:underline transition-all",{ "underline decoration-2 decoration-white underline-offset-4": currentPath === link.href }]}>{link.name}</a>
                 </li>
             ))}
         </ul>

@@ -1,5 +1,6 @@
 ---
 // src/pages/rentals/[id].astro
+
 export const prerender = true;
 
 import { getCollection, render } from 'astro:content';
@@ -20,21 +21,17 @@ export async function getStaticPaths() {
 // get specific property data for this page
 const { rental } = Astro.props;
 const { Content } = await render(rental);
-
-// Destructure structured address for easier use
+// destructure structured address for easier use
 const { street, city, province, postalCode } = rental.data.address;
 const fullFormattedAddress = `${street}, ${city}, ${province} ${postalCode}`;
-
 const allImages = [...(rental.data.gallery || [])];
 if (rental.data.coverImage) allImages.push(rental.data.coverImage);
-
-// FIX 1: Access the status directly and use TypeScript's narrowing properly
+// access status directly and use TypeScript's narrowing properly
 const status = rental.data.vacancyStatus;
 const isVacant = status.discriminant === 'vacant';
-// This safely extracts the array if it exists, otherwise returns an empty array
+// safely extract array if it exists, otherwise return an empty array
 const availableUnits = status.discriminant === 'vacant' ? status.value : [];
-
-// Helper to check if a spec exists and has content
+// check if a spec exists and has content
 const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
 ---
 
