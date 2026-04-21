@@ -2,14 +2,22 @@
 import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
 import heroImage from '../assets/hero.png';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import PageContainer from '../components/PageContainer.astro';
 
 // fetch and sort news chronologically
 const newsEntries = await getCollection('news');
-const latestNews = newsEntries
+const sortedNews = newsEntries
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
     .slice(0, 3); // limit to top 3 notices
+
+// safely render MDX content
+const latestNews = await Promise.all(
+    sortedNews.map(async (news) => {
+        const { Content } = await render(news);
+        return { ...news, Content };
+    })
+);
 ---
 
 <Layout title="Home | Schiketanz Real Estate" logoAs="h1">
@@ -87,8 +95,8 @@ const latestNews = newsEntries
                                     <h4 class="font-century font-bold text-gray-900 leading-tight mb-2 text-lg">
                                         {news.data.title}
                                     </h4>
-                                    <div class="text-sm text-gray-600 line-clamp-4">
-                                        {news.body}
+                                    <div class="text-sm text-gray-600 line-clamp-4 prose prose-sm max-w-none prose-p:my-1">
+                                        <news.Content />
                                     </div>
                                 </article>
                             ))}

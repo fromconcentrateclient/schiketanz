@@ -2,10 +2,18 @@
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 
 const newsEntries = await getCollection('news');
 const sortedNews = newsEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// safely render MDX content
+const renderedNews = await Promise.all(
+  sortedNews.map(async (item) => {
+    const { Content } = await render(item);
+    return { ...item, Content };
+  })
+);
 ---
 
 <Layout title="News & Resources | Schiketanz Real Estate">
@@ -25,7 +33,7 @@ const sortedNews = newsEntries.sort((a, b) => b.data.date.valueOf() - a.data.dat
             </h2>
             
             <div class="space-y-8">
-                {sortedNews.length > 0 ? sortedNews.map(item => (
+                {renderedNews.length > 0 ? renderedNews.map(item => (
                     <article class="bg-white p-6 border border-gray-200 rounded-sm shadow-sm hover:shadow-md transition-shadow">
                         <header class="mb-3">
                             <span class="text-sm text-gray-500 font-bold uppercase tracking-wider">
@@ -36,7 +44,7 @@ const sortedNews = newsEntries.sort((a, b) => b.data.date.valueOf() - a.data.dat
                             </h3>
                         </header>
                         <div class="prose text-gray-600 max-w-none">
-                            {item.body}
+                            <item.Content />
                         </div>
                     </article>
                 )) : (

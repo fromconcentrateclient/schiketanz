@@ -40,11 +40,10 @@ export default config({
         }),
         coverImage: fields.image({
           label: 'Building Photo',
-          directory: 'src/assets/rentals', 
-          publicPath: '../../assets/rentals/', 
+          directory: 'src/assets/rentals/{slug}', 
+          publicPath: '../../assets/rentals/{slug}/', 
         }),
         iGuideUrl: fields.url({ label: 'iGuide Virtual Tour URL' }),
-        // ADDED: Superintendent Section
         superintendent: fields.object({
           name: fields.text({ label: 'Name (Optional)' }),
           phone: fields.text({ label: 'Phone Number (e.g. 519-000-0000)' }),
@@ -72,8 +71,8 @@ export default config({
         gallery: fields.array(
           fields.image({
             label: 'Gallery Image',
-            directory: 'src/assets/rentals', 
-            publicPath: '../../assets/rentals/',
+            directory: 'src/assets/rentals/{slug}/gallery', 
+            publicPath: '../../assets/rentals/{slug}/gallery/',
           }),
           { label: 'Property Photo Gallery' }
         ),
