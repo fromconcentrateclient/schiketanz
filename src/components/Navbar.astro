@@ -1,13 +1,15 @@
 ---
+// src/components/Navbar.astro
+
 const navLinks = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Rentals", href: "/rentals" },
+  { name: "Commercial", href: "/commercial" },
   { name: "Contact and Hours", href: "/contact" },
   { name: "Maintenance Request", href: "/maintenance" },
   { name: "PAD Form", href: "/pad-form" },
   { name: "Application", href: "/application" },
-  { name: "More", href: "/more" },
 ];
 
 const currentPath = Astro.url.pathname;

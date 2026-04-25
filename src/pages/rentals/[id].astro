@@ -57,9 +57,16 @@ const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
       <!-- Left Column: Media and Description -->
       <div class="lg:col-span-2 space-y-8">
         {allImages.length > 0 ? (
-            <PropertyGallery images={allImages} title={rental.data.title} />
+            <div>
+              <PropertyGallery images={allImages} title={rental.data.title} />
+              <p class="text-sm italic text-gray-500 mt-3 text-center md:text-left">
+                Units may vary in appearance, and furnishings shown may not be included
+              </p>
+            </div>
         ) : (
-            <div class="w-full h-96 flex items-center justify-center bg-gray-100 text-gray-400 border border-gray-200">No Images Available</div>
+            <div class="w-full h-96 flex items-center justify-center bg-gray-100 text-gray-400 border border-gray-200">
+                No Images Available
+            </div>
         )}
         <div class="prose prose-red max-w-none text-gray-700">
            <Content />
