@@ -1,11 +1,12 @@
-// src/content/config.ts - Updated
+// src/content/config.ts
+
 import { defineCollection, z } from 'astro:content';
 
 const rentals = defineCollection({
     type: 'content',
     schema: ({ image }) => z.object({
         title: z.string(),
-        // Validates the Keystatic conditional field structure
+        // validate keystatic conditional field structure
         vacancyStatus: z.discriminatedUnion('discriminant', [
             z.object({ discriminant: z.literal('occupied') }),
             z.object({ 
@@ -24,10 +25,10 @@ const rentals = defineCollection({
         }),
         // cover image
         coverImage: image().optional(),        
-        // iGuide Link: Optional string, validated as a URL
+        // iGuide link: optional string, validated as a URL
         iGuideUrl: z.string().url().optional(),
-        // Gallery: Optional array of images
-        // Structured specs are optional strings
+        // gallery: optional array of images
+        // structured specs are optional strings
         superintendent: z.object({
             name: z.string().optional(),
             phone: z.string().optional(),
