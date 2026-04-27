@@ -3,7 +3,7 @@ import { config, fields, collection } from '@keystatic/core';
 
 export default config({
   storage: { kind: 'cloud' },
-  cloud: { project: 'fromconcentrateclien/schiketanz' },
+  cloud: { project: 'schiketanz/schiketanz' },
   collections: {
     rentals: collection({
       label: 'Rental Properties',
