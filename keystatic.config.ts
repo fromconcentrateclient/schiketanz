@@ -11,7 +11,12 @@ export default config({
       path: 'src/content/rentals/*',
       format: { contentField: 'content' },
       schema: {
-        title: fields.slug({ name: { label: 'Property Name/Address' } }),
+        title: fields.slug({ 
+          name: { 
+            label: 'Property Name',
+            validation: { length: { min: 1 } } // Enforces a title
+          } 
+        }),
         vacancyStatus: fields.conditional(
           fields.select({
             label: 'Availability',
@@ -25,28 +30,52 @@ export default config({
             occupied: fields.empty(),
             vacant: fields.array(
               fields.object({
-                unitType: fields.text({ label: 'Unit Type' }),
-                price: fields.text({ label: 'Starting Price' }),
+                unitType: fields.text({ 
+                  label: 'Unit Type',
+                  validation: { length: { min: 1 } } // Enforce filling out unit details if vacant
+                }),
+                price: fields.text({ 
+                  label: 'Starting Price',
+                  validation: { length: { min: 1 } } // Enforce filling out price details if vacant
+                }),
               }),
-              { label: 'Available Units', itemLabel: (p) => p.fields.unitType.value || 'Unit' }
+              { 
+                label: 'Available Units', 
+                itemLabel: (p) => p.fields.unitType.value || 'Unit',
+                validation: { length: { min: 1 } } // Enforces AT LEAST one unit is added if they selected "Vacancies Available"
+              }
             )
           }
         ),
         address: fields.object({
-          street: fields.text({ label: 'Street Address' }),
-          city: fields.text({ label: 'City', defaultValue: 'Kitchener' }),
-          province: fields.text({ label: 'Province', defaultValue: 'Ontario' }),
-          postalCode: fields.text({ label: 'Postal Code' }),
+          street: fields.text({ 
+            label: 'Street Address',
+            validation: { length: { min: 1 } } 
+          }),
+          city: fields.text({ 
+            label: 'City', 
+            defaultValue: 'Kitchener',
+            validation: { length: { min: 1 } } 
+          }),
+          province: fields.text({ 
+            label: 'Province', 
+            defaultValue: 'Ontario',
+            validation: { length: { min: 1 } } 
+          }),
+          postalCode: fields.text({ 
+            label: 'Postal Code',
+            validation: { length: { min: 1 } } 
+          }),
         }),
         coverImage: fields.image({
           label: 'Building Photo',
           directory: 'src/assets/rentals/{slug}', 
           publicPath: '../../assets/rentals/{slug}/', 
         }),
-        iGuideUrl: fields.url({ label: 'iGuide Virtual Tour URL' }),
+        iGuideUrl: fields.url({ label: 'iGuide Tour URL' }),
         superintendent: fields.object({
-          name: fields.text({ label: 'Name (Optional)' }),
-          phone: fields.text({ label: 'Phone Number (e.g. 519-000-0000)' }),
+          name: fields.text({ label: 'Superintendent Name' }),
+          phone: fields.text({ label: 'Superintendent Phone Number' }),
           hours: fields.text({ label: 'Available Hours (e.g. 9am - 5pm)' }),
         }),
         specs: fields.object({
@@ -84,8 +113,16 @@ export default config({
       path: 'src/content/news/*',
       format: { contentField: 'content' },
       schema: {
-        title: fields.slug({ name: { label: 'Title' } }),
-        date: fields.date({ label: 'Date Posted' }),
+        title: fields.slug({ 
+          name: { 
+            label: 'Title',
+            validation: { length: { min: 1 } } 
+          } 
+        }),
+        date: fields.date({ 
+          label: 'Date Posted',
+          validation: { isRequired: true } 
+        }),
         content: fields.mdx({ label: 'Content' }),
       }
     })

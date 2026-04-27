@@ -27,7 +27,6 @@ const rentals = defineCollection({
         coverImage: image().optional(),        
         // iGuide link: optional string, validated as a URL
         iGuideUrl: z.string().url().optional(),
-        // gallery: optional array of images
         // structured specs are optional strings
         superintendent: z.object({
             name: z.string().optional(),
@@ -44,6 +43,7 @@ const rentals = defineCollection({
             pets: z.string().optional(),
             smoking: z.string().optional(),
         }).optional(),
+        // gallery: optional array of images
         gallery: z.array(image()).optional(),
     }),
 });
