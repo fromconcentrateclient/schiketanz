@@ -51,8 +51,8 @@ src/components/PropertyGallery.astro
 src/content/config.ts
 src/content/news/another-example-post.mdx
 src/content/news/family-day.mdx
-src/content/rentals/bluebird-apartments.mdx
-src/content/rentals/chicopee-court.mdx
+src/content/rentals/bluebird-apartments/index.mdx
+src/content/rentals/chicopee-court/index.mdx
 src/layouts/Layout.astro
 src/pages/404.astro
 src/pages/about.astro
@@ -71,6 +71,96 @@ src/styles/global.css
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="src/content/rentals/bluebird-apartments/index.mdx">
+---
+title: Bluebird Apartments
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 195 Natchez Road
+  city: Kitchener
+  province: Ontario
+  postalCode: N2B 1W2
+coverImage: ./coverImage.jpg
+iGuideUrl: https://youriguide.com/vEN92C3Z6V8DD1
+superintendent:
+  phone: 519-588-0083
+  hours: 9 AM - 5 PM
+specs:
+  stories: '9'
+  totalUnits: '159'
+  elevators: '2'
+  laundry: On Each Floor
+  sqft: >-
+    2pc Ensuite: 8'2" x 4'1"  |  30 sq ft 4pc Bath: 6'10" x 6'4"  |  40 sq ft
+    Bedroom: 12'11" x 9'8"  |  125 sq ft Dining: 9'7" x 8'3"  |  79 sq ft
+    Kitchen: 9'9" x 7'9"  |  72 sq ft Living: 23'11" x 11'5"  |  274 sq ft
+    Primary: 16'8" x 11'2"  |  167 sq ft
+  utilities: Hydro and Parking are Extra
+  pets: No Pets
+  smoking: No Smoking
+gallery:
+  - ./gallery/0.jpg
+  - ./gallery/1.jpg
+  - ./gallery/2.jpg
+---
+Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
+</file>
+
+<file path="src/content/rentals/chicopee-court/index.mdx">
+---
+title: Chicopee Court
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 7 Old Chicopee Dr.
+  city: Kitchener
+  province: Ontario
+  postalCode: N2A2V4
+coverImage: ./coverImage.avif
+iGuideUrl: https://youriguide.com/vMKDMO2Z6V8DD1
+superintendent:
+  name: >-
+    Please contact Superintendent for an appointment to view. Phone:
+    519-893-9881
+  phone: 519-893-9881
+  hours: 9 am. - 5 pm.
+specs:
+  stories: '7 '
+  totalUnits: '55'
+  elevators: '1'
+  laundry: On site
+  sqft: >-
+    MAIN FLOOR 4pc Bath: 7'5" x 4'11"  |  37 sq ft Bedroom: 9'10" x 15'6"  | 
+    153 sq ft Bedroom: 10'6" x 10'10"  |  114 sq ft Dining: 9'6" x 7'8"  |  73
+    sq ft Kitchen: 6'9" x 7'5"  |  51 sq ft Living: 20'8" x 11'10"  |  244 sq ft
+  pets: No Pets
+  smoking: No Smoking
+gallery:
+  - ./gallery/0.jpg
+  - ./gallery/1.jpg
+  - ./gallery/2.jpg
+  - ./gallery/3.jpg
+  - ./gallery/4.jpg
+  - ./gallery/5.jpg
+  - ./gallery/6.jpg
+  - ./gallery/7.jpg
+  - ./gallery/8.jpg
+  - ./gallery/9.jpg
+  - ./gallery/10.jpg
+  - ./gallery/11.jpg
+  - ./gallery/12.jpg
+  - ./gallery/13.jpg
+  - ./gallery/14.jpg
+  - ./gallery/15.jpg
+  - ./gallery/16.jpg
+---
+Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access. Walking distance to Stanley Park Mall.\
+Rent includes utilities.
+
+Parking is extra.
+</file>
 
 <file path="src/components/Logo.astro">
 ---
@@ -760,68 +850,6 @@ const { title, subtitle, breadcrumb } = Astro.props;
 </div>
 </file>
 
-<file path="src/content/config.ts">
-// src/content/config.ts
-
-import { defineCollection, z } from 'astro:content';
-
-const rentals = defineCollection({
-    type: 'content',
-    schema: ({ image }) => z.object({
-        title: z.string(),
-        // validate keystatic conditional field structure
-        vacancyStatus: z.discriminatedUnion('discriminant', [
-            z.object({ discriminant: z.literal('occupied') }),
-            z.object({ 
-                discriminant: z.literal('vacant'), 
-                value: z.array(z.object({
-                    unitType: z.string(),
-                    price: z.string()
-                }))
-            }),
-        ]),
-        address: z.object({
-            street: z.string(),
-            city: z.string(),
-            province: z.string(),
-            postalCode: z.string(),
-        }),
-        // cover image
-        coverImage: image().optional(),        
-        // iGuide link: optional string, validated as a URL
-        iGuideUrl: z.string().url().optional(),
-        // structured specs are optional strings
-        superintendent: z.object({
-            name: z.string().optional(),
-            phone: z.string().optional(),
-            hours: z.string().optional(),
-        }).optional(),
-        specs: z.object({
-            stories: z.string().optional(),
-            totalUnits: z.string().optional(),
-            elevators: z.string().optional(),
-            laundry: z.string().optional(),
-            sqft: z.string().optional(),
-            utilities: z.string().optional(),
-            pets: z.string().optional(),
-            smoking: z.string().optional(),
-        }).optional(),
-        // gallery: optional array of images
-        gallery: z.array(image()).optional(),
-    }),
-});
-
-const news = defineCollection({
-    type: 'content',
-    schema: z.object({
-        title: z.string(),
-        date: z.coerce.date(),
-    }),
-});
-
-export const collections = { rentals, news };
-</file>
-
 <file path="src/pages/contact.astro">
 ---
 export const prerender = true;
@@ -908,6 +936,68 @@ import PageContainer from '../components/PageContainer.astro';
     </div>
   </PageContainer>
 </Layout>
+</file>
+
+<file path="src/content/config.ts">
+// src/content/config.ts
+
+import { defineCollection, z } from 'astro:content';
+
+const rentals = defineCollection({
+    type: 'content',
+    schema: ({ image }) => z.object({
+        title: z.string(),
+        // validate keystatic conditional field structure
+        vacancyStatus: z.discriminatedUnion('discriminant', [
+            z.object({ discriminant: z.literal('occupied') }),
+            z.object({ 
+                discriminant: z.literal('vacant'), 
+                value: z.array(z.object({
+                    unitType: z.string(),
+                    price: z.string()
+                }))
+            }),
+        ]),
+        address: z.object({
+            street: z.string(),
+            city: z.string(),
+            province: z.string(),
+            postalCode: z.string(),
+        }),
+        // cover image
+        coverImage: image().optional(),        
+        // iGuide link: optional string, validated as a URL
+        iGuideUrl: z.string().url().or(z.literal('')).optional(),
+        // structured specs are optional strings
+        superintendent: z.object({
+            name: z.string().optional(),
+            phone: z.string().optional(),
+            hours: z.string().optional(),
+        }).optional(),
+        specs: z.object({
+            stories: z.string().optional(),
+            totalUnits: z.string().optional(),
+            elevators: z.string().optional(),
+            laundry: z.string().optional(),
+            sqft: z.string().optional(),
+            utilities: z.string().optional(),
+            pets: z.string().optional(),
+            smoking: z.string().optional(),
+        }).optional(),
+        // gallery: optional array of images
+        gallery: z.array(image()).optional(),
+    }),
+});
+
+const news = defineCollection({
+    type: 'content',
+    schema: z.object({
+        title: z.string(),
+        date: z.coerce.date(),
+    }),
+});
+
+export const collections = { rentals, news };
 </file>
 
 <file path="src/pages/index.astro">
@@ -1024,37 +1114,6 @@ const latestNews = await Promise.all(
         </div>
     </PageContainer>
 </Layout>
-</file>
-
-<file path="src/content/rentals/bluebird-apartments.mdx">
----
-title: Bluebird Apartments
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 195 Natchez Road
-  city: Kitchener
-  province: Ontario
-  postalCode: N2B 1W2
-coverImage: ../../assets/rentals/{slug}/bluebird-apartments/coverImage.jpg
-iGuideUrl: https://youriguide.com/vEN92C3Z6V8DD1
-superintendent:
-  phone: 519-588-0083
-  hours: 9 AM - 5 PM
-specs:
-  stories: '9'
-  totalUnits: '159'
-  elevators: '2'
-  laundry: On Each Floor
-  utilities: Hydro and Parking are Extra
-  pets: No Pets
-  smoking: No Smoking
-gallery:
-  - ../../assets/rentals/{slug}/gallery/bluebird-apartments/gallery/0.jpg
-  - ../../assets/rentals/{slug}/gallery/bluebird-apartments/gallery/1.jpg
-  - ../../assets/rentals/{slug}/gallery/bluebird-apartments/gallery/2.jpg
----
-Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
 </file>
 
 <file path="src/pages/application.astro">
@@ -1285,28 +1344,79 @@ const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
 </Layout>
 </file>
 
-<file path="src/content/rentals/chicopee-court.mdx">
+<file path="src/pages/rentals.astro">
 ---
-title: Chicopee Court
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 7 Old Chicopee Dr.
-  city: Kitchener
-  province: Ontario
-  postalCode: N2A2V4
-superintendent:
-  phone: 519-893-9881
-  hours: 9 am. - 5 pm.
-specs:
-  stories: '7 '
-  totalUnits: '55'
-  elevators: '1'
-  laundry: On site
-  pets: No Pets
-  smoking: No Smoking
-gallery: []
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+
+// sort: vacant (1) first, then occupied (2), then alphabetical
+const allRentals = await getCollection('rentals');
+const rentals = allRentals.sort((a, b) => {
+  const statusA = a.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
+  const statusB = b.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
+  // if status is same, sort alphabetically by title
+  return statusA !== statusB ? statusA - statusB : a.data.title.localeCompare(b.data.title);
+});
 ---
+
+<Layout title="Rental Properties | Schiketanz Real Estate">
+  <PageContainer>
+    <PageHeader 
+      title="Rental Properties" 
+      subtitle="Browse our residential and commercial listings. Contact our office for current availability."
+      breadcrumb={[{ text: 'Rentals', href: '/rentals' }]}
+    />
+    <!-- standardized grid gap -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+      {rentals.map(rental => (
+        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full @container">
+          <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
+            <span class="sr-only">View {rental.data.title}</span>
+          </a>
+          <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-sm">
+             {rental.data.coverImage ? (
+                <Image 
+                    src={rental.data.coverImage} 
+                    alt={rental.data.title} 
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                />
+             ) : (
+                <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50 text-[10px] font-bold uppercase tracking-widest">
+                    No Image
+                </div>
+             )}
+             <div class:list={[
+                 "absolute top-3 right-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white z-30 shadow-sm rounded-sm",
+                 {
+                    "bg-green-600": rental.data.vacancyStatus.discriminant === 'vacant',
+                    "bg-gray-700/90": rental.data.vacancyStatus.discriminant === 'occupied'
+                 }
+             ]}>
+                {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacant' : 'No Vacancy'}
+             </div>
+          </div>
+          <div class="p-5 border-t border-gray-50">
+            <h2 class="text-[clamp(1.125rem,6cqi,1.5rem)] font-bold text-gray-900 group-hover:text-schiketanz-red transition-colors duration-300 leading-tight mb-1 text-balance">
+              {rental.data.title}
+            </h2>
+            <div class="flex items-start text-gray-500">
+                <p class="text-xs font-medium">{rental.data.address.street}</p>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+    <!-- Empty State -->
+    {rentals.length === 0 && (
+        <div class="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
+            <p class="text-gray-400 font-medium">No rental properties found.</p>
+        </div>
+    )}
+  </PageContainer>
+</Layout>
 </file>
 
 <file path="src/pages/maintenance.astro">
@@ -1392,7 +1502,7 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
             >
                 <input type="hidden" name="form-name" value="maintenance-group-1" />
                 <p class="hidden"><label>Bot: <input name="bot-field" /></label></p>
-                <input type="hidden" name="building_name" class="selected-building-input" />
+                <input type="hidden" name="building_name" value="Not Selected" class="selected-building-input" />
                 <input type="hidden" name="subject" value="New Maintenance Request (Group 1)" />
 
                 <!-- 1. Contact Info -->
@@ -1484,7 +1594,7 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
             >
                 <input type="hidden" name="form-name" value="maintenance-group-2" />
                 <p class="hidden"><label>Bot: <input name="bot-field" /></label></p>
-                <input type="hidden" name="building_name" class="selected-building-input" />
+                <input type="hidden" name="building_name" value="Not Selected" class="selected-building-input" />
                 <input type="hidden" name="subject" value="New Maintenance Request (Group 2)" />
 
                 <!-- 1. Contact Info -->
@@ -1618,81 +1728,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
 </style>
 </file>
 
-<file path="src/pages/rentals.astro">
----
-import Layout from '../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
-
-// sort: vacant (1) first, then occupied (2), then alphabetical
-const allRentals = await getCollection('rentals');
-const rentals = allRentals.sort((a, b) => {
-  const statusA = a.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
-  const statusB = b.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
-  // if status is same, sort alphabetically by title
-  return statusA !== statusB ? statusA - statusB : a.data.title.localeCompare(b.data.title);
-});
----
-
-<Layout title="Rental Properties | Schiketanz Real Estate">
-  <PageContainer>
-    <PageHeader 
-      title="Rental Properties" 
-      subtitle="Browse our residential and commercial listings. Contact our office for current availability."
-      breadcrumb={[{ text: 'Rentals', href: '/rentals' }]}
-    />
-    <!-- standardized grid gap -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-      {rentals.map(rental => (
-        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full @container">
-          <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
-            <span class="sr-only">View {rental.data.title}</span>
-          </a>
-          <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-sm">
-             {rental.data.coverImage ? (
-                <Image 
-                    src={rental.data.coverImage} 
-                    alt={rental.data.title} 
-                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                />
-             ) : (
-                <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50 text-[10px] font-bold uppercase tracking-widest">
-                    No Image
-                </div>
-             )}
-             <div class:list={[
-                 "absolute top-3 right-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white z-30 shadow-sm rounded-sm",
-                 {
-                    "bg-green-600": rental.data.vacancyStatus.discriminant === 'vacant',
-                    "bg-gray-700/90": rental.data.vacancyStatus.discriminant === 'occupied'
-                 }
-             ]}>
-                {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacant' : 'No Vacancy'}
-             </div>
-          </div>
-          <div class="p-5 border-t border-gray-50">
-            <h2 class="text-[clamp(1.125rem,6cqi,1.5rem)] font-bold text-gray-900 group-hover:text-schiketanz-red transition-colors duration-300 leading-tight mb-1 text-balance">
-              {rental.data.title}
-            </h2>
-            <div class="flex items-start text-gray-500">
-                <p class="text-xs font-medium">{rental.data.address.street}</p>
-            </div>
-          </div>
-        </article>
-      ))}
-    </div>
-    <!-- Empty State -->
-    {rentals.length === 0 && (
-        <div class="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
-            <p class="text-gray-400 font-medium">No rental properties found.</p>
-        </div>
-    )}
-  </PageContainer>
-</Layout>
-</file>
-
 <file path="src/pages/pad-form.astro">
 ---
 export const prerender = true;
@@ -1746,7 +1781,7 @@ export default config({
     rentals: collection({
       label: 'Rental Properties',
       slugField: 'title',
-      path: 'src/content/rentals/*',
+      path: 'src/content/rentals/*/',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ 
@@ -1807,8 +1842,8 @@ export default config({
         }),
         coverImage: fields.image({
           label: 'Building Photo',
-          directory: 'src/assets/rentals/{slug}', 
-          publicPath: '../../assets/rentals/{slug}/', 
+          directory: 'src/content/rentals/*/', 
+          publicPath: './',
         }),
         iGuideUrl: fields.url({ label: 'iGuide Tour URL' }),
         superintendent: fields.object({
