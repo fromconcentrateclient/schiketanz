@@ -99,7 +99,7 @@ export default config({
         gallery: fields.array(
           fields.image({
             label: 'Gallery Image',
-            directory: 'src/content/rentals/*/', 
+            directory: 'src/content/rentals/*/gallery/', 
             publicPath: './gallery/',
           }),
           { label: 'Property Photo Gallery' }
