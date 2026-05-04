@@ -8,7 +8,7 @@ export default config({
     rentals: collection({
       label: 'Rental Properties',
       slugField: 'title',
-      path: 'src/content/rentals/*',
+      path: 'src/content/rentals/*/',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ 
@@ -69,8 +69,8 @@ export default config({
         }),
         coverImage: fields.image({
           label: 'Building Photo',
-          directory: 'src/assets/rentals/{slug}', 
-          publicPath: '../../assets/rentals/{slug}/', 
+          directory: 'src/content/rentals/*/', 
+          publicPath: './',
         }),
         iGuideUrl: fields.url({ label: 'iGuide Tour URL' }),
         superintendent: fields.object({

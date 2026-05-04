@@ -26,7 +26,7 @@ const rentals = defineCollection({
         // cover image
         coverImage: image().optional(),        
         // iGuide link: optional string, validated as a URL
-        iGuideUrl: z.string().url().optional(),
+        iGuideUrl: z.string().url().or(z.literal('')).optional(),
         // structured specs are optional strings
         superintendent: z.object({
             name: z.string().optional(),
