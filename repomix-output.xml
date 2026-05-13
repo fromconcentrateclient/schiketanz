@@ -30,6 +30,36 @@ src/styles/global.css
 <files>
 This section contains the contents of the repository's files.
 
+<file path="src/components/Logo.astro">
+---
+interface Props {
+  class?: string;
+  as?: string;
+}
+
+const { class: className = "", as: Element = "div" } = Astro.props;
+---
+
+<Element class:list={["inline-flex flex-col leading-none select-none w-fit", className]}>
+  <span class="font-century font-bold text-[1em] tracking-[0.01em] [-webkit-text-stroke:0.015em_currentColor] whitespace-nowrap">
+    M. Schiketanz
+  </span>
+  <span class="font-century text-[0.36em] tracking-[0.14em] text-right -mt-[0.05em] mr-[0.02em] opacity-90">
+    real estate inc.
+  </span>
+</Element>
+</file>
+
+<file path="src/content/news/family-day.mdx">
+---
+title: Office Closure for Family Day
+date: 2026-02-17
+---
+Please be advised that the Schiketanz office will be closed on Monday, February 17th for Family Day.
+
+For emergency maintenance requests, please call our 24-hour line. Normal business hours will resume on Tuesday.
+</file>
+
 <file path="src/content/rentals/bluebird-apartments/index.mdx">
 ---
 title: Bluebird Apartments
@@ -120,60 +150,6 @@ Rent includes utilities.
 Parking is extra.
 </file>
 
-<file path="src/components/Logo.astro">
----
-interface Props {
-  class?: string;
-  as?: string;
-}
-
-const { class: className = "", as: Element = "div" } = Astro.props;
----
-
-<Element class:list={["inline-flex flex-col leading-none select-none w-fit", className]}>
-  <span class="font-century font-bold text-[1em] tracking-[0.01em] [-webkit-text-stroke:0.015em_currentColor] whitespace-nowrap">
-    M. Schiketanz
-  </span>
-  <span class="font-century text-[0.36em] tracking-[0.14em] text-right -mt-[0.05em] mr-[0.02em] opacity-90">
-    real estate inc.
-  </span>
-</Element>
-</file>
-
-<file path="src/components/PageContainer.astro">
----
-interface Props {
-  narrow?: boolean;
-  class?: string;
-}
-
-const { narrow = false, class: className = "" } = Astro.props;
----
-
-<div class:list={[
-  "container mx-auto px-4",
-  "pt-4 md:pt-6 lg:pt-8",
-  "pb-8 md:pb-12 lg:pb-16",
-  className
-]}>
-  <div class:list={[
-    narrow ? "max-w-3xl" : "w-full" 
-  ]}>
-    <slot />
-  </div>
-</div>
-</file>
-
-<file path="src/content/news/family-day.mdx">
----
-title: Office Closure for Family Day
-date: 2026-02-17
----
-Please be advised that the Schiketanz office will be closed on Monday, February 17th for Family Day.
-
-For emergency maintenance requests, please call our 24-hour line. Normal business hours will resume on Tuesday.
-</file>
-
 <file path="src/pages/404.astro">
 ---
 import Layout from '../layouts/Layout.astro';
@@ -213,57 +189,36 @@ const year = new Date().getFullYear();
 </footer>
 </file>
 
+<file path="src/components/PageContainer.astro">
+---
+interface Props {
+  narrow?: boolean;
+  class?: string;
+}
+
+const { narrow = false, class: className = "" } = Astro.props;
+---
+
+<div class:list={[
+  "container mx-auto px-4",
+  "pt-4 md:pt-6 lg:pt-8",
+  "pb-8 md:pb-12 lg:pb-16",
+  className
+]}>
+  <div class:list={[
+    narrow ? "max-w-3xl" : "w-full" 
+  ]}>
+    <slot />
+  </div>
+</div>
+</file>
+
 <file path="src/content/news/another-example-post.mdx">
 ---
 title: Site Available for Testing
 date: 2026-02-26
 ---
 The site will need to be ported to the company URL when your team is ready.
-</file>
-
-<file path="src/pages/privacy.astro">
----
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
----
-
-<Layout title="Privacy Policy | Schiketanz Real Estate">
-  <PageContainer narrow>
-    <PageHeader 
-      title="Privacy Policy" 
-      breadcrumb={[{ text: 'Privacy Policy', href: '/privacy' }]}
-    />
-
-    <div class="prose max-w-none text-gray-700">
-      <p class="italic text-sm text-gray-500 mb-6">Last Updated: {new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-
-      <h3>1. General Policy</h3>
-      <p>
-        At M. Schiketanz Real Estate Inc., we are committed to maintaining the accuracy, confidentiality, and security of your personally identifiable information ("Personal Information"). As part of this commitment, our privacy policy governs our actions as they relate to the collection, use, and disclosure of Personal Information.
-      </p>
-
-      <h3>2. Collection of Personal Information</h3>
-      <p>
-        We collect personal information (such as names, contact details, and financial information) primarily for the purpose of evaluating rental applications, managing tenancy agreements, and processing payments. We collect only the amount of information that is necessary for the purposes identified.
-      </p>
-
-      <h3>3. Use and Disclosure</h3>
-      <p>
-        Your personal information is used only for the purposes for which it was collected or as required by law. We do not sell, trade, or rent your personal information to third parties.
-      </p>
-      
-      <h3>4. Contact Us</h3>
-      <p>
-        If you have any questions regarding this Privacy Policy or the personal information we hold about you, please contact our office at:
-      </p>
-      <ul>
-        <li><strong>Email:</strong> <a href="mailto:office@schiketanz.ca" class="text-schiketanz-red hover:underline">office@schiketanz.ca</a></li>
-        <li><strong>Phone:</strong> (519) 742-4477</li>
-      </ul>
-    </div>
-  </PageContainer>
-</Layout>
 </file>
 
 <file path="src/components/PropertyGallery.astro">
@@ -415,39 +370,46 @@ const { images, title } = Astro.props;
 </script>
 </file>
 
-<file path="src/pages/success.astro">
+<file path="src/pages/privacy.astro">
 ---
-export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
 ---
 
-<Layout title="Thank You | Schiketanz Real Estate">
-  <PageContainer narrow class="min-h-[60vh] flex flex-col justify-center text-center">
-    <PageHeader title="Submission Received">
-        <!-- using slot to place icon next to title -->
-        <div slot="after-title" class="bg-green-100 p-2 rounded-full hidden md:block">
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-            </svg>
-        </div>
-    </PageHeader>
-    <div class="space-y-8">
-        <!-- mobile-only icon -->
-        <div class="bg-green-100 p-4 rounded-full w-fit mx-auto md:hidden">
-            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-        </div>
-        <p class="text-gray-600 text-xl max-w-md mx-auto leading-relaxed">
-            Thank you. Your information has been securely transmitted to our office. We will review your submission and contact you if necessary.
-        </p>
-        <div class="pt-4">
-            <a href="/" class="inline-block px-10 py-4 bg-schiketanz-red text-white font-century font-bold rounded shadow-lg hover:bg-red-700 transition-all hover:-translate-y-1">
-                Return to Homepage
-            </a>
-        </div>
+<Layout title="Privacy Policy | Schiketanz Real Estate">
+  <PageContainer narrow>
+    <PageHeader 
+      title="Privacy Policy" 
+      breadcrumb={[{ text: 'Privacy Policy', href: '/privacy' }]}
+    />
+
+    <div class="prose max-w-none text-gray-700">
+      <p class="italic text-sm text-gray-500 mb-6">Last Updated: {new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+
+      <h3>1. General Policy</h3>
+      <p>
+        At M. Schiketanz Real Estate Inc., we are committed to maintaining the accuracy, confidentiality, and security of your personally identifiable information ("Personal Information"). As part of this commitment, our privacy policy governs our actions as they relate to the collection, use, and disclosure of Personal Information.
+      </p>
+
+      <h3>2. Collection of Personal Information</h3>
+      <p>
+        We collect personal information (such as names, contact details, and financial information) primarily for the purpose of evaluating rental applications, managing tenancy agreements, and processing payments. We collect only the amount of information that is necessary for the purposes identified.
+      </p>
+
+      <h3>3. Use and Disclosure</h3>
+      <p>
+        Your personal information is used only for the purposes for which it was collected or as required by law. We do not sell, trade, or rent your personal information to third parties.
+      </p>
+      
+      <h3>4. Contact Us</h3>
+      <p>
+        If you have any questions regarding this Privacy Policy or the personal information we hold about you, please contact our office at:
+      </p>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:office@schiketanz.ca" class="text-schiketanz-red hover:underline">office@schiketanz.ca</a></li>
+        <li><strong>Phone:</strong> (519) 742-4477</li>
+      </ul>
     </div>
   </PageContainer>
 </Layout>
@@ -670,63 +632,40 @@ import aboutImage from '../assets/about.avif';
 </Layout>
 </file>
 
-<file path="src/pages/commercial.astro">
+<file path="src/pages/success.astro">
 ---
+export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
-import { Image } from 'astro:assets';
-// import forestHillImg from '../assets/commercial/forest-hill.jpg'; 
 ---
 
-<Layout title="Commercial Leasing | Schiketanz Real Estate">
-  <PageContainer>
-    <PageHeader 
-      title="Commercial Properties" 
-      subtitle="Retail and office space management in the Kitchener-Waterloo region."
-      breadcrumb={[{ text: 'Commercial', href: '/commercial' }]}
-    />
-
-    <article class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-        <!-- Image Placeholder -->
-        <div class="bg-gray-200 h-80 lg:h-auto w-full rounded-sm flex items-center justify-center text-gray-500 border border-gray-300">
-            <!-- <Image src={forestHillImg} alt="Forest Hill Shopping Centre" class="w-full h-full object-cover" /> -->
-            <span class="font-century">Forest Hill Shopping Centre Photo</span>
+<Layout title="Thank You | Schiketanz Real Estate">
+  <PageContainer narrow class="min-h-[60vh] flex flex-col justify-center text-center">
+    <PageHeader title="Submission Received">
+        <!-- using slot to place icon next to title -->
+        <div slot="after-title" class="bg-green-100 p-2 rounded-full hidden md:block">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+            </svg>
         </div>
-
-        <!-- Content -->
-        <div class="flex flex-col justify-center">
-            <h2 class="font-century font-bold text-3xl text-gray-800 mb-2">Forest Hill Shopping Centre</h2>
-            <p class="text-gray-500 text-lg mb-6">395-421 Greenbrook Drive, Kitchener, Ontario</p>
-
-            <div class="prose text-gray-700 mb-8">
-                <p>
-                    Forest Hill Shopping Centre is centrally located in the Forest Hill Area of Kitchener, Ontario. This shopping centre meets everyone's needs.
-                </p>
-                <p>
-                    It includes a Giant Tiger, pharmacy, restaurant, bakery, doctors and dentists offices and so much more!
-                </p>
-                <ul class="list-disc pl-5 space-y-2 mt-4">
-                    <li>High traffic visibility</li>
-                    <li>Ample parking for customers</li>
-                    <li>Professional property management on-site</li>
-                </ul>
-            </div>
-
-            <div class="bg-gray-50 p-6 border-l-4 border-schiketanz-red max-w-md">
-                <h3 class="font-bold text-gray-800 mb-2">Leasing Inquiries</h3>
-                <p class="text-gray-600 mb-4">
-                    For information on space available for rent, please contact Sue.
-                </p>
-                <div class="space-y-2">
-                    <a href="tel:5197424477" class="block font-bold text-gray-800 hover:text-schiketanz-red transition-colors">(519) 742-4477</a>
-                    <a href="mailto:sue@schiketanz.ca" class="block text-schiketanz-red font-bold hover:underline">
-                        sue@schiketanz.ca &rarr;
-                    </a>
-                </div>
-            </div>
+    </PageHeader>
+    <div class="space-y-8">
+        <!-- mobile-only icon -->
+        <div class="bg-green-100 p-4 rounded-full w-fit mx-auto md:hidden">
+            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
         </div>
-    </article>
+        <p class="text-gray-600 text-xl max-w-md mx-auto leading-relaxed">
+            Thank you. Your information has been securely transmitted to our office. We will review your submission and contact you if necessary.
+        </p>
+        <div class="pt-4">
+            <a href="/" class="inline-block px-10 py-4 bg-schiketanz-red text-white font-century font-bold rounded shadow-lg hover:bg-red-700 transition-all hover:-translate-y-1">
+                Return to Homepage
+            </a>
+        </div>
+    </div>
   </PageContainer>
 </Layout>
 </file>
@@ -806,6 +745,77 @@ const { title, subtitle, breadcrumb } = Astro.props;
     <slot name="after-title" />
   </div>
 </div>
+</file>
+
+<file path="src/pages/commercial.astro">
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+import PropertyGallery from '../components/PropertyGallery.astro';
+import type { ImageMetadata } from 'astro';
+
+// dynamically import all images from commercial folder
+const imageFiles = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/commercial/forest-hill/*.{jpeg,jpg,png,gif,webp,avif}', 
+  { eager: true }
+);
+// convert imported object into a clean array of images
+const images = Object.values(imageFiles).map((file) => file.default);
+---
+
+<Layout title="Commercial Leasing | Schiketanz Real Estate">
+  <PageContainer>
+    <PageHeader 
+      title="Commercial Properties" 
+      subtitle="Retail and office space management in the Kitchener-Waterloo region."
+      breadcrumb={[{ text: 'Commercial', href: '/commercial' }]}
+    />
+    <article class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <!-- Image Gallery Container -->
+        <div class="w-full flex flex-col h-fit">
+            {images.length > 0 ? (
+                <PropertyGallery images={images} title="Forest Hill Shopping Centre" />
+            ) : (
+                <div class="bg-gray-200 aspect-video w-full rounded-sm flex items-center justify-center text-gray-500 border border-gray-300">
+                    <span class="font-century">Forest Hill Shopping Centre Photos</span>
+                </div>
+            )}
+        </div>
+        <!-- Content -->
+        <div class="flex flex-col justify-center">
+            <h2 class="font-century font-bold text-3xl text-gray-800 mb-2">Forest Hill Shopping Centre</h2>
+            <p class="text-gray-500 text-lg mb-6">395-421 Greenbrook Drive, Kitchener, Ontario</p>
+
+            <div class="prose text-gray-700 mb-8">
+                <p>
+                    Forest Hill Shopping Centre is centrally located in the Forest Hill Area of Kitchener, Ontario. This shopping centre meets everyone's needs.
+                </p>
+                <p>
+                    It includes a Giant Tiger, pharmacy, restaurant, bakery, doctors and dentists offices and so much more!
+                </p>
+                <ul class="list-disc pl-5 space-y-2 mt-4">
+                    <li>High traffic visibility</li>
+                    <li>Ample parking for customers</li>
+                    <li>Professional property management on-site</li>
+                </ul>
+            </div>
+            <div class="bg-gray-50 p-6 border-l-4 border-schiketanz-red max-w-md w-fit pr-10">
+                <h3 class="font-bold text-gray-800 mb-2">Leasing Inquiries</h3>
+                <p class="text-gray-600 mb-4">
+                    For information on space available for rent, please contact Sue.
+                </p>
+                <div class="space-y-2">
+                    <a href="tel:5197424477" class="block font-bold text-gray-800 hover:text-schiketanz-red transition-colors">(519) 742-4477</a>
+                    <a href="mailto:sue@schiketanz.ca" class="block text-schiketanz-red font-bold hover:underline">
+                        sue@schiketanz.ca &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </article>
+  </PageContainer>
+</Layout>
 </file>
 
 <file path="src/pages/contact.astro">
@@ -996,9 +1006,9 @@ const latestNews = await Promise.all(
         <!-- Text Overlay Container -->
         <div class="absolute inset-0 container mx-auto px-4 flex flex-col justify-center pointer-events-none">
             <div class="w-full lg:w-[80%] xl:w-[70%] @container">
-                <!-- Reduced to 9.5cqi and min-size of 1.5rem to ensure it fits mobile padding -->
+                <!-- 9.5cqi and min-size of 1.5rem to ensure it fits mobile padding -->
                 <div class="flex flex-col drop-shadow-lg text-[clamp(1.5rem,9.5cqi,5.5rem)]">
-                    <!-- Adjusted to 0.42em (42% of master) to perfectly align with the bottom text -->
+                    <!-- 0.42em (42% of master) to perfectly align with the bottom text -->
                     <h2 class="font-century font-medium text-white drop-shadow-md leading-tight text-[0.42em] whitespace-nowrap mb-[0.2em]">
                         Your Property Management Company Since 1953
                     </h2>
@@ -1089,7 +1099,6 @@ import PageContainer from '../components/PageContainer.astro';
       title="Rental Application" 
       breadcrumb={[{ text: 'Application', href: '/application' }]}
     />
-
     <div class="prose max-w-none text-gray-700 mb-8">
         <p class="text-lg">
             Thank you for your interest in our properties.
@@ -1097,9 +1106,8 @@ import PageContainer from '../components/PageContainer.astro';
             or bring it to our office during business hours.
         </p>
     </div>
-    
     <!-- Checklist -->
-    <div class="bg-blue-50 border border-blue-200 p-6 rounded-sm mb-6">
+    <div class="bg-blue-50 border border-blue-200 p-6 rounded-sm mb-6 w-fit pr-10">
         <h3 class="font-century font-bold text-xl text-blue-900 mb-4">Required Documents</h3>
         <ul class="space-y-3">
             <li class="flex items-start">
@@ -1120,7 +1128,6 @@ import PageContainer from '../components/PageContainer.astro';
             </li>
         </ul>
     </div>
-
     <!-- Download Section -->
     <div class="text-left pt-8 border-t border-gray-200">
         <a href="/forms/application.doc" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
@@ -1181,7 +1188,7 @@ const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
         ]}
     >
         {!isVacant && (
-            <div slot="after-title" class="px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-sm shadow-sm text-white bg-gray-600 h-fit md:mb-1">
+            <div slot="after-title" class="px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-sm shadow-sm text-white bg-gray-600 h-fit md:mb-1 w-fit">
                 No Vacancy
             </div>
         )}
@@ -1710,7 +1717,7 @@ import PageContainer from '../components/PageContainer.astro';
             Please read the instructions carefully, fill out the form completely, and attach a void cheque or a direct deposit form from your bank. 
             You can return the completed form to your superintendent or drop it off at our office mail slot.
         </p>
-        <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mt-6">
+        <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mt-6 w-fit">
             <p class="font-bold text-blue-900 m-0">
                 Please note: We need to receive the form at least 15 days prior to the first of the month that you want the payments to commence.
             </p>

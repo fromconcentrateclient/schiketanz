@@ -14,7 +14,7 @@ export default config({
         title: fields.slug({ 
           name: { 
             label: 'Property Name',
-            validation: { length: { min: 1 } } // Enforces a title
+            validation: { length: { min: 1 } }
           } 
         }),
         vacancyStatus: fields.conditional(
@@ -69,8 +69,6 @@ export default config({
         }),
         coverImage: fields.image({
           label: 'Building Photo',
-          directory: 'src/content/rentals/*/', 
-          publicPath: './',
         }),
         iGuideUrl: fields.url({ label: 'iGuide Tour URL' }),
         superintendent: fields.object({
@@ -99,8 +97,6 @@ export default config({
         gallery: fields.array(
           fields.image({
             label: 'Gallery Image',
-            directory: 'src/content/rentals/*/gallery/', 
-            publicPath: './gallery/',
           }),
           { label: 'Property Photo Gallery' }
         ),
