@@ -69,8 +69,6 @@ export default config({
             validation: { length: { min: 1 } } 
           }),
         }),
-        // No directory/publicPath — Keystatic resolves images relative to each
-        // entry's own subfolder automatically via the path: 'src/content/rentals/*/' pattern
         coverImage: fields.image({
           label: 'Building Photo',
         }),
@@ -85,7 +83,6 @@ export default config({
           totalUnits: fields.text({ label: 'Number of Units' }),
           elevators: fields.text({ label: 'Elevators' }),
           laundry: fields.text({ label: 'Laundry', description: 'e.g. "On Each Floor", "On Site"' }),
-          sqft: fields.text({ label: 'Unit Sq. Footage' }),
           utilities: fields.text({ label: 'Utilities Note', description: 'e.g. "Hydro and Parking are Extra"' }),
           pets: fields.select({
             label: 'Pet Policy',
@@ -103,6 +100,28 @@ export default config({
             ],
             defaultValue: 'No Smoking'
           }),
+          // Replaced free-text sqft with a structured array of room measurements
+          rooms: fields.array(
+            fields.object({
+              name: fields.text({
+                label: 'Room Name',
+                description: 'e.g. "Living Room", "Primary Bedroom", "4pc Bath"',
+                validation: { length: { min: 1 } },
+              }),
+              dimensions: fields.text({
+                label: 'Dimensions',
+                description: 'e.g. 23\'11" x 11\'5"',
+              }),
+              sqft: fields.text({
+                label: 'Square Footage',
+                description: 'e.g. 274 sq ft',
+              }),
+            }),
+            {
+              label: 'Room Measurements',
+              itemLabel: (p) => p.fields.name.value || 'New Room',
+            }
+          ),
         }),
         gallery: fields.array(
           fields.image({
