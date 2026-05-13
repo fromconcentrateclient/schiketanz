@@ -44,7 +44,6 @@ export default config({
               { 
                 label: 'Available Units', 
                 itemLabel: (p) => p.fields.unitType.value || 'New Unit',
-                // Enforces AT LEAST one unit entry when "Vacancies Available" is selected
                 validation: { length: { min: 1 } }
               }
             )
@@ -70,12 +69,10 @@ export default config({
             validation: { length: { min: 1 } } 
           }),
         }),
+        // No directory/publicPath — Keystatic resolves images relative to each
+        // entry's own subfolder automatically via the path: 'src/content/rentals/*/' pattern
         coverImage: fields.image({
           label: 'Building Photo',
-          // Saves into the property's own subfolder, e.g. src/content/rentals/bluebird-apartments/
-          // This keeps images co-located with their content file, matching Astro's image() schema
-          directory: 'src/content/rentals',
-          publicPath: '../../content/rentals/',
         }),
         iGuideUrl: fields.url({ label: 'iGuide Tour URL' }),
         superintendent: fields.object({
@@ -110,9 +107,6 @@ export default config({
         gallery: fields.array(
           fields.image({
             label: 'Gallery Image',
-            // Co-located with the content file, inside a /gallery/ subfolder
-            directory: 'src/content/rentals',
-            publicPath: '../../content/rentals/',
           }),
           { label: 'Property Photo Gallery' }
         ),
