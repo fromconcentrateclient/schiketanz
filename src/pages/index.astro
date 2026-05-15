@@ -9,8 +9,7 @@ import PageContainer from '../components/PageContainer.astro';
 const newsEntries = await getCollection('news');
 const sortedNews = newsEntries
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-    .slice(0, 3); // limit to top 3 notices
-
+    .slice(0, 3); // limit to top 3
 // safely render MDX content
 const latestNews = await Promise.all(
     sortedNews.map(async (news) => {
@@ -20,8 +19,12 @@ const latestNews = await Promise.all(
 );
 ---
 
-<Layout title="Home | Schiketanz Real Estate" logoAs="h1">
-    <!-- Hero Section -->
+<Layout 
+    title="Property Management & Apartment Rentals in Kitchener-Waterloo | Schiketanz Real Estate" 
+    description="M. Schiketanz Real Estate Inc. provides quality residential apartment rentals and commercial property management in the Kitchener-Waterloo region. Family owned since 1953."
+    logoAs="h1"
+>
+    <!-- hero section -->
 	<section class="relative w-full h-[60svh] min-h-[300px] bg-gray-100 overflow-hidden">
 		<Image 
             src={heroImage} 
@@ -30,14 +33,14 @@ const latestNews = await Promise.all(
             quality="high"
             loading="eager" 
         />
-        <!-- Darker overlay for better text contrast -->
+        <!-- darker overlay for text contrast -->
         <div class="absolute inset-0 bg-black/40"></div>
-        <!-- Text Overlay Container -->
+        <!-- text overlay container -->
         <div class="absolute inset-0 container mx-auto px-4 flex flex-col justify-center pointer-events-none">
             <div class="w-full lg:w-[80%] xl:w-[70%] @container">
-                <!-- 9.5cqi and min-size of 1.5rem to ensure it fits mobile padding -->
+                <!-- 9.5cqi & min-size of 1.5rem so it fits mobile padding -->
                 <div class="flex flex-col drop-shadow-lg text-[clamp(1.5rem,9.5cqi,5.5rem)]">
-                    <!-- 0.42em (42% of master) to perfectly align with the bottom text -->
+                    <!-- 0.42em (42% of master) to align with bottom text -->
                     <h2 class="font-century font-medium text-white drop-shadow-md leading-tight text-[0.42em] whitespace-nowrap mb-[0.2em]">
                         Your Property Management Company Since 1953
                     </h2>
@@ -48,10 +51,10 @@ const latestNews = await Promise.all(
             </div>
         </div>
 	</section>
-    <!-- Content Section: Wrapped in PageContainer for consistent alignment -->
+    <!-- Content Section (wrapped in PageContainer for consistent alignment) -->
     <PageContainer>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-            <!-- LEFT COLUMN: Welcome Text -->
+            <!-- Left Column -->
             <div class="lg:col-span-2">
                 <h3 class="text-2xl font-bold text-schiketanz-red mb-6 border-b-2 border-gray-200 pb-2 inline-block">
                     Welcome
@@ -67,19 +70,18 @@ const latestNews = await Promise.all(
                         Please browse our available rentals or contact our office for more information regarding upcoming vacancies.
                     </p>
                 </div>
-                
                 <div class="mt-8">
                     <a href="/rentals" class="inline-block bg-schiketanz-red text-white px-6 py-3 font-century font-bold hover:bg-schiketanz-red-dark transition-colors rounded-sm shadow-sm">
                         View Available Rentals &rarr;
                     </a>
                 </div>
             </div>
-            <!-- RIGHT COLUMN: News & Notices -->
+            <!-- Right Column -->
             <div class="lg:col-span-1 w-full">
-                <!-- "Notice Board" Container -->
+                <!-- notice board container -->
                 <div class="bg-gray-50 border border-gray-200 p-6 rounded-sm shadow-sm">
                     <h3 class="text-xl font-bold text-gray-800 mb-5 flex items-center border-b border-gray-200 pb-3">
-                        <!-- Icon -->
+                        <!-- icon -->
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-schiketanz-red" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clip-rule="evenodd" />
                         </svg>

@@ -33,9 +33,34 @@ const availableUnits = status.discriminant === 'vacant' ? status.value : [];
 // check if a spec exists and has content
 const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
 const rooms = rental.data.specs?.rooms ?? [];
+// dynamic SEO description
+const seoDescription = `${rental.data.title} - ${isVacant ? 'Currently renting ' + availableUnits.map((u: any) => u.unitType).join(', ') : 'No vacancy'}. Located at ${fullFormattedAddress}. Clean, well-maintained apartments in Kitchener-Waterloo.`;
+// build apartment complex schema
+const propertySchema = {
+  "@context": "https://schema.org",
+  "@type": "ApartmentComplex",
+  "name": rental.data.title,
+  "description": seoDescription,
+  "url": new URL(Astro.url.pathname, Astro.site).href,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": rental.data.address.street,
+    "addressLocality": rental.data.address.city,
+    "addressRegion": rental.data.address.province,
+    "postalCode": rental.data.address.postalCode,
+    "addressCountry": "CA"
+  },
+  "petsAllowed": rental.data.specs?.pets === "Pet Friendly" ? "True" : "False",
+  "image": allImages.length > 0 ? new URL(allImages[0].src, Astro.site).href : undefined
+};
 ---
 
-<Layout title={`${rental.data.title} | Schiketanz Rentals`}>
+<Layout 
+    title={`${rental.data.title} Apartments Kitchener-Waterloo | Schiketanz Rentals`}
+    description={seoDescription}
+    image={rental.data.coverImage?.src}
+    propertySchema={propertySchema} 
+>
   <PageContainer>
     <PageHeader 
         title={rental.data.title} 

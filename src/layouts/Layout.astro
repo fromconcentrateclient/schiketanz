@@ -14,7 +14,10 @@ interface Props {
     type?: 'website' | 'article';
     // allow pages to control semantic tag of logo (default: div)
     logoAs?: 'h1' | 'div';
+    // allow pages to inject specific schema (like ApartmentComplex)
+    propertySchema?: object; 
 }
+
 // default SEO values extracted from original site
 const defaultDesc = "Apartment Rentals in Kitchener Waterloo Ontario. M. Schiketanz Real Estate Inc. providing quality service to tenants since 1953.";
 const siteName = "M. Schiketanz Real Estate Inc.";
@@ -24,7 +27,8 @@ const {
     image = '/images/og-default.jpg',
     canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
     type = 'website',
-    logoAs = 'div' // default to 'div' so only homepage overrides to 'h1'
+    logoAs = 'div', // default to 'div' so only homepage overrides to 'h1'
+    propertySchema // extract the new prop
 } = Astro.props;
 // schema extracted from CURL data
 const businessSchema = {
@@ -72,6 +76,11 @@ const businessSchema = {
         <meta property="twitter:image" content={new URL(image, Astro.site)} />
         <!-- schema.org JSON-LD -->
         <script type="application/ld+json" set:html={JSON.stringify(businessSchema)} />
+        <!-- dynamically inject property schema if provided by the page -->
+        {propertySchema && (
+            <script type="application/ld+json" set:html={JSON.stringify(propertySchema)} />
+        )}
+        
 		<ClientRouter />
 	</head>
 	
