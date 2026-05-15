@@ -1,5 +1,7 @@
 <directory_structure>
+astro.config.mjs
 keystatic.config.ts
+public/robots.txt
 src/components/Footer.astro
 src/components/Logo.astro
 src/components/Navbar.astro
@@ -43,6 +45,35 @@ src/styles/global.css
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="astro.config.mjs">
+// @ts-check
+import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
+import keystatic from '@keystatic/astro';
+import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
+import netlify from '@astrojs/netlify';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  site: 'https://schiketanz.fromconcentrate.ca',
+  output: 'static',
+  adapter: netlify(),
+  integrations: [
+    react(),
+    mdx(),
+    keystatic(),
+    sitemap(),
+  ],
+  vite: {
+    plugins: [tailwindcss()],
+    optimizeDeps: {
+      exclude: ['@keystatic/astro', '@keystatic/core']
+    }
+  },
+});
+</file>
 
 <file path="src/components/Footer.astro">
 ---
@@ -105,6 +136,219 @@ const { narrow = false, class: className = "" } = Astro.props;
     narrow ? "max-w-3xl" : "w-full" 
   ]}>
     <slot />
+  </div>
+</div>
+</file>
+
+<file path="src/pages/404.astro">
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page Not Found | Schiketanz Real Estate">
+  <div class="container mx-auto px-4 h-[60vh] flex flex-col items-center justify-center text-center">
+    <h1 class="font-century font-bold text-6xl text-schiketanz-red mb-4">404</h1>
+    <p class="text-2xl text-gray-800 font-bold mb-4">Page Not Found</p>
+    <p class="text-gray-600 mb-8 max-w-md">The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+    <div class="flex gap-4">
+        <a href="/" class="px-6 py-3 bg-schiketanz-red text-white font-bold rounded hover:bg-red-700 transition-colors">Go Home</a>
+        <a href="/rentals" class="px-6 py-3 border border-gray-300 text-gray-700 font-bold rounded hover:bg-gray-50 transition-colors">View Rentals</a>
+    </div>
+  </div>
+</Layout>
+</file>
+
+<file path="src/pages/privacy.astro">
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+---
+
+<Layout title="Privacy Policy | Schiketanz Real Estate">
+  <PageContainer narrow>
+    <PageHeader 
+      title="Privacy Policy" 
+      breadcrumb={[{ text: 'Privacy Policy', href: '/privacy' }]}
+    />
+
+    <div class="prose max-w-none text-gray-700">
+      <p class="italic text-sm text-gray-500 mb-6">Last Updated: {new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+
+      <h3>1. General Policy</h3>
+      <p>
+        At M. Schiketanz Real Estate Inc., we are committed to maintaining the accuracy, confidentiality, and security of your personally identifiable information ("Personal Information"). As part of this commitment, our privacy policy governs our actions as they relate to the collection, use, and disclosure of Personal Information.
+      </p>
+
+      <h3>2. Collection of Personal Information</h3>
+      <p>
+        We collect personal information (such as names, contact details, and financial information) primarily for the purpose of evaluating rental applications, managing tenancy agreements, and processing payments. We collect only the amount of information that is necessary for the purposes identified.
+      </p>
+
+      <h3>3. Use and Disclosure</h3>
+      <p>
+        Your personal information is used only for the purposes for which it was collected or as required by law. We do not sell, trade, or rent your personal information to third parties.
+      </p>
+      
+      <h3>4. Contact Us</h3>
+      <p>
+        If you have any questions regarding this Privacy Policy or the personal information we hold about you, please contact our office at:
+      </p>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:office@schiketanz.ca" class="text-schiketanz-red hover:underline">office@schiketanz.ca</a></li>
+        <li><strong>Phone:</strong> (519) 742-4477</li>
+      </ul>
+    </div>
+  </PageContainer>
+</Layout>
+</file>
+
+<file path="src/pages/success.astro">
+---
+export const prerender = true;
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+---
+
+<Layout title="Thank You | Schiketanz Real Estate">
+  <PageContainer narrow class="min-h-[60vh] flex flex-col justify-center text-center">
+    <PageHeader title="Submission Received">
+        <!-- using slot to place icon next to title -->
+        <div slot="after-title" class="bg-green-100 p-2 rounded-full hidden md:block">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+    </PageHeader>
+    <div class="space-y-8">
+        <!-- mobile-only icon -->
+        <div class="bg-green-100 p-4 rounded-full w-fit mx-auto md:hidden">
+            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+        <p class="text-gray-600 text-xl max-w-md mx-auto leading-relaxed">
+            Thank you. Your information has been securely transmitted to our office. We will review your submission and contact you if necessary.
+        </p>
+        <div class="pt-4">
+            <a href="/" class="inline-block px-10 py-4 bg-schiketanz-red text-white font-century font-bold rounded shadow-lg hover:bg-red-700 transition-all hover:-translate-y-1">
+                Return to Homepage
+            </a>
+        </div>
+    </div>
+  </PageContainer>
+</Layout>
+</file>
+
+<file path="src/styles/global.css">
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Century Gothic";
+  src: url("/fonts/CenturyGothic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Century Gothic Bold";
+  src: url("/fonts/CenturyGothicBold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@layer utilities {
+  .antialiased-crisp {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+@theme {
+  --color-schiketanz-red: rgba(236, 28, 28, 1);
+  --color-schiketanz-red-dark: rgba(200, 24, 24, 1);
+  --font-century: "Century Gothic", sans-serif;
+  --font-centurybold: "Century Gothic Bold", sans-serif;
+  --font-sans: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+}
+body {
+    /* ensure scrollbar doesn't shift layout on some windows */
+    overflow-y: scroll; 
+}
+</file>
+
+<file path="public/robots.txt">
+User-agent: *
+Allow: /
+
+Sitemap: https://schiketanz.ca/sitemap-index.xml
+</file>
+
+<file path="src/components/PageHeader.astro">
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  breadcrumb?: { text: string; href: string }[];
+}
+
+const { title, subtitle, breadcrumb } = Astro.props;
+
+// Construct the Schema.org JSON-LD for Breadcrumbs
+// Position 1 is always Home, subsequent items follow the breadcrumb array
+const breadcrumbSchema = breadcrumb ? {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": Astro.site?.href
+    },
+    ...breadcrumb.map((crumb, index) => ({
+      "@type": "ListItem",
+      "position": index + 2,
+      "name": crumb.text,
+      "item": new URL(crumb.href, Astro.site).href
+    }))
+  ]
+} : null;
+---
+
+<!-- Breadcrumb Schema -->
+{breadcrumbSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+)}
+
+<div class="mb-8 border-b border-gray-200 pb-4">
+  {breadcrumb && (
+    <nav class="flex items-center text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-schiketanz-red transition-colors">Home</a>
+      {breadcrumb.map((crumb) => (
+        <>
+          <span class="mx-2 text-gray-300">/</span>
+          <a href={crumb.href} class="hover:text-schiketanz-red transition-colors">
+            {crumb.text}
+          </a>
+        </>
+      ))}
+    </nav>
+  )}
+
+  <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+    <div>
+      <h1 class="font-century font-bold text-[clamp(2rem,5vw,2.5rem)] text-balance text-schiketanz-red leading-tight">
+        {title}
+      </h1>
+      {subtitle && (
+        <p class="text-gray-600 text-lg mt-2 text-pretty font-sans">
+          {subtitle}
+        </p>
+      )}
+    </div>
+    <slot name="after-title" />
   </div>
 </div>
 </file>
@@ -256,233 +500,6 @@ const { images, title } = Astro.props;
     updateDots(0);
   }); 
 </script>
-</file>
-
-<file path="src/pages/404.astro">
----
-import Layout from '../layouts/Layout.astro';
----
-
-<Layout title="Page Not Found | Schiketanz Real Estate">
-  <div class="container mx-auto px-4 h-[60vh] flex flex-col items-center justify-center text-center">
-    <h1 class="font-century font-bold text-6xl text-schiketanz-red mb-4">404</h1>
-    <p class="text-2xl text-gray-800 font-bold mb-4">Page Not Found</p>
-    <p class="text-gray-600 mb-8 max-w-md">The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
-    <div class="flex gap-4">
-        <a href="/" class="px-6 py-3 bg-schiketanz-red text-white font-bold rounded hover:bg-red-700 transition-colors">Go Home</a>
-        <a href="/rentals" class="px-6 py-3 border border-gray-300 text-gray-700 font-bold rounded hover:bg-gray-50 transition-colors">View Rentals</a>
-    </div>
-  </div>
-</Layout>
-</file>
-
-<file path="src/pages/about.astro">
----
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
-import { Image } from 'astro:assets';
-import aboutImage from '../assets/about.avif'; 
----
-
-<Layout 
-    title="About Us | Property Management Kitchener-Waterloo | Schiketanz"
-    description="Learn about M. Schiketanz Real Estate Inc. We have been managing residential and commercial properties in the Kitchener-Waterloo region since 1953."
->
-  <PageContainer>
-    <PageHeader 
-      title="About Schiketanz" 
-      subtitle="We are the small company doing big things!"
-      breadcrumb={[{ text: 'About', href: '/about' }]}
-    />
-    <!-- Text Information Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-lg text-gray-700 leading-relaxed font-sans">
-      <div>
-        <p class="mb-6">
-          Schiketanz Real Estate manages many residential and commercial properties located in KW Region.
-          Our buildings are well maintained and cared for by a truly dedicated team of individuals - many of which are long, long term employees.
-        </p>
-        <p>
-          We have built this business on superior service using fair and honest practices.
-          We will treat you with respect and do everything we can to make your tenancy comfortable.
-          Our personalized service will "help you make your apartment into a home."
-        </p>
-      </div>
-      
-      <div class="bg-gray-50 p-8 border-l-4 border-schiketanz-red rounded-sm h-fit">
-        <h3 class="font-century font-bold text-xl text-schiketanz-red mb-4">
-          Our History
-        </h3>
-        <p>
-          M. Schiketanz Real Estate was founded by Margaret Schiketanz in 1953.
-          Our office operated from the same premises at 189 King Street East in Kitchener for 68 years and have since moved to our current office on Frederick Street.
-        </p>
-      </div>
-    </div>
-    <!-- Image Section -->
-    <div class="mt-12 md:mt-16">
-        <Image 
-            src={aboutImage} 
-            alt="M. Schiketanz Real Estate office building" 
-            class="w-full h-auto rounded-sm shadow-md"
-            quality="high"
-        />
-    </div>
-  </PageContainer>
-</Layout>
-</file>
-
-<file path="src/pages/privacy.astro">
----
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
----
-
-<Layout title="Privacy Policy | Schiketanz Real Estate">
-  <PageContainer narrow>
-    <PageHeader 
-      title="Privacy Policy" 
-      breadcrumb={[{ text: 'Privacy Policy', href: '/privacy' }]}
-    />
-
-    <div class="prose max-w-none text-gray-700">
-      <p class="italic text-sm text-gray-500 mb-6">Last Updated: {new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-
-      <h3>1. General Policy</h3>
-      <p>
-        At M. Schiketanz Real Estate Inc., we are committed to maintaining the accuracy, confidentiality, and security of your personally identifiable information ("Personal Information"). As part of this commitment, our privacy policy governs our actions as they relate to the collection, use, and disclosure of Personal Information.
-      </p>
-
-      <h3>2. Collection of Personal Information</h3>
-      <p>
-        We collect personal information (such as names, contact details, and financial information) primarily for the purpose of evaluating rental applications, managing tenancy agreements, and processing payments. We collect only the amount of information that is necessary for the purposes identified.
-      </p>
-
-      <h3>3. Use and Disclosure</h3>
-      <p>
-        Your personal information is used only for the purposes for which it was collected or as required by law. We do not sell, trade, or rent your personal information to third parties.
-      </p>
-      
-      <h3>4. Contact Us</h3>
-      <p>
-        If you have any questions regarding this Privacy Policy or the personal information we hold about you, please contact our office at:
-      </p>
-      <ul>
-        <li><strong>Email:</strong> <a href="mailto:office@schiketanz.ca" class="text-schiketanz-red hover:underline">office@schiketanz.ca</a></li>
-        <li><strong>Phone:</strong> (519) 742-4477</li>
-      </ul>
-    </div>
-  </PageContainer>
-</Layout>
-</file>
-
-<file path="src/pages/success.astro">
----
-export const prerender = true;
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
----
-
-<Layout title="Thank You | Schiketanz Real Estate">
-  <PageContainer narrow class="min-h-[60vh] flex flex-col justify-center text-center">
-    <PageHeader title="Submission Received">
-        <!-- using slot to place icon next to title -->
-        <div slot="after-title" class="bg-green-100 p-2 rounded-full hidden md:block">
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-            </svg>
-        </div>
-    </PageHeader>
-    <div class="space-y-8">
-        <!-- mobile-only icon -->
-        <div class="bg-green-100 p-4 rounded-full w-fit mx-auto md:hidden">
-            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-        </div>
-        <p class="text-gray-600 text-xl max-w-md mx-auto leading-relaxed">
-            Thank you. Your information has been securely transmitted to our office. We will review your submission and contact you if necessary.
-        </p>
-        <div class="pt-4">
-            <a href="/" class="inline-block px-10 py-4 bg-schiketanz-red text-white font-century font-bold rounded shadow-lg hover:bg-red-700 transition-all hover:-translate-y-1">
-                Return to Homepage
-            </a>
-        </div>
-    </div>
-  </PageContainer>
-</Layout>
-</file>
-
-<file path="src/styles/global.css">
-@import "tailwindcss";
-
-@font-face {
-  font-family: "Century Gothic";
-  src: url("/fonts/CenturyGothic.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-@font-face {
-  font-family: "Century Gothic Bold";
-  src: url("/fonts/CenturyGothicBold.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-@layer utilities {
-  .antialiased-crisp {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-  }
-}
-@theme {
-  --color-schiketanz-red: rgba(236, 28, 28, 1);
-  --color-schiketanz-red-dark: rgba(200, 24, 24, 1);
-  --font-century: "Century Gothic", sans-serif;
-  --font-centurybold: "Century Gothic Bold", sans-serif;
-  --font-sans: "Open Sans", ui-sans-serif, system-ui, sans-serif;
-}
-body {
-    /* ensure scrollbar doesn't shift layout on some windows */
-    overflow-y: scroll; 
-}
-</file>
-
-<file path="src/components/PageHeader.astro">
----
-interface Props {
-  title: string;
-  subtitle?: string;
-  breadcrumb?: { text: string; href: string }[];
-}
-const { title, subtitle, breadcrumb } = Astro.props;
----
-
-<div class="mb-8 border-b border-gray-200 pb-4">
-  {breadcrumb && (
-    <nav class="flex items-center text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
-      <a href="/" class="hover:text-schiketanz-red">Home</a>
-      {breadcrumb.map((crumb) => (
-        <>
-          <span class="mx-2">/</span>
-          <a href={crumb.href} class="hover:text-schiketanz-red">{crumb.text}</a>
-        </>
-      ))}
-    </nav>
-  )}
-
-  <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
-    <div>
-      <h1 class="font-century font-bold text-[clamp(2rem,5vw,2.5rem)] text-balance text-schiketanz-red">{title}</h1>
-      {subtitle && <p class="text-gray-600 text-lg mt-2 text-pretty">{subtitle}</p>}
-    </div>
-    <slot name="after-title" />
-  </div>
-</div>
 </file>
 
 <file path="src/content/rentals/chicopee-terrace/index.mdx">
@@ -855,6 +872,62 @@ gallery: []
 4 quiet buildings in Kitchener. Clean spacious units. Balconies. Close to highway and walking distance to Fairview Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access, walking distance to ION Train as well.
 </file>
 
+<file path="src/pages/about.astro">
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+import { Image } from 'astro:assets';
+import aboutImage from '../assets/about.avif'; 
+---
+
+<Layout 
+    title="About Us | Property Management Kitchener-Waterloo | Schiketanz"
+    description="Learn about M. Schiketanz Real Estate Inc. We have been managing residential and commercial properties in the Kitchener-Waterloo region since 1953."
+>
+  <PageContainer>
+    <PageHeader 
+      title="About Schiketanz" 
+      subtitle="We are the small company doing big things!"
+      breadcrumb={[{ text: 'About', href: '/about' }]}
+    />
+    <!-- Text Information Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-lg text-gray-700 leading-relaxed font-sans">
+      <div>
+        <p class="mb-6">
+          Schiketanz Real Estate manages many residential and commercial properties located in KW Region.
+          Our buildings are well maintained and cared for by a truly dedicated team of individuals - many of which are long, long term employees.
+        </p>
+        <p>
+          We have built this business on superior service using fair and honest practices.
+          We will treat you with respect and do everything we can to make your tenancy comfortable.
+          Our personalized service will "help you make your apartment into a home."
+        </p>
+      </div>
+      
+      <div class="bg-gray-50 p-8 border-l-4 border-schiketanz-red rounded-sm h-fit">
+        <h3 class="font-century font-bold text-xl text-schiketanz-red mb-4">
+          Our History
+        </h3>
+        <p>
+          M. Schiketanz Real Estate was founded by Margaret Schiketanz in 1953.
+          Our office operated from the same premises at 189 King Street East in Kitchener for 68 years and have since moved to our current office on Frederick Street.
+        </p>
+      </div>
+    </div>
+    <!-- Image Section -->
+    <div class="mt-12 md:mt-16">
+        <Image 
+            src={aboutImage} 
+            alt="M. Schiketanz Real Estate office building" 
+            class="w-full h-auto rounded-sm shadow-md"
+            quality="high"
+        />
+    </div>
+  </PageContainer>
+</Layout>
+</file>
+
 <file path="src/pages/contact.astro">
 ---
 export const prerender = true;
@@ -863,7 +936,10 @@ import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
 ---
 
-<Layout title="Contact & Hours | Schiketanz Real Estate">
+<Layout 
+  title="Contact & Hours | Schiketanz Real Estate"
+  description="Contact M. Schiketanz Real Estate in Kitchener for office hours, phone numbers, and location details. We are open Monday to Friday."
+>
   <PageContainer>
     <PageHeader 
       title="Contact & Hours" 
@@ -939,84 +1015,6 @@ import PageContainer from '../components/PageContainer.astro';
         </div>
       </div>
     </div>
-  </PageContainer>
-</Layout>
-</file>
-
-<file path="src/pages/rentals.astro">
----
-import Layout from '../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
-
-// sort: vacant (1) first, then occupied (2), then alphabetical
-const allRentals = await getCollection('rentals');
-const rentals = allRentals.sort((a, b) => {
-  const statusA = a.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
-  const statusB = b.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
-  // if status is same, sort alphabetically by title
-  return statusA !== statusB ? statusA - statusB : a.data.title.localeCompare(b.data.title);
-});
----
-
-<Layout 
-    title="Apartment & Commercial Rentals Kitchener-Waterloo | Schiketanz Real Estate"
-    description="Browse available residential apartments and commercial spaces for rent in Kitchener and Waterloo. Contact M. Schiketanz Real Estate for current availability."
->
-  <PageContainer>
-    <PageHeader 
-      title="Rental Properties" 
-      subtitle="Browse our residential and commercial listings. Contact our office for current availability."
-      breadcrumb={[{ text: 'Rentals', href: '/rentals' }]}
-    />
-    <!-- standardized grid gap -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-      {rentals.map(rental => (
-        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full @container">
-          <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
-            <span class="sr-only">View {rental.data.title}</span>
-          </a>
-          <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-sm">
-             {rental.data.coverImage ? (
-                <Image 
-                    src={rental.data.coverImage} 
-                    alt={rental.data.title} 
-                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                />
-             ) : (
-                <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50 text-[10px] font-bold uppercase tracking-widest">
-                    No Image
-                </div>
-             )}
-             <div class:list={[
-                 "absolute top-3 right-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white z-30 shadow-sm rounded-sm",
-                 {
-                    "bg-green-600": rental.data.vacancyStatus.discriminant === 'vacant',
-                    "bg-gray-700/90": rental.data.vacancyStatus.discriminant === 'occupied'
-                 }
-             ]}>
-                {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacant' : 'No Vacancy'}
-             </div>
-          </div>
-          <div class="p-5 border-t border-gray-50">
-            <h2 class="text-[clamp(1.125rem,6cqi,1.5rem)] font-bold text-gray-900 group-hover:text-schiketanz-red transition-colors duration-300 leading-tight mb-1 text-balance">
-              {rental.data.title}
-            </h2>
-            <div class="flex items-start text-gray-500">
-                <p class="text-xs font-medium">{rental.data.address.street}</p>
-            </div>
-          </div>
-        </article>
-      ))}
-    </div>
-    <!-- Empty State -->
-    {rentals.length === 0 && (
-        <div class="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
-            <p class="text-gray-400 font-medium">No rental properties found.</p>
-        </div>
-    )}
   </PageContainer>
 </Layout>
 </file>
@@ -1099,6 +1097,84 @@ Quiet building in Kitchener. Long term tenant profile. Clean spacious units. Bal
 Parking is underground only.
 </file>
 
+<file path="src/pages/rentals.astro">
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+
+// sort: vacant (1) first, then occupied (2), then alphabetical
+const allRentals = await getCollection('rentals');
+const rentals = allRentals.sort((a, b) => {
+  const statusA = a.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
+  const statusB = b.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
+  // if status is same, sort alphabetically by title
+  return statusA !== statusB ? statusA - statusB : a.data.title.localeCompare(b.data.title);
+});
+---
+
+<Layout 
+    title="Apartment & Commercial Rentals Kitchener-Waterloo | Schiketanz Real Estate"
+    description="Browse available residential apartments and commercial spaces for rent in Kitchener and Waterloo. Contact M. Schiketanz Real Estate for current availability."
+>
+  <PageContainer>
+    <PageHeader 
+      title="Rental Properties" 
+      subtitle="Browse our residential and commercial listings. Contact our office for current availability."
+      breadcrumb={[{ text: 'Rentals', href: '/rentals' }]}
+    />
+    <!-- standardized grid gap -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+      {rentals.map(rental => (
+        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full @container">
+          <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
+            <span class="sr-only">View {rental.data.title}</span>
+          </a>
+          <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-sm">
+             {rental.data.coverImage ? (
+                <Image 
+                    src={rental.data.coverImage} 
+                    alt={rental.data.title} 
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                />
+             ) : (
+                <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50 text-[10px] font-bold uppercase tracking-widest">
+                    No Image
+                </div>
+             )}
+             <div class:list={[
+                 "absolute top-3 right-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white z-30 shadow-sm rounded-sm",
+                 {
+                    "bg-green-600": rental.data.vacancyStatus.discriminant === 'vacant',
+                    "bg-gray-700/90": rental.data.vacancyStatus.discriminant === 'occupied'
+                 }
+             ]}>
+                {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacant' : 'No Vacancy'}
+             </div>
+          </div>
+          <div class="p-5 border-t border-gray-50">
+            <h2 class="text-[clamp(1.125rem,6cqi,1.5rem)] font-bold text-gray-900 group-hover:text-schiketanz-red transition-colors duration-300 leading-tight mb-1 text-balance">
+              {rental.data.title}
+            </h2>
+            <div class="flex items-start text-gray-500">
+                <p class="text-xs font-medium">{rental.data.address.street}</p>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+    <!-- Empty State -->
+    {rentals.length === 0 && (
+        <div class="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
+            <p class="text-gray-400 font-medium">No rental properties found.</p>
+        </div>
+    )}
+  </PageContainer>
+</Layout>
+</file>
+
 <file path="src/content/news/spring-summer-newsletter.mdx">
 ---
 title: Spring/Summer Newsletter
@@ -1140,6 +1216,48 @@ gallery: []
 Clean, quiet building. Mature tenant profile. Large units with updated balconies. Close to Westmount Mall and Waterloo Town Square. Close to all amenities, shops, bars and restaurants. 
 
 Excellent public transit access.
+</file>
+
+<file path="src/pages/pad-form.astro">
+---
+export const prerender = true;
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+---
+
+<Layout title="Pre-Authorized Debit Form | Schiketanz Real Estate">
+  <PageContainer>
+    <PageHeader 
+      title="Pre-Authorized Debit (PAD)" 
+      subtitle="Enroll in automatic rent payments directly from your bank account."
+      breadcrumb={[{ text: 'PAD Form', href: '/pad-form' }]}
+    />
+
+    <div class="prose max-w-none text-gray-700 mb-8">
+        <p class="text-lg">
+            If you wish to pay your rent by pre-authorized debit, please download the enrollment form below.
+        </p>
+        <p>
+            Please read the instructions carefully, fill out the form completely, and attach a void cheque or a direct deposit form from your bank. 
+            You can return the completed form to your superintendent or drop it off at our office mail slot.
+        </p>
+        <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mt-6 w-fit">
+            <p class="font-bold text-blue-900 m-0">
+                Please note: We need to receive the form at least 15 days prior to the first of the month that you want the payments to commence.
+            </p>
+        </div>
+    </div>
+
+    <!-- Download Section -->
+    <div class="text-left pt-8 border-t border-gray-200">
+        <a href="/forms/pad-form.pdf" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Download PAD Form
+        </a>
+    </div>
+  </PageContainer>
+</Layout>
 </file>
 
 <file path="src/pages/commercial.astro">
@@ -1332,184 +1450,6 @@ const latestNews = await Promise.all(
         </div>
     </PageContainer>
 </Layout>
-</file>
-
-<file path="src/pages/pad-form.astro">
----
-export const prerender = true;
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
----
-
-<Layout title="Pre-Authorized Debit Form | Schiketanz Real Estate">
-  <PageContainer>
-    <PageHeader 
-      title="Pre-Authorized Debit (PAD)" 
-      subtitle="Enroll in automatic rent payments directly from your bank account."
-      breadcrumb={[{ text: 'PAD Form', href: '/pad-form' }]}
-    />
-
-    <div class="prose max-w-none text-gray-700 mb-8">
-        <p class="text-lg">
-            If you wish to pay your rent by pre-authorized debit, please download the enrollment form below.
-        </p>
-        <p>
-            Please read the instructions carefully, fill out the form completely, and attach a void cheque or a direct deposit form from your bank. 
-            You can return the completed form to your superintendent or drop it off at our office mail slot.
-        </p>
-        <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mt-6 w-fit">
-            <p class="font-bold text-blue-900 m-0">
-                Please note: We need to receive the form at least 15 days prior to the first of the month that you want the payments to commence.
-            </p>
-        </div>
-    </div>
-
-    <!-- Download Section -->
-    <div class="text-left pt-8 border-t border-gray-200">
-        <a href="/forms/pad-form.pdf" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
-            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Download PAD Form
-        </a>
-    </div>
-  </PageContainer>
-</Layout>
-</file>
-
-<file path="src/layouts/Layout.astro">
----
-import { ClientRouter } from 'astro:transitions';
-import '@fontsource/open-sans/index.css';
-import '../styles/global.css';
-import Navbar from '../components/Navbar.astro';
-import Footer from '../components/Footer.astro';
-import Logo from '../components/Logo.astro';
-
-interface Props {
-	title: string;
-	description?: string;
-	image?: string;
-	canonicalURL?: string;
-    type?: 'website' | 'article';
-    // allow pages to control semantic tag of logo (default: div)
-    logoAs?: 'h1' | 'div';
-    // allow pages to inject specific schema (like ApartmentComplex)
-    propertySchema?: object; 
-}
-
-// default SEO values extracted from original site
-const defaultDesc = "Apartment Rentals in Kitchener Waterloo Ontario. M. Schiketanz Real Estate Inc. providing quality service to tenants since 1953.";
-const siteName = "M. Schiketanz Real Estate Inc.";
-const { 
-    title, 
-    description = defaultDesc, 
-    image = '/images/og-default.jpg',
-    canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
-    type = 'website',
-    logoAs = 'div', // default to 'div' so only homepage overrides to 'h1'
-    propertySchema // extract the new prop
-} = Astro.props;
-// schema extracted from CURL data
-const businessSchema = {
-  "@context": "https://schema.org/",
-  "@type": "LocalBusiness",
-  "name": "M. Schiketanz Real Estate Inc.",
-  "url": Astro.site,
-  "logo": new URL('/favicon.svg', Astro.site).href,
-  "address": {
-    "@type": "PostalAddress",
-    "addressCountry": "CA",
-    "addressLocality": "Kitchener",
-    "addressRegion": "ON",
-    "postalCode": "N2B 2A9",
-    "streetAddress": "582 Frederick Street"
-  },
-  "telephone": "519-742-4477",
-  "description": description
-};
----
-
-<!doctype html>
-<html lang="en" class="scroll-smooth">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-        <link rel="canonical" href={canonicalURL} />
-        <!-- primary meta tags -->
-		<title>{title}</title>
-		<meta name="description" content={description} />
-        <!-- open graph / facebook -->
-        <meta property="og:type" content={type} />
-        <meta property="og:url" content={canonicalURL} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:image" content={new URL(image, Astro.site)} />
-        <meta property="og:site_name" content={siteName} />
-        <!-- twitter -->
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content={canonicalURL} />
-        <meta property="twitter:title" content={title} />
-        <meta property="twitter:description" content={description} />
-        <meta property="twitter:image" content={new URL(image, Astro.site)} />
-        <!-- schema.org JSON-LD -->
-        <script type="application/ld+json" set:html={JSON.stringify(businessSchema)} />
-        <!-- dynamically inject property schema if provided by the page -->
-        {propertySchema && (
-            <script type="application/ld+json" set:html={JSON.stringify(propertySchema)} />
-        )}
-        
-		<ClientRouter />
-	</head>
-	
-	<body class="bg-white flex flex-col min-h-screen text-gray-800 font-sans antialiased-crisp">
-        <!-- accessibility: skip to content -->
-        <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] bg-white text-blue-800 p-4 border border-blue-800 rounded">Skip to main content</a>
-		<header class="bg-schiketanz-red shadow-md sticky top-0 z-50">
-			<div class="container mx-auto px-4 pt-6 pb-2">
-				<!-- logo/title -->
-				<div class="flex justify-between items-start mb-2">
-					<a href="/" class="block text-white hover:text-gray-100 transition-colors decoration-0 group" aria-label="Go to Homepage">
-                        <!-- dynamic logo tag (h1 home, div elsewhere) -->
-						<Logo as={logoAs} class="text-4xl md:text-5xl group-hover:opacity-95 transition-opacity" />
-					</a>
-					<!-- mobile menu button -->
-					<button 
-                        id="menu-btn" 
-                        class="lg:hidden text-white p-2 border border-white/30 rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white cursor-pointer"
-                        aria-label="Toggle Navigation Menu"
-                        aria-expanded="false"
-                        aria-controls="mobile-menu"
-                    >
-						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-						</svg>
-					</button>
-				</div>
-				<Navbar />
-			</div>
-		</header>
-		<main id="main-content" class="flex-grow w-full">
-			<slot />
-		</main>
-		<Footer />
-	</body>
-</html>
-
-<script>
-    // handles mobile menu toggle with ARIA updates for accessibility
-	document.addEventListener('astro:page-load', () => {
-		const btn = document.getElementById('menu-btn');
-		const menu = document.getElementById('mobile-menu');
-		if(btn && menu) {
-			btn.addEventListener('click', () => {
-				const isHidden = menu.classList.toggle('hidden');
-                btn.setAttribute('aria-expanded', (!isHidden).toString());
-			});
-		}
-	});
-</script>
 </file>
 
 <file path="src/pages/maintenance.astro">
@@ -1821,6 +1761,157 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
 </style>
 </file>
 
+<file path="src/layouts/Layout.astro">
+---
+import { ClientRouter } from 'astro:transitions';
+import '@fontsource/open-sans/index.css';
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import Logo from '../components/Logo.astro';
+
+interface Props {
+	title: string;
+	description?: string;
+	image?: string;
+	canonicalURL?: string;
+    type?: 'website' | 'article';
+    // allow pages to control semantic tag of logo (default: div)
+    logoAs?: 'h1' | 'div';
+    // allow pages to inject specific schema (like ApartmentComplex)
+    propertySchema?: object; 
+}
+
+// default SEO values extracted from original site
+const defaultDesc = "Apartment Rentals in Kitchener Waterloo Ontario. M. Schiketanz Real Estate Inc. providing quality service to tenants since 1953.";
+const siteName = "M. Schiketanz Real Estate Inc.";
+const { 
+    title, 
+    description = defaultDesc, 
+    image = '/images/og-default.jpg',
+    canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+    type = 'website',
+    logoAs = 'div', // default to 'div' so only homepage overrides to 'h1'
+    propertySchema // extract the new prop
+} = Astro.props;
+// schema extracted from CURL data
+const businessSchema = {
+  "@context": "https://schema.org/",
+  "@type": "LocalBusiness",
+  "name": "M. Schiketanz Real Estate Inc.",
+  "url": Astro.site,
+  "logo": new URL('/favicon.svg', Astro.site).href,
+  "image": new URL('/images/og-default.jpg', Astro.site).href, // Use your default OG image
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "CA",
+    "addressLocality": "Kitchener",
+    "addressRegion": "ON",
+    "postalCode": "N2B 2A9",
+    "streetAddress": "582 Frederick Street"
+  },
+  "telephone": "+1-519-742-4477",
+  "description": description,
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+      "opens": "08:30",
+      "closes": "16:30"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Friday",
+      "opens": "08:30",
+      "closes": "13:00"
+    }
+  ]
+};
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+        <link rel="canonical" href={canonicalURL} />
+        <!-- primary meta tags -->
+		<title>{title}</title>
+		<meta name="description" content={description} />
+        <!-- open graph / facebook -->
+        <meta property="og:type" content={type} />
+        <meta property="og:url" content={canonicalURL} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={new URL(image, Astro.site)} />
+        <meta property="og:site_name" content={siteName} />
+        <!-- twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={canonicalURL} />
+        <meta property="twitter:title" content={title} />
+        <meta property="twitter:description" content={description} />
+        <meta property="twitter:image" content={new URL(image, Astro.site)} />
+        <!-- schema.org JSON-LD -->
+        <script type="application/ld+json" set:html={JSON.stringify(businessSchema)} />
+        <!-- dynamically inject property schema if provided by the page -->
+        {propertySchema && (
+            <script type="application/ld+json" set:html={JSON.stringify(propertySchema)} />
+        )}
+        
+		<ClientRouter />
+	</head>
+	
+	<body class="bg-white flex flex-col min-h-screen text-gray-800 font-sans antialiased-crisp">
+        <!-- accessibility: skip to content -->
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] bg-white text-blue-800 p-4 border border-blue-800 rounded">Skip to main content</a>
+		<header class="bg-schiketanz-red shadow-md sticky top-0 z-50">
+			<div class="container mx-auto px-4 pt-6 pb-2">
+				<!-- logo/title -->
+				<div class="flex justify-between items-start mb-2">
+					<a href="/" class="block text-white hover:text-gray-100 transition-colors decoration-0 group" aria-label="Go to Homepage">
+                        <!-- dynamic logo tag (h1 home, div elsewhere) -->
+						<Logo as={logoAs} class="text-4xl md:text-5xl group-hover:opacity-95 transition-opacity" />
+					</a>
+					<!-- mobile menu button -->
+					<button 
+                        id="menu-btn" 
+                        class="lg:hidden text-white p-2 border border-white/30 rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white cursor-pointer"
+                        aria-label="Toggle Navigation Menu"
+                        aria-expanded="false"
+                        aria-controls="mobile-menu"
+                    >
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+						</svg>
+					</button>
+				</div>
+				<Navbar />
+			</div>
+		</header>
+		<main id="main-content" class="flex-grow w-full">
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<script>
+    // handles mobile menu toggle with ARIA updates for accessibility
+	document.addEventListener('astro:page-load', () => {
+		const btn = document.getElementById('menu-btn');
+		const menu = document.getElementById('mobile-menu');
+		if(btn && menu) {
+			btn.addEventListener('click', () => {
+				const isHidden = menu.classList.toggle('hidden');
+                btn.setAttribute('aria-expanded', (!isHidden).toString());
+			});
+		}
+	});
+</script>
+</file>
+
 <file path="src/pages/application.astro">
 ---
 export const prerender = true; // to ensure form is detected
@@ -1876,6 +1967,142 @@ import PageContainer from '../components/PageContainer.astro';
 </Layout>
 </file>
 
+<file path="src/content/config.ts">
+// src/content/config.ts
+import { defineCollection, z } from 'astro:content';
+
+const rentals = defineCollection({
+    type: 'content',
+    schema: ({ image }) => z.object({
+        title: z.string(),
+        vacancyStatus: z.discriminatedUnion('discriminant', [
+            z.object({ discriminant: z.literal('occupied') }),
+            z.object({ 
+                discriminant: z.literal('vacant'), 
+                value: z.array(z.object({
+                    unitType: z.string(),
+                    price: z.string()
+                })).min(1)
+            }),
+        ]),
+        address: z.object({
+            street: z.string(),
+            city: z.string(),
+            province: z.string(),
+            postalCode: z.string(),
+        }),
+        coverImage: image().optional(),        
+        iGuideUrl: z.string().url().or(z.literal('')).optional(),
+        superintendent: z.object({
+            name: z.string().optional(),
+            phone: z.string().optional(),
+            hours: z.string().optional(),
+        }).optional(),
+        specs: z.object({
+            stories: z.string().optional(),
+            totalUnits: z.string().optional(),
+            elevators: z.string().optional(),
+            laundry: z.string().optional(),
+            utilities: z.string().optional(),
+            // Locked to exact values Keystatic's select fields produce
+            pets: z.enum(['No Pets', 'Pet Friendly']).optional(),
+            smoking: z.enum(['No Smoking', 'Smoking Permitted']).optional(),
+            // Structured room measurements — replaces the free-text sqft field
+            rooms: z.array(z.object({
+                name: z.string(),
+                dimensions: z.string().optional(),
+                sqft: z.string().optional(),
+            })).optional(),
+        }).optional(),
+        gallery: z.array(image()).optional(),
+    }),
+});
+
+const news = defineCollection({
+    type: 'content',
+    schema: z.object({
+        title: z.string(),
+        date: z.coerce.date(),
+    }),
+});
+
+export const collections = { rentals, news };
+</file>
+
+<file path="src/content/rentals/bridge-apartments/index.mdx">
+---
+title: Bridge Apartments
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 131-139 Bridge Street East
+  city: Kitchener
+  province: Ontario
+  postalCode: N2K 1K1
+coverImage: coverImage.jpg
+iGuideUrl: https://iguidephotos.com/two_bedroom_suite_139_bridge_st_e_kitchener_on/
+superintendent:
+  phone: 519-742-4477
+  hours: '9AM - 4 PM '
+specs:
+  stories: '3'
+  totalUnits: '16'
+  utilities: Utilities and Parking Extra
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery: []
+---
+Condo style living.  Quiet building in Kitchener. Clean spacious units. Close to amenities. Excellent public transit access. Amenities include Central A/C, 5 appliances; fridge, stove, washer, dryer and microwave.
+</file>
+
+<file path="src/content/rentals/chicopee-court/index.mdx">
+---
+title: Chicopee Court
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 7 Old Chicopee Drive
+  city: Kitchener
+  province: Ontario
+  postalCode: N2A 2V4
+coverImage: coverImage.jpg
+iGuideUrl: https://youriguide.com/two_bedroom_suite_7_old_chicopee_dr_kitchener_on/
+superintendent: {}
+specs:
+  stories: '7'
+  totalUnits: '55'
+  elevators: '1'
+  laundry: On Site
+  utilities: Rent includes utilities
+  pets: No Pets
+  smoking: No Smoking
+  rooms:
+    - name: 4pc Bath
+      dimensions: 7'5" x 4'11"
+      sqft: '37'
+    - name: Bedroom
+      dimensions: 9'10" x 15'6"
+      sqft: '153'
+    - name: Bedroom
+      dimensions: 10'6" x 10'10"
+      sqft: '114'
+    - name: Dining
+      dimensions: 9'6" x 7'8"
+      sqft: '73'
+    - name: Kitchen
+      dimensions: 6'9" x 7'5"
+      sqft: '51'
+    - name: Living
+      dimensions: 20'8" x 11'10"
+      sqft: '244'
+gallery: []
+---
+Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access. Walking distance to Stanley Park Mall.\\
+
+Parking is extra.
+</file>
+
 <file path="src/pages/rentals/[id].astro">
 ---
 // src/pages/rentals/[id].astro
@@ -1914,12 +2141,31 @@ const hasSpec = (val: string | undefined) => val && val.trim().length > 0;
 const rooms = rental.data.specs?.rooms ?? [];
 // dynamic SEO description
 const seoDescription = `${rental.data.title} - ${isVacant ? 'Currently renting ' + availableUnits.map((u: any) => u.unitType).join(', ') : 'No vacancy'}. Located at ${fullFormattedAddress}. Clean, well-maintained apartments in Kitchener-Waterloo.`;
+// build apartment complex schema
+const propertySchema = {
+  "@context": "https://schema.org",
+  "@type": "ApartmentComplex",
+  "name": rental.data.title,
+  "description": seoDescription,
+  "url": new URL(Astro.url.pathname, Astro.site).href,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": rental.data.address.street,
+    "addressLocality": rental.data.address.city,
+    "addressRegion": rental.data.address.province,
+    "postalCode": rental.data.address.postalCode,
+    "addressCountry": "CA"
+  },
+  "petsAllowed": rental.data.specs?.pets === "Pet Friendly" ? "True" : "False",
+  "image": allImages.length > 0 ? new URL(allImages[0].src, Astro.site).href : undefined
+};
 ---
 
 <Layout 
     title={`${rental.data.title} Apartments Kitchener-Waterloo | Schiketanz Rentals`}
     description={seoDescription}
     image={rental.data.coverImage?.src}
+    propertySchema={propertySchema} 
 >
   <PageContainer>
     <PageHeader 
@@ -2070,142 +2316,6 @@ const seoDescription = `${rental.data.title} - ${isVacant ? 'Currently renting '
     </div>
   </PageContainer>
 </Layout>
-</file>
-
-<file path="src/content/config.ts">
-// src/content/config.ts
-import { defineCollection, z } from 'astro:content';
-
-const rentals = defineCollection({
-    type: 'content',
-    schema: ({ image }) => z.object({
-        title: z.string(),
-        vacancyStatus: z.discriminatedUnion('discriminant', [
-            z.object({ discriminant: z.literal('occupied') }),
-            z.object({ 
-                discriminant: z.literal('vacant'), 
-                value: z.array(z.object({
-                    unitType: z.string(),
-                    price: z.string()
-                })).min(1)
-            }),
-        ]),
-        address: z.object({
-            street: z.string(),
-            city: z.string(),
-            province: z.string(),
-            postalCode: z.string(),
-        }),
-        coverImage: image().optional(),        
-        iGuideUrl: z.string().url().or(z.literal('')).optional(),
-        superintendent: z.object({
-            name: z.string().optional(),
-            phone: z.string().optional(),
-            hours: z.string().optional(),
-        }).optional(),
-        specs: z.object({
-            stories: z.string().optional(),
-            totalUnits: z.string().optional(),
-            elevators: z.string().optional(),
-            laundry: z.string().optional(),
-            utilities: z.string().optional(),
-            // Locked to exact values Keystatic's select fields produce
-            pets: z.enum(['No Pets', 'Pet Friendly']).optional(),
-            smoking: z.enum(['No Smoking', 'Smoking Permitted']).optional(),
-            // Structured room measurements — replaces the free-text sqft field
-            rooms: z.array(z.object({
-                name: z.string(),
-                dimensions: z.string().optional(),
-                sqft: z.string().optional(),
-            })).optional(),
-        }).optional(),
-        gallery: z.array(image()).optional(),
-    }),
-});
-
-const news = defineCollection({
-    type: 'content',
-    schema: z.object({
-        title: z.string(),
-        date: z.coerce.date(),
-    }),
-});
-
-export const collections = { rentals, news };
-</file>
-
-<file path="src/content/rentals/bridge-apartments/index.mdx">
----
-title: Bridge Apartments
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 131-139 Bridge Street East
-  city: Kitchener
-  province: Ontario
-  postalCode: N2K 1K1
-coverImage: coverImage.jpg
-iGuideUrl: https://iguidephotos.com/two_bedroom_suite_139_bridge_st_e_kitchener_on/
-superintendent:
-  phone: 519-742-4477
-  hours: '9AM - 4 PM '
-specs:
-  stories: '3'
-  totalUnits: '16'
-  utilities: Utilities and Parking Extra
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Condo style living.  Quiet building in Kitchener. Clean spacious units. Close to amenities. Excellent public transit access. Amenities include Central A/C, 5 appliances; fridge, stove, washer, dryer and microwave.
-</file>
-
-<file path="src/content/rentals/chicopee-court/index.mdx">
----
-title: Chicopee Court
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 7 Old Chicopee Drive
-  city: Kitchener
-  province: Ontario
-  postalCode: N2A 2V4
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/two_bedroom_suite_7_old_chicopee_dr_kitchener_on/
-superintendent: {}
-specs:
-  stories: '7'
-  totalUnits: '55'
-  elevators: '1'
-  laundry: On Site
-  utilities: Rent includes utilities
-  pets: No Pets
-  smoking: No Smoking
-  rooms:
-    - name: 4pc Bath
-      dimensions: 7'5" x 4'11"
-      sqft: '37'
-    - name: Bedroom
-      dimensions: 9'10" x 15'6"
-      sqft: '153'
-    - name: Bedroom
-      dimensions: 10'6" x 10'10"
-      sqft: '114'
-    - name: Dining
-      dimensions: 9'6" x 7'8"
-      sqft: '73'
-    - name: Kitchen
-      dimensions: 6'9" x 7'5"
-      sqft: '51'
-    - name: Living
-      dimensions: 20'8" x 11'10"
-      sqft: '244'
-gallery: []
----
-Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access. Walking distance to Stanley Park Mall.\\
-
-Parking is extra.
 </file>
 
 <file path="src/content/rentals/bluebird-apartments/index.mdx">

@@ -37,6 +37,7 @@ const businessSchema = {
   "name": "M. Schiketanz Real Estate Inc.",
   "url": Astro.site,
   "logo": new URL('/favicon.svg', Astro.site).href,
+  "image": new URL('/images/og-default.jpg', Astro.site).href, // Use your default OG image
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "CA",
@@ -45,8 +46,22 @@ const businessSchema = {
     "postalCode": "N2B 2A9",
     "streetAddress": "582 Frederick Street"
   },
-  "telephone": "519-742-4477",
-  "description": description
+  "telephone": "+1-519-742-4477",
+  "description": description,
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+      "opens": "08:30",
+      "closes": "16:30"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Friday",
+      "opens": "08:30",
+      "closes": "13:00"
+    }
+  ]
 };
 ---
 

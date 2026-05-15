@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.schiketanz.ca/sitemap-index.xml
+Sitemap: https://schiketanz.ca/sitemap-index.xml
