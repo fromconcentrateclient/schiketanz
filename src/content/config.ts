@@ -33,10 +33,8 @@ const rentals = defineCollection({
             elevators: z.string().optional(),
             laundry: z.string().optional(),
             utilities: z.string().optional(),
-            // locked to exact values Keystatic's select fields produce
             pets: z.enum(['No Pets', 'Pet Friendly']).optional(),
             smoking: z.enum(['No Smoking', 'Smoking Permitted']).optional(),
-            // structured room measurements — replaces free-text sqft field
             rooms: z.array(z.object({
                 name: z.string(),
                 dimensions: z.string().optional(),
@@ -46,7 +44,6 @@ const rentals = defineCollection({
         gallery: z.array(image()).optional(),
     }),
 });
-
 const news = defineCollection({
     type: 'content',
     schema: z.object({
