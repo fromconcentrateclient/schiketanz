@@ -254,9 +254,16 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
         if (form1) toggleForm(form1, false);
         if (form2) toggleForm(form2, false);
         if(selector) {
+            selector.selectedIndex = 0;
             selector.addEventListener('change', (e) => {
                 const target = e.target as HTMLSelectElement;
                 const option = target.options[target.selectedIndex];
+                if (target.value === "") {
+                    if(msg) msg.classList.remove('hidden');
+                    toggleForm(form1, false);
+                    toggleForm(form2, false);
+                    return;
+                }
                 const group = option.dataset.group;
                 const buildingName = target.value;
                 if(msg) msg.classList.add('hidden');
