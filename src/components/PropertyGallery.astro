@@ -34,7 +34,7 @@ const { images, title } = Astro.props;
       </div>
     ))}
   </div>
-  <!-- navigation arrows & dots -->
+  <!-- navigation arrows & dots/counter -->
   {images.length > 1 && (
     <>
       <button 
@@ -55,10 +55,15 @@ const { images, title } = Astro.props;
           <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
       </button>
-      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 bg-black/20 px-3 py-1 rounded-full backdrop-blur-[2px] z-10">
+      <!-- Mobile Counter (Visible on small screens) -->
+      <div class="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/40 text-white text-xs font-bold tracking-widest px-4 py-1.5 rounded-full backdrop-blur-[2px] z-10 shadow-sm">
+         <span id="slide-counter">1</span> / {images.length}
+      </div>
+      <!-- Desktop Dots (Hidden on small screens) -->
+      <div class="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 space-x-2 bg-black/20 px-3 py-1 rounded-full backdrop-blur-[2px] z-10">
          {images.map((_, index) => (
             <button 
-                class="indicator-dot w-2 h-2 rounded-full shadow-sm transition-all duration-300 bg-white/70" 
+                class="indicator-dot flex-shrink-0 w-2 h-2 rounded-full shadow-sm transition-all duration-300 bg-white/70" 
                 data-index={index}
                 aria-label={`Go to slide ${index + 1}`}
             ></button>
@@ -85,10 +90,14 @@ const { images, title } = Astro.props;
     const nextBtn = document.getElementById('next-btn');
     const slides = document.querySelectorAll('.gallery-slide');
     const dots = document.querySelectorAll('.indicator-dot');
+    const counter = document.getElementById('slide-counter');
     // guard clause
     if (!track) return;
-    // update active dot 
+    // update active dot and counter
     const updateDots = (activeIndex: number) => {
+      // update text counter for mobile
+      if (counter) counter.textContent = (activeIndex + 1).toString();
+      // update dots for desktop
       dots.forEach((dot, index) => {
         if (index === activeIndex) {
           // active: schiketanz red + slightly larger
@@ -138,7 +147,7 @@ const { images, title } = Astro.props;
         }
       });
     });
-    // initialize first dot as active on load
+    // initialize first dot/counter as active on load
     updateDots(0);
   }); 
 </script>

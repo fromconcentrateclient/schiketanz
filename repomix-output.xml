@@ -1,5 +1,6 @@
 <directory_structure>
 astro.config.mjs
+import-gallery.mjs
 keystatic.config.ts
 public/robots.txt
 src/components/Footer.astro
@@ -158,64 +159,98 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 </file>
 
-<file path="src/pages/privacy.astro">
----
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
----
+<file path="import-gallery.mjs">
+// script to pull all iGuide images at once
+// open project root folder in command prompt, then run 
+// node import-gallery.mjs https://youriguide.com/vEN92C3Z6V8DD1 bluebird-apartments
+// but obviously swap out the iGuide in the middle and the slug for the apartment so they match
 
-<Layout title="Privacy Policy | Schiketanz Real Estate">
-  <PageContainer narrow>
-    <PageHeader 
-      title="Privacy Policy" 
-      breadcrumb={[{ text: 'Privacy Policy', href: '/privacy' }]}
-    />
-    <div class="text-lg text-gray-700 leading-relaxed font-sans space-y-8">
-      <p class="italic text-sm text-gray-500 pb-4 border-b border-gray-200">
-        Last Updated: {new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })}
-      </p>
-      <section>
-        <h3 class="font-century font-bold text-2xl text-gray-800 mb-3">1. General Policy</h3>
-        <p>
-          At M. Schiketanz Real Estate Inc., we are committed to maintaining the accuracy, confidentiality, and security of your personally identifiable information ("Personal Information"). As part of this commitment, our privacy policy governs our actions as they relate to the collection, use, and disclosure of Personal Information.
-        </p>
-      </section>
-      <section>
-        <h3 class="font-century font-bold text-2xl text-gray-800 mb-3">2. Collection of Personal Information</h3>
-        <p>
-          We collect personal information (such as names, contact details, and financial information) primarily for the purpose of evaluating rental applications, managing tenancy agreements, and processing payments. We collect only the amount of information that is necessary for the purposes identified.
-        </p>
-      </section>
-      <section>
-        <h3 class="font-century font-bold text-2xl text-gray-800 mb-3">3. Use and Disclosure</h3>
-        <p>
-          Your personal information is used only for the purposes for which it was collected or as required by law. We do not sell, trade, or rent your personal information to third parties.
-        </p>
-      </section>
-      <div class="bg-gray-50 p-6 md:p-8 border-l-4 border-schiketanz-red rounded-sm shadow-sm mt-4">
-        <h3 class="font-century font-bold text-2xl text-schiketanz-red mb-4">4. Contact Us</h3>
-        <p class="mb-5 text-base">
-          If you have any questions regarding this Privacy Policy or the personal information we hold about you, please contact our office at:
-        </p>
-        <ul class="space-y-4 text-base">
-          <li class="flex items-center">
-            <svg class="w-5 h-5 text-schiketanz-red mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-            </svg>
-            <span><strong>Email:</strong> <a href="mailto:office@schiketanz.ca" class="text-schiketanz-red hover:underline font-medium">office@schiketanz.ca</a></span>
-          </li>
-          <li class="flex items-center">
-            <svg class="w-5 h-5 text-schiketanz-red mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-            </svg>
-            <span><strong>Phone:</strong> <a href="tel:5197424477" class="hover:text-schiketanz-red hover:underline transition-colors">(519) 742-4477</a></span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </PageContainer>
-</Layout>
+import fs from 'fs/promises';
+import path from 'path';
+import sharp from 'sharp';
+
+async function processGallery(tourUrl, propertySlug) {
+  try {
+    console.log(`🌍 Fetching iGuide tour: ${tourUrl}`);
+    const res = await fetch(tourUrl);
+    const html = await res.text();
+    // find hidden JSON array containing images in page source
+    const imagesArrayMatch = html.match(/"images"\s*:\s*\[([\s\S]*?)\]/);
+    if (!imagesArrayMatch) {
+      console.error("❌ Could not find the images array in the iGuide page.");
+      return;
+    }
+    // extract .jpg filenames from that block
+    const imagesBlock = imagesArrayMatch[1];
+    const filenameRegex = /"name"\s*:\s*"([^"]+\.jpg)"/g;
+    const matches = [...imagesBlock.matchAll(filenameRegex)];
+    const filenames = matches.map(m => m[1]);
+    if (filenames.length === 0) {
+      console.error("❌ No images found.");
+      return;
+    }
+    console.log(`📸 Found ${filenames.length} images. Downloading & optimizing...`);
+    // prepare URLs and local directories
+    const urlObj = new URL(tourUrl);
+    const tourId = urlObj.pathname.replace(/\//g, ''); // extracts vEN92C3Z6V8DD1
+    const baseUrl = urlObj.origin; 
+    const galleryDir = path.join(process.cwd(), 'src', 'content', 'rentals', propertySlug, 'gallery');
+    await fs.mkdir(galleryDir, { recursive: true });
+    // download, resize, and compress each image
+    const galleryEntries = [];
+    for (let i = 0; i < filenames.length; i++) {
+      const filename = filenames[i];
+      const imageUrl = `${baseUrl}/${tourId}/f/${filename}`;
+      console.log(`   Processing ${i + 1}/${filenames.length}: ${filename}`);
+      const imgRes = await fetch(imageUrl);
+      if (!imgRes.ok) {
+        console.warn(`   ⚠️ Failed to fetch ${imageUrl}`);
+        continue;
+      }
+      const arrayBuffer = await imgRes.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      // compress to 1920x1080 webp
+      const outputPath = path.join(galleryDir, `${i}.webp`);
+      await sharp(buffer)
+        .resize(1920, 1080, { fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toFile(outputPath);
+      galleryEntries.push(`  - gallery/${i}.webp`);
+    }
+    // safely update property's index.mdx frontmatter
+    const mdxPath = path.join(process.cwd(), 'src', 'content', 'rentals', propertySlug, 'index.mdx');
+    let mdxContent = await fs.readFile(mdxPath, 'utf8');
+    const galleryYaml = `gallery:\n${galleryEntries.join('\n')}`;
+    const galleryRegex = /^gallery:.*(?:\n\s+-.*)*/m;
+    // split file to ensure we only target frontmatter block
+    const parts = mdxContent.split('---');
+    if (parts.length >= 3) {
+      let frontmatter = parts[1];
+      if (galleryRegex.test(frontmatter)) {
+        // replace existing gallery: [] array
+        parts[1] = frontmatter.replace(galleryRegex, galleryYaml);
+      } else {
+        // or append to bottom of frontmatter if it didn't exist
+        parts[1] = frontmatter.replace(/\n$/, `\n${galleryYaml}\n`);
+      }
+      mdxContent = parts.join('---');
+      await fs.writeFile(mdxPath, mdxContent, 'utf8');
+      console.log(`\n✅ Successfully updated '${propertySlug}' frontmatter!`);
+    }
+  } catch (error) {
+    console.error("❌ An error occurred:", error);
+  }
+}
+// read arguments from terminal command
+const tourUrl = process.argv[2];
+const propertySlug = process.argv[3];
+if (!tourUrl || !propertySlug) {
+  console.log("Usage: node import-gallery.mjs <tour-url> <property-folder-name>");
+  console.log("Example: node import-gallery.mjs https://youriguide.com/vEN92C3Z6V8DD1 bluebird-apartments");
+  process.exit(1);
+}
+
+processGallery(tourUrl, propertySlug);
 </file>
 
 <file path="src/pages/success.astro">
@@ -292,6 +327,13 @@ body {
 }
 </file>
 
+<file path="public/robots.txt">
+User-agent: *
+Allow: /
+
+Sitemap: https://schiketanz.ca/sitemap-index.xml
+</file>
+
 <file path="src/components/PropertyGallery.astro">
 ---
 import { Image } from 'astro:assets';
@@ -329,7 +371,7 @@ const { images, title } = Astro.props;
       </div>
     ))}
   </div>
-  <!-- navigation arrows & dots -->
+  <!-- navigation arrows & dots/counter -->
   {images.length > 1 && (
     <>
       <button 
@@ -350,10 +392,15 @@ const { images, title } = Astro.props;
           <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
       </button>
-      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 bg-black/20 px-3 py-1 rounded-full backdrop-blur-[2px] z-10">
+      <!-- Mobile Counter (Visible on small screens) -->
+      <div class="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/40 text-white text-xs font-bold tracking-widest px-4 py-1.5 rounded-full backdrop-blur-[2px] z-10 shadow-sm">
+         <span id="slide-counter">1</span> / {images.length}
+      </div>
+      <!-- Desktop Dots (Hidden on small screens) -->
+      <div class="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 space-x-2 bg-black/20 px-3 py-1 rounded-full backdrop-blur-[2px] z-10">
          {images.map((_, index) => (
             <button 
-                class="indicator-dot w-2 h-2 rounded-full shadow-sm transition-all duration-300 bg-white/70" 
+                class="indicator-dot flex-shrink-0 w-2 h-2 rounded-full shadow-sm transition-all duration-300 bg-white/70" 
                 data-index={index}
                 aria-label={`Go to slide ${index + 1}`}
             ></button>
@@ -380,10 +427,14 @@ const { images, title } = Astro.props;
     const nextBtn = document.getElementById('next-btn');
     const slides = document.querySelectorAll('.gallery-slide');
     const dots = document.querySelectorAll('.indicator-dot');
+    const counter = document.getElementById('slide-counter');
     // guard clause
     if (!track) return;
-    // update active dot 
+    // update active dot and counter
     const updateDots = (activeIndex: number) => {
+      // update text counter for mobile
+      if (counter) counter.textContent = (activeIndex + 1).toString();
+      // update dots for desktop
       dots.forEach((dot, index) => {
         if (index === activeIndex) {
           // active: schiketanz red + slightly larger
@@ -433,326 +484,10 @@ const { images, title } = Astro.props;
         }
       });
     });
-    // initialize first dot as active on load
+    // initialize first dot/counter as active on load
     updateDots(0);
   }); 
 </script>
-</file>
-
-<file path="src/content/rentals/chicopee-terrace/index.mdx">
----
-title: Chicopee Terrace
-vacancyStatus:
-  discriminant: vacant
-  value:
-    - unitType: 3 Bedroom
-      price: $2200/month
-address:
-  street: 23 Old Chicopee Drive
-  city: Kitchener
-  province: Ontario
-  postalCode: N2A 2V5
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/v2O3AU2Z6V8DD1
-superintendent:
-  phone: 519-893-9881
-  hours: 9 AM - 5 PM
-specs:
-  stories: '7'
-  totalUnits: '51'
-  elevators: '1'
-  laundry: On-Site
-  utilities: Includes Utilities
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Walking distance to Stanley Park Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
-
-Parking is extra.
-</file>
-
-<file path="src/content/rentals/confederation-apartments/index.mdx">
----
-title: Confederation Apartments
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 144 Confederation Drive
-  city: Kitchener
-  province: Ontario
-  postalCode: N2B 3H7
-coverImage: coverImage.jpg
-iGuideUrl: https://iguidephotos.com/v4BC6O2Z6V8DD1
-superintendent:
-  phone: (519) 588-0462
-  hours: 9 AM - 5 PM
-specs:
-  stories: '5'
-  totalUnits: '62'
-  elevators: '1'
-  laundry: On Each Floor
-  utilities: Rent Includes Utilities
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access.\
-
-
-Parking is extra.
-</file>
-
-<file path="src/content/rentals/heritage-apartments/index.mdx">
----
-title: Heritage Apartments
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 221 Heritage Drive
-  city: Kitchener
-  province: Ontario
-  postalCode: N2B 3A9
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/vR3ZWW2Z6V8DD1
-superintendent:
-  phone: (519) 588-0083
-specs:
-  stories: '3'
-  totalUnits: '16'
-  elevators: '0'
-  laundry: On-Site
-  utilities: Rent Includes Utilities
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Quiet building nestled in Heritage Park area of Kitchener.  Clean spacious units.  Balconies.  Close to all amenities, shops, bars and restaurants. Excellent public transit access.\
-
-
-Parking is extra.
-</file>
-
-<file path="src/content/rentals/hickory-apartments/index.mdx">
----
-title: Hickory Apartments
-vacancyStatus:
-  discriminant: vacant
-  value:
-    - unitType: 2 Bedroom
-      price: $1900/month
-address:
-  street: 55 Hickory Street East
-  city: Kitchener
-  province: Ontario
-  postalCode: N2J 3J5
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/v7LOORX75V8DD1
-superintendent:
-  phone: (519) 208-7037
-  hours: 9 AM - 5 PM
-specs:
-  stories: '7'
-  totalUnits: '78'
-  elevators: '2'
-  laundry: On-Site
-  utilities: Hydro and Parking Extra
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Quiet building in Waterloo. Long term tenant profile. Clean, spacious units. Large balconies. Close to Grocery Store/Strip Mall, take-out restaurants, universities and bank. Close to highway.
-</file>
-
-<file path="src/content/rentals/holborn-apartments/index.mdx">
----
-title: Holborn Apartments
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 80 Holborn Drive
-  city: Kitchener
-  province: Ontario
-  postalCode: N2A 2V8
-coverImage: coverImage.jpg
-iGuideUrl: https://iguidephotos.com/vUO2HO2Z6V8DD1
-superintendent:
-  phone: (519) 893-9881
-  hours: 9 AM - 5 PM
-specs:
-  stories: '7'
-  totalUnits: '55'
-  elevators: '1'
-  laundry: On-Site
-  utilities: Utilities Included
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
-
-Parking is extra.
-</file>
-
-<file path="src/content/rentals/kloster-court/index.mdx">
----
-title: Kloster Court
-vacancyStatus:
-  discriminant: vacant
-  value:
-    - unitType: 1 Bedroom
-      price: $1450/month
-    - unitType: 2 Bedroom
-      price: $1900/month
-address:
-  street: 135 Confederation Drive
-  city: Kitchener
-  province: Ontario
-  postalCode: N2B 1W1
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/v5J28T2Z6V8DD1
-superintendent:
-  phone: (519) 588-0462
-  hours: 9 AM - 5 PM
-specs:
-  stories: '10'
-  totalUnits: '83'
-  elevators: '1'
-  laundry: On-Site
-  utilities: Includes Utilities, Parking is Extra
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Quiet building in Heritage Park. Long term tenant profile. Clean, spacious units. Balconies. Close to Stanley Park Mall. Excellent public transit access.
-</file>
-
-<file path="src/content/rentals/lorraine-apartments/index.mdx">
----
-title: Lorraine Apartments
-vacancyStatus:
-  discriminant: vacant
-  value:
-    - unitType: 2 Bedroom
-      price: $1800/month
-address:
-  street: 187 Lorraine Avenue
-  city: Kitchener
-  province: Ontario
-  postalCode: N2B 2N3
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/vKXJJQ2Z6V8DD1
-superintendent:
-  phone: (519) 578-7881
-  hours: 9 AM - 5 PM
-specs:
-  stories: '3'
-  totalUnits: '21'
-  laundry: On-Site
-  utilities: Includes Utilities, Parking is Extra
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Quiet building. 3 storey walk-up in Heritage Park Kitchener. Long term tenant profile, clean spacious units. Balconies. Walking distance to Stanley Park. Excellent public transit access.
-</file>
-
-<file path="src/content/rentals/margaret-apartments/index.mdx">
----
-title: Margaret Apartments
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 149 Confederation Drive
-  city: Kitchener
-  province: Ontario
-  postalCode: N2B 3J5
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/vQU2DP2Z6V8DD1
-superintendent:
-  phone: (519) 588-0462
-  hours: 9 AM - 5 PM
-specs:
-  stories: '8'
-  totalUnits: '61'
-  elevators: '2'
-  laundry: On-Site
-  utilities: Includes Utilities, Parking is Extra
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Quiet building in Heritage Park. Long term tenant profile. Clean spacious units. Balconies. Close to Stanley Park Mall. Excellent public transit access.\\
-</file>
-
-<file path="src/content/rentals/parkview-apartments/index.mdx">
----
-title: Parkview Apartments
-vacancyStatus:
-  discriminant: vacant
-  value:
-    - unitType: 1 Bedroom
-      price: $1500/month
-    - unitType: 2 Bedroom
-      price: $1800/month
-address:
-  street: 12 Birkshire Court
-  city: Kitchener
-  province: Ontario
-  postalCode: N2B 3H9
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/vHYP6R2Z6V8DD1
-superintendent:
-  phone: (226) 752-5322
-  hours: 9 AM - 5 PM
-specs:
-  stories: '3'
-  totalUnits: '42'
-  laundry: On-Site
-  utilities: Hydro and Parking Extra
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Quiet building. 3 storey walk-up in Heritage Park, Kitchener. Long term tenant profile, clean spacious units. Balconies facing green space on quiet court. Walking distance to Stanley Park Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
-</file>
-
-<file path="src/content/rentals/richelieu-apartments/index.mdx">
----
-title: Richelieu Apartments
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 250 Mary Street
-  city: Kitchener
-  province: Ontario
-  postalCode: N2J 1S7
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/vZN35QX75V8DD1
-superintendent:
-  phone: (519) 505-2808
-  hours: 9 AM - 5 PM
-specs:
-  stories: '6'
-  totalUnits: '54'
-  elevators: '1'
-  laundry: On-Site
-  utilities: Includes Utilities, Parking is Extra
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Quiet building in Waterloo. Long term, mainly tenant profile. Clean, large units with balconies. Close to hospital and Waterloo Town Square. Close to all amenities, shops, bars and restaurants. Excellent public transit access.\
 </file>
 
 <file path="src/content/rentals/stanley-park-apartments/index.mdx">
@@ -778,35 +513,7 @@ specs:
   rooms: []
 gallery: []
 ---
-Quiet building. 3 storey walk-up in Heritage Park, Kitchener. Long term tenant profile, clean spacious units. Balconies facing Green Space on quiet court. Walking distance to Stanley Park Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access.\
-</file>
-
-<file path="src/content/rentals/traynor-avenue-apartments/index.mdx">
----
-title: Traynor Avenue Apartments
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 231-241 + 249-259 Traynor Avenue
-  city: Kitchener
-  province: Ontario
-  postalCode: N2C 1W7
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/249_traynor_ave_kitchener_on/
-superintendent:
-  phone: (519) 588-1372
-  hours: 9 AM - 5 PM
-specs:
-  stories: '3'
-  totalUnits: 10-20
-  laundry: On-Site
-  utilities: Includes Utilities, Parking is Extra
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-4 quiet buildings in Kitchener. Clean spacious units. Balconies. Close to highway and walking distance to Fairview Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access, walking distance to ION Train as well.
+Quiet building. 3 storey walk-up in Heritage Park, Kitchener. Long term tenant profile, clean spacious units. Balconies facing Green Space on quiet court. Walking distance to Stanley Park Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
 </file>
 
 <file path="src/pages/about.astro">
@@ -864,11 +571,64 @@ import aboutImage from '../assets/about.avif';
 </Layout>
 </file>
 
-<file path="public/robots.txt">
-User-agent: *
-Allow: /
+<file path="src/pages/privacy.astro">
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+---
 
-Sitemap: https://schiketanz.ca/sitemap-index.xml
+<Layout title="Privacy Policy | Schiketanz Real Estate">
+  <PageContainer narrow>
+    <PageHeader 
+      title="Privacy Policy" 
+      breadcrumb={[{ text: 'Privacy Policy', href: '/privacy' }]}
+    />
+    <div class="text-lg text-gray-700 leading-relaxed font-sans space-y-8">
+      <p class="italic text-sm text-gray-500 pb-4 border-b border-gray-200">
+        Effective: May 19th, 2026
+      </p>
+      <section>
+        <h3 class="font-century font-bold text-2xl text-gray-800 mb-3">1. General Policy</h3>
+        <p class="text-sm">
+          At M. Schiketanz Real Estate Inc., we are committed to maintaining the accuracy, confidentiality, and security of your personally identifiable information ("Personal Information"). As part of this commitment, our privacy policy governs our actions as they relate to the collection, use, and disclosure of Personal Information.
+        </p>
+      </section>
+      <section>
+        <h3 class="font-century font-bold text-2xl text-gray-800 mb-3">2. Collection of Personal Information</h3>
+        <p class="text-sm">
+          We collect personal information (such as names, contact details, and financial information) primarily for the purpose of evaluating rental applications, managing tenancy agreements, and processing payments. We collect only the amount of information that is necessary for the purposes identified.
+        </p>
+      </section>
+      <section>
+        <h3 class="font-century font-bold text-2xl text-gray-800 mb-3">3. Use and Disclosure</h3>
+        <p class="text-sm">
+          Your personal information is used only for the purposes for which it was collected or as required by law. We do not sell, trade, or rent your personal information to third parties.
+        </p>
+      </section>
+      <div class="bg-gray-50 p-6 md:p-8 border-l-4 border-schiketanz-red rounded-sm shadow-sm mt-4">
+        <h3 class="font-century font-bold text-2xl text-schiketanz-red mb-4">4. Contact Us</h3>
+        <p class="mb-5 text-sm">
+          If you have any questions regarding this Privacy Policy or the personal information we hold about you, please contact our office at:
+        </p>
+        <ul class="space-y-4 text-base">
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-schiketanz-red mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <span><strong>Email:</strong> <a href="mailto:office@schiketanz.ca" class="text-schiketanz-red hover:underline font-medium">office@schiketanz.ca</a></span>
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-schiketanz-red mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+            </svg>
+            <span><strong>Phone:</strong> <a href="tel:5197424477" class="hover:text-schiketanz-red hover:underline transition-colors">(519) 742-4477</a></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </PageContainer>
+</Layout>
 </file>
 
 <file path="src/components/Navbar.astro">
@@ -977,38 +737,613 @@ const breadcrumbSchema = breadcrumb ? {
 </div>
 </file>
 
-<file path="src/content/rentals/princess-apartments/index.mdx">
+<file path="src/content/news/spring-summer-newsletter.mdx">
 ---
-title: Princess Apartments
+title: Spring/Summer Newsletter
+date: 2026-05-15
+---
+We are excited to share our latest community updates and office news!\
+[**Click here to read the full newsletter.**](/newsletters/2026SpringNewsletter.pdf)
+</file>
+
+<file path="src/content/rentals/chicopee-terrace/index.mdx">
+---
+title: Chicopee Terrace
+vacancyStatus:
+  discriminant: vacant
+  value:
+    - unitType: 3 Bedroom
+      price: $2200/month
+address:
+  street: 23 Old Chicopee Drive
+  city: Kitchener
+  province: Ontario
+  postalCode: N2A 2V5
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/v2O3AU2Z6V8DD1
+superintendent:
+  phone: 519-893-9881
+  hours: 9 AM - 5 PM
+specs:
+  stories: '7'
+  totalUnits: '51'
+  elevators: '1'
+  laundry: On-Site
+  utilities: Includes Utilities
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+---
+Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Walking distance to Stanley Park Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
+
+Parking is extra.
+</file>
+
+<file path="src/content/rentals/confederation-apartments/index.mdx">
+---
+title: Confederation Apartments
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 144 Confederation Drive
+  city: Kitchener
+  province: Ontario
+  postalCode: N2B 3H7
+coverImage: coverImage.webp
+iGuideUrl: https://iguidephotos.com/v4BC6O2Z6V8DD1
+superintendent:
+  phone: (519) 588-0462
+  hours: 9 AM - 5 PM
+specs:
+  stories: '5'
+  totalUnits: '62'
+  elevators: '1'
+  laundry: On Each Floor
+  utilities: Rent Includes Utilities
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+  - gallery/21.webp
+  - gallery/22.webp
+  - gallery/23.webp
+  - gallery/24.webp
+  - gallery/25.webp
+  - gallery/26.webp
+  - gallery/27.webp
+  - gallery/28.webp
+  - gallery/29.webp
+  - gallery/30.webp
+  - gallery/31.webp
+  - gallery/32.webp
+  - gallery/33.webp
+  - gallery/34.webp
+---
+Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
+
+
+Parking is extra.
+</file>
+
+<file path="src/content/rentals/heritage-apartments/index.mdx">
+---
+title: Heritage Apartments
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 221 Heritage Drive
+  city: Kitchener
+  province: Ontario
+  postalCode: N2B 3A9
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/vR3ZWW2Z6V8DD1
+superintendent:
+  phone: (519) 588-0083
+specs:
+  stories: '3'
+  totalUnits: '16'
+  elevators: '0'
+  laundry: On-Site
+  utilities: Rent Includes Utilities
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+---
+Quiet building nestled in Heritage Park area of Kitchener.  Clean spacious units.  Balconies.  Close to all amenities, shops, bars and restaurants. Excellent public transit access.
+
+
+Parking is extra.
+</file>
+
+<file path="src/content/rentals/hickory-apartments/index.mdx">
+---
+title: Hickory Apartments
+vacancyStatus:
+  discriminant: vacant
+  value:
+    - unitType: 2 Bedroom
+      price: $1900/month
+address:
+  street: 55 Hickory Street East
+  city: Kitchener
+  province: Ontario
+  postalCode: N2J 3J5
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/v7LOORX75V8DD1
+superintendent:
+  phone: (519) 208-7037
+  hours: 9 AM - 5 PM
+specs:
+  stories: '7'
+  totalUnits: '78'
+  elevators: '2'
+  laundry: On-Site
+  utilities: Hydro and Parking Extra
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+  - gallery/21.webp
+  - gallery/22.webp
+  - gallery/23.webp
+---
+Quiet building in Waterloo. Long term tenant profile. Clean, spacious units. Large balconies. Close to Grocery Store/Strip Mall, take-out restaurants, universities and bank. Close to highway.
+</file>
+
+<file path="src/content/rentals/holborn-apartments/index.mdx">
+---
+title: Holborn Apartments
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 80 Holborn Drive
+  city: Kitchener
+  province: Ontario
+  postalCode: N2A 2V8
+coverImage: coverImage.webp
+iGuideUrl: https://iguidephotos.com/vUO2HO2Z6V8DD1
+superintendent:
+  phone: (519) 893-9881
+  hours: 9 AM - 5 PM
+specs:
+  stories: '7'
+  totalUnits: '55'
+  elevators: '1'
+  laundry: On-Site
+  utilities: Utilities Included
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+  - gallery/21.webp
+  - gallery/22.webp
+  - gallery/23.webp
+  - gallery/24.webp
+---
+Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
+
+Parking is extra.
+</file>
+
+<file path="src/content/rentals/kloster-court/index.mdx">
+---
+title: Kloster Court
 vacancyStatus:
   discriminant: vacant
   value:
     - unitType: 1 Bedroom
       price: $1450/month
+    - unitType: 2 Bedroom
+      price: $1900/month
 address:
-  street: 88 Bruce Street
+  street: 135 Confederation Drive
   city: Kitchener
   province: Ontario
-  postalCode: N2B 1Y8
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/2_bedroom_88_bruce_st_kitchener_on/
+  postalCode: N2B 1W1
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/v5J28T2Z6V8DD1
 superintendent:
-  phone: (519) 579-9190
+  phone: (519) 588-0462
   hours: 9 AM - 5 PM
 specs:
-  stories: '5'
-  totalUnits: '40'
+  stories: '10'
+  totalUnits: '83'
   elevators: '1'
   laundry: On-Site
   utilities: Includes Utilities, Parking is Extra
   pets: No Pets
   smoking: No Smoking
   rooms: []
-gallery: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+  - gallery/21.webp
+  - gallery/22.webp
+  - gallery/23.webp
+  - gallery/24.webp
+  - gallery/25.webp
+  - gallery/26.webp
+  - gallery/27.webp
+  - gallery/28.webp
+  - gallery/29.webp
+  - gallery/30.webp
+  - gallery/31.webp
 ---
-Quiet building in Kitchener. Long term tenant profile. Clean spacious units. Balconies. Close to highway and to all amenities, shops, bars and restaurants. Excellent public transit access.\\
+Quiet building in Heritage Park. Long term tenant profile. Clean, spacious units. Balconies. Close to Stanley Park Mall. Excellent public transit access.
+</file>
 
-Parking is underground only.
+<file path="src/content/rentals/lorraine-apartments/index.mdx">
+---
+title: Lorraine Apartments
+vacancyStatus:
+  discriminant: vacant
+  value:
+    - unitType: 2 Bedroom
+      price: $1800/month
+address:
+  street: 187 Lorraine Avenue
+  city: Kitchener
+  province: Ontario
+  postalCode: N2B 2N3
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/vKXJJQ2Z6V8DD1
+superintendent:
+  phone: (519) 578-7881
+  hours: 9 AM - 5 PM
+specs:
+  stories: '3'
+  totalUnits: '21'
+  laundry: On-Site
+  utilities: Includes Utilities, Parking is Extra
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+---
+Quiet building. 3 storey walk-up in Heritage Park Kitchener. Long term tenant profile, clean spacious units. Balconies. Walking distance to Stanley Park. Excellent public transit access.
+</file>
+
+<file path="src/content/rentals/margaret-apartments/index.mdx">
+---
+title: Margaret Apartments
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 149 Confederation Drive
+  city: Kitchener
+  province: Ontario
+  postalCode: N2B 3J5
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/vQU2DP2Z6V8DD1
+superintendent:
+  phone: (519) 588-0462
+  hours: 9 AM - 5 PM
+specs:
+  stories: '8'
+  totalUnits: '61'
+  elevators: '2'
+  laundry: On-Site
+  utilities: Includes Utilities, Parking is Extra
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+---
+Quiet building in Heritage Park. Long term tenant profile. Clean spacious units. Balconies. Close to Stanley Park Mall. Excellent public transit access.
+</file>
+
+<file path="src/content/rentals/parkview-apartments/index.mdx">
+---
+title: Parkview Apartments
+vacancyStatus:
+  discriminant: vacant
+  value:
+    - unitType: 1 Bedroom
+      price: $1500/month
+    - unitType: 2 Bedroom
+      price: $1800/month
+address:
+  street: 12 Birkshire Court
+  city: Kitchener
+  province: Ontario
+  postalCode: N2B 3H9
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/vHYP6R2Z6V8DD1
+superintendent:
+  phone: (226) 752-5322
+  hours: 9 AM - 5 PM
+specs:
+  stories: '3'
+  totalUnits: '42'
+  laundry: On-Site
+  utilities: Hydro and Parking Extra
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+---
+Quiet building. 3 storey walk-up in Heritage Park, Kitchener. Long term tenant profile, clean spacious units. Balconies facing green space on quiet court. Walking distance to Stanley Park Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
+</file>
+
+<file path="src/content/rentals/richelieu-apartments/index.mdx">
+---
+title: Richelieu Apartments
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 250 Mary Street
+  city: Kitchener
+  province: Ontario
+  postalCode: N2J 1S7
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/vZN35QX75V8DD1
+superintendent:
+  phone: (519) 505-2808
+  hours: 9 AM - 5 PM
+specs:
+  stories: '6'
+  totalUnits: '54'
+  elevators: '1'
+  laundry: On-Site
+  utilities: Includes Utilities, Parking is Extra
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+---
+Quiet building in Waterloo. Long term, mainly tenant profile. Clean, large units with balconies. Close to hospital and Waterloo Town Square. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
+</file>
+
+<file path="src/content/rentals/traynor-avenue-apartments/index.mdx">
+---
+title: Traynor Avenue Apartments
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 231-241 + 249-259 Traynor Avenue
+  city: Kitchener
+  province: Ontario
+  postalCode: N2C 1W7
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/249_traynor_ave_kitchener_on/
+superintendent:
+  phone: (519) 588-1372
+  hours: 9 AM - 5 PM
+specs:
+  stories: '3'
+  totalUnits: 10-20
+  laundry: On-Site
+  utilities: Includes Utilities, Parking is Extra
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+  - gallery/21.webp
+  - gallery/22.webp
+  - gallery/23.webp
+  - gallery/24.webp
+  - gallery/25.webp
+  - gallery/26.webp
+  - gallery/27.webp
+  - gallery/28.webp
+  - gallery/29.webp
+  - gallery/30.webp
+  - gallery/31.webp
+  - gallery/32.webp
+---
+4 quiet buildings in Kitchener. Clean spacious units. Balconies. Close to highway and walking distance to Fairview Mall. Close to all amenities, shops, bars and restaurants. Excellent public transit access, walking distance to ION Train as well.
 </file>
 
 <file path="src/pages/contact.astro">
@@ -1124,11 +1459,11 @@ const rentals = allRentals.sort((a, b) => {
   <PageContainer>
     <PageHeader 
       title="Rental Properties" 
-      subtitle="Browse our residential and commercial listings. Contact our office for current availability."
+      subtitle="Browse our residential listings, and contact our office for current availability."
       breadcrumb={[{ text: 'Rentals', href: '/rentals' }]}
     />
     <!-- standardized grid gap -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {rentals.map(rental => (
         <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full @container">
           <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
@@ -1177,47 +1512,72 @@ const rentals = allRentals.sort((a, b) => {
 </Layout>
 </file>
 
-<file path="src/content/news/spring-summer-newsletter.mdx">
+<file path="src/content/rentals/princess-apartments/index.mdx">
 ---
-title: Spring/Summer Newsletter
-date: 2026-05-15
----
-We are excited to share our latest community updates and office news!\
-[**Click here to read the full newsletter.**](/newsletters/2026SpringNewsletter.pdf)
-</file>
-
-<file path="src/content/rentals/panorama-terrace-apartments/index.mdx">
----
-title: Panorama Terrace Apartments
+title: Princess Apartments
 vacancyStatus:
   discriminant: vacant
   value:
-    - unitType: 2 Bedroom
-      price: $1850/month
+    - unitType: 1 Bedroom
+      price: $1450/month
 address:
-  street: 235 Erb Street West
+  street: 88 Bruce Street
   city: Kitchener
   province: Ontario
-  postalCode: N2L 1V9
-coverImage: coverImage.jpg
-iGuideUrl: https://iguidephotos.com/two_bedroom_suite_139_bridge_st_e_kitchener_on/
+  postalCode: N2B 1Y8
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/2_bedroom_88_bruce_st_kitchener_on/
 superintendent:
-  phone: (519) 588-1376
+  phone: (519) 579-9190
   hours: 9 AM - 5 PM
 specs:
-  stories: '8'
-  totalUnits: '90'
-  elevators: '2'
+  stories: '5'
+  totalUnits: '40'
+  elevators: '1'
   laundry: On-Site
   utilities: Includes Utilities, Parking is Extra
   pets: No Pets
   smoking: No Smoking
   rooms: []
-gallery: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+  - gallery/21.webp
+  - gallery/22.webp
+  - gallery/23.webp
+  - gallery/24.webp
+  - gallery/25.webp
+  - gallery/26.webp
+  - gallery/27.webp
+  - gallery/28.webp
+  - gallery/29.webp
+  - gallery/30.webp
+  - gallery/31.webp
+  - gallery/32.webp
+  - gallery/33.webp
 ---
-Clean, quiet building. Mature tenant profile. Large units with updated balconies. Close to Westmount Mall and Waterloo Town Square. Close to all amenities, shops, bars and restaurants. 
+Quiet building in Kitchener. Long term tenant profile. Clean spacious units. Balconies. Close to highway and to all amenities, shops, bars and restaurants. Excellent public transit access.\\
 
-Excellent public transit access.
+Parking is underground only.
 </file>
 
 <file path="src/pages/pad-form.astro">
@@ -1252,6 +1612,122 @@ import PageContainer from '../components/PageContainer.astro';
         <a href="/forms/pad-form.pdf" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
             Download PAD Form
+        </a>
+    </div>
+  </PageContainer>
+</Layout>
+</file>
+
+<file path="src/content/rentals/panorama-terrace-apartments/index.mdx">
+---
+title: Panorama Terrace Apartments
+vacancyStatus:
+  discriminant: vacant
+  value:
+    - unitType: 2 Bedroom
+      price: $1850/month
+address:
+  street: 235 Erb Street West
+  city: Kitchener
+  province: Ontario
+  postalCode: N2L 1V9
+coverImage: coverImage.webp
+iGuideUrl: https://iguidephotos.com/two_bedroom_suite_139_bridge_st_e_kitchener_on/
+superintendent:
+  phone: (519) 588-1376
+  hours: 9 AM - 5 PM
+specs:
+  stories: '8'
+  totalUnits: '90'
+  elevators: '2'
+  laundry: On-Site
+  utilities: Includes Utilities, Parking is Extra
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+  - gallery/21.webp
+  - gallery/22.webp
+  - gallery/23.webp
+  - gallery/24.webp
+  - gallery/25.webp
+  - gallery/26.webp
+  - gallery/27.webp
+  - gallery/28.webp
+---
+Clean, quiet building. Mature tenant profile. Large units with updated balconies. Close to Westmount Mall and Waterloo Town Square. Close to all amenities, shops, bars and restaurants. 
+
+Excellent public transit access.
+</file>
+
+<file path="src/pages/application.astro">
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+---
+
+<Layout title="Rental Application | Schiketanz Real Estate">
+  <PageContainer>
+    <PageHeader 
+      title="Rental Application" 
+      breadcrumb={[{ text: 'Application', href: '/application' }]}
+    />
+    <div class="prose max-w-none text-gray-700 mb-8">
+        <p class="text-lg">
+            Thank you for your interest in our properties.
+            To view one of our rental units, please submit the required documents to <a href="mailto:leasing@schiketanz.ca" class="text-schiketanz-red hover:underline">leasing@schiketanz.ca</a>
+            or bring it to our office during business hours.
+        </p>
+    </div>
+    <!-- checklist -->
+    <div class="bg-blue-50 border border-blue-200 p-6 rounded-sm mb-6 w-fit pr-10">
+        <h3 class="font-century font-bold text-xl text-blue-900 mb-4">Required Documents</h3>
+        <ul class="space-y-3">
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Completed and signed Application Form</span>
+            </li>
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Proof of Income (e.g., recent pay stub, employment letter)</span>
+            </li>
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Two Pieces of Identification (one must include your photo)</span>
+            </li>
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Last Month's Rent Deposit</span>
+            </li>
+        </ul>
+    </div>
+    <!-- download section -->
+    <div class="text-left pt-8 border-t border-gray-200">
+        <a href="/forms/application.pdf" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Download Application
         </a>
     </div>
   </PageContainer>
@@ -1300,23 +1776,21 @@ const images = Object.values(imageFiles).map((file) => file.default);
         <div class="flex flex-col justify-center">
             <h2 class="font-century font-bold text-3xl text-gray-800 mb-2">Forest Hill Shopping Centre</h2>
             <p class="text-gray-500 text-lg mb-6">395-421 Greenbrook Drive, Kitchener, Ontario</p>
-            <div class="prose text-gray-700 mb-8">
+            <div class="prose text-gray-700 mb-4">
                 <p>
                     Forest Hill Shopping Centre is centrally located in the Forest Hill Area of Kitchener, Ontario. This shopping centre meets everyone's needs.
-                </p>
-                <p>
                     It includes a Giant Tiger, pharmacy, restaurant, bakery, doctors and dentists offices and so much more!
                 </p>
-                <ul class="list-disc pl-5 space-y-2 mt-4">
+                <ul class="list-disc pl-5 mt-4">
                     <li>High traffic visibility</li>
                     <li>Ample parking for customers</li>
                     <li>Professional property management on-site</li>
                 </ul>
             </div>
-            <div class="bg-gray-50 p-6 border-l-4 border-schiketanz-red max-w-md w-fit pr-10">
+            <div class="bg-gray-50 p-6 border-l-4 border-schiketanz-red max-w-md w-fit">
                 <h3 class="font-bold text-gray-800 mb-2">Leasing Inquiries</h3>
                 <p class="text-gray-600 mb-4">
-                    For information on space available for rent, please contact Sue.
+                    For more information, please contact Sue.
                 </p>
                 <div class="space-y-2">
                     <a href="tel:5197424477" class="block font-bold text-gray-800 hover:text-schiketanz-red transition-colors">(519) 742-4477</a>
@@ -1706,9 +2180,16 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
         if (form1) toggleForm(form1, false);
         if (form2) toggleForm(form2, false);
         if(selector) {
+            selector.selectedIndex = 0;
             selector.addEventListener('change', (e) => {
                 const target = e.target as HTMLSelectElement;
                 const option = target.options[target.selectedIndex];
+                if (target.value === "") {
+                    if(msg) msg.classList.remove('hidden');
+                    toggleForm(form1, false);
+                    toggleForm(form2, false);
+                    return;
+                }
                 const group = option.dataset.group;
                 const buildingName = target.value;
                 if(msg) msg.classList.add('hidden');
@@ -1729,194 +2210,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
         animation: fadeIn 0.3s ease-out forwards;
     }
 </style>
-</file>
-
-<file path="src/pages/application.astro">
----
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
----
-
-<Layout title="Rental Application | Schiketanz Real Estate">
-  <PageContainer>
-    <PageHeader 
-      title="Rental Application" 
-      breadcrumb={[{ text: 'Application', href: '/application' }]}
-    />
-    <div class="prose max-w-none text-gray-700 mb-8">
-        <p class="text-lg">
-            Thank you for your interest in our properties.
-            To view one of our rental units, please submit the required documents to <a href="mailto:leasing@schiketanz.ca" class="text-schiketanz-red hover:underline">leasing@schiketanz.ca</a>
-            or bring it to our office during business hours.
-        </p>
-    </div>
-    <!-- checklist -->
-    <div class="bg-blue-50 border border-blue-200 p-6 rounded-sm mb-6 w-fit pr-10">
-        <h3 class="font-century font-bold text-xl text-blue-900 mb-4">Required Documents</h3>
-        <ul class="space-y-3">
-            <li class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Completed and signed Application Form</span>
-            </li>
-            <li class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Proof of Income (e.g., recent pay stub, employment letter)</span>
-            </li>
-            <li class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Two Pieces of Identification (one must include your photo)</span>
-            </li>
-            <li class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Last Month's Rent Deposit</span>
-            </li>
-        </ul>
-    </div>
-    <!-- download section -->
-    <div class="text-left pt-8 border-t border-gray-200">
-        <a href="/forms/application.pdf" target="_blank" class="inline-flex items-center bg-schiketanz-red text-white font-century font-bold text-lg px-8 py-4 rounded hover:bg-red-700 transition-colors shadow-md">
-            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Download Application
-        </a>
-    </div>
-  </PageContainer>
-</Layout>
-</file>
-
-<file path="src/content/config.ts">
-import { defineCollection, z } from 'astro:content';
-
-const rentals = defineCollection({
-    type: 'content',
-    schema: ({ image }) => z.object({
-        title: z.string(),
-        vacancyStatus: z.discriminatedUnion('discriminant', [
-            z.object({ discriminant: z.literal('occupied') }),
-            z.object({ 
-                discriminant: z.literal('vacant'), 
-                value: z.array(z.object({
-                    unitType: z.string(),
-                    price: z.string()
-                })).min(1)
-            }),
-        ]),
-        address: z.object({
-            street: z.string(),
-            city: z.string(),
-            province: z.string(),
-            postalCode: z.string(),
-        }),
-        coverImage: image().optional(),        
-        iGuideUrl: z.string().url().or(z.literal('')).optional(),
-        superintendent: z.object({
-            name: z.string().optional(),
-            phone: z.string().optional(),
-            hours: z.string().optional(),
-        }).optional(),
-        specs: z.object({
-            stories: z.string().optional(),
-            totalUnits: z.string().optional(),
-            elevators: z.string().optional(),
-            laundry: z.string().optional(),
-            utilities: z.string().optional(),
-            // locked to exact values Keystatic's select fields produce
-            pets: z.enum(['No Pets', 'Pet Friendly']).optional(),
-            smoking: z.enum(['No Smoking', 'Smoking Permitted']).optional(),
-            // structured room measurements — replaces free-text sqft field
-            rooms: z.array(z.object({
-                name: z.string(),
-                dimensions: z.string().optional(),
-                sqft: z.string().optional(),
-            })).optional(),
-        }).optional(),
-        gallery: z.array(image()).optional(),
-    }),
-});
-
-const news = defineCollection({
-    type: 'content',
-    schema: z.object({
-        title: z.string(),
-        date: z.coerce.date(),
-    }),
-});
-
-export const collections = { rentals, news };
-</file>
-
-<file path="src/content/rentals/bridge-apartments/index.mdx">
----
-title: Bridge Apartments
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 131-139 Bridge Street East
-  city: Kitchener
-  province: Ontario
-  postalCode: N2K 1K1
-coverImage: coverImage.jpg
-iGuideUrl: https://iguidephotos.com/two_bedroom_suite_139_bridge_st_e_kitchener_on/
-superintendent:
-  phone: 519-742-4477
-  hours: '9AM - 4 PM '
-specs:
-  stories: '3'
-  totalUnits: '16'
-  utilities: Utilities and Parking Extra
-  pets: No Pets
-  smoking: No Smoking
-  rooms: []
-gallery: []
----
-Condo style living.  Quiet building in Kitchener. Clean spacious units. Close to amenities. Excellent public transit access. Amenities include Central A/C, 5 appliances; fridge, stove, washer, dryer and microwave.
-</file>
-
-<file path="src/content/rentals/chicopee-court/index.mdx">
----
-title: Chicopee Court
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 7 Old Chicopee Drive
-  city: Kitchener
-  province: Ontario
-  postalCode: N2A 2V4
-coverImage: coverImage.jpg
-iGuideUrl: https://youriguide.com/two_bedroom_suite_7_old_chicopee_dr_kitchener_on/
-superintendent: {}
-specs:
-  stories: '7'
-  totalUnits: '55'
-  elevators: '1'
-  laundry: On Site
-  utilities: Rent includes utilities
-  pets: No Pets
-  smoking: No Smoking
-  rooms:
-    - name: 4pc Bath
-      dimensions: 7'5" x 4'11"
-      sqft: '37'
-    - name: Bedroom
-      dimensions: 9'10" x 15'6"
-      sqft: '153'
-    - name: Bedroom
-      dimensions: 10'6" x 10'10"
-      sqft: '114'
-    - name: Dining
-      dimensions: 9'6" x 7'8"
-      sqft: '73'
-    - name: Kitchen
-      dimensions: 6'9" x 7'5"
-      sqft: '51'
-    - name: Living
-      dimensions: 20'8" x 11'10"
-      sqft: '244'
-gallery: []
----
-Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access. Walking distance to Stanley Park Mall.\\
-
-Parking is extra.
 </file>
 
 <file path="src/layouts/Layout.astro">
@@ -2067,6 +2360,268 @@ const businessSchema = {
 </script>
 </file>
 
+<file path="src/content/config.ts">
+import { defineCollection, z } from 'astro:content';
+
+const rentals = defineCollection({
+    type: 'content',
+    schema: ({ image }) => z.object({
+        title: z.string(),
+        vacancyStatus: z.discriminatedUnion('discriminant', [
+            z.object({ discriminant: z.literal('occupied') }),
+            z.object({ 
+                discriminant: z.literal('vacant'), 
+                value: z.array(z.object({
+                    unitType: z.string(),
+                    price: z.string()
+                })).min(1)
+            }),
+        ]),
+        address: z.object({
+            street: z.string(),
+            city: z.string(),
+            province: z.string(),
+            postalCode: z.string(),
+        }),
+        coverImage: image().optional(),        
+        iGuideUrl: z.string().url().or(z.literal('')).optional(),
+        superintendent: z.object({
+            name: z.string().optional(),
+            phone: z.string().optional(),
+            hours: z.string().optional(),
+        }).optional(),
+        specs: z.object({
+            stories: z.string().optional(),
+            totalUnits: z.string().optional(),
+            elevators: z.string().optional(),
+            laundry: z.string().optional(),
+            utilities: z.string().optional(),
+            pets: z.enum(['No Pets', 'Pet Friendly']).optional(),
+            smoking: z.enum(['No Smoking', 'Smoking Permitted']).optional(),
+            rooms: z.array(z.object({
+                name: z.string(),
+                dimensions: z.string().optional(),
+                sqft: z.string().optional(),
+            })).optional(),
+        }).optional(),
+        gallery: z.array(image()).optional(),
+    }),
+});
+const news = defineCollection({
+    type: 'content',
+    schema: z.object({
+        title: z.string(),
+        date: z.coerce.date(),
+    }),
+});
+
+export const collections = { rentals, news };
+</file>
+
+<file path="src/content/rentals/bluebird-apartments/index.mdx">
+---
+title: Bluebird Apartments
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 195 Natchez Road
+  city: Kitchener
+  province: Ontario
+  postalCode: N2B 1W2
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/vEN92C3Z6V8DD1
+superintendent:
+  phone: (519) 588-0083
+  hours: 9 AM - 5 PM
+specs:
+  stories: '9'
+  totalUnits: '159'
+  elevators: '2'
+  laundry: On Each Floor
+  utilities: Hydro and Parking Extra
+  pets: No Pets
+  smoking: No Smoking
+  rooms:
+    - name: 2pc Ensuite
+      dimensions: 8'2" x 4'1"
+      sqft: 30 sq ft
+    - name: 4pc Bath
+      dimensions: 6'10" x 6'4
+      sqft: 40 sq ft
+    - name: Bedroom
+      dimensions: 12'11" x 9'8"
+      sqft: 125 sq ft
+    - name: Dining
+      dimensions: 9'7" x 8'3"
+      sqft: 79 sq ft
+    - name: Kitchen
+      dimensions: 9'9" x 7'9"
+      sqft: 72 sq ft
+    - name: Living
+      dimensions: 23'11" x 11'5"
+      sqft: 274 sq ft
+    - name: Primary
+      dimensions: 16'8" x 11'2"
+      sqft: 167 sq ft
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+  - gallery/21.webp
+  - gallery/22.webp
+  - gallery/23.webp
+  - gallery/24.webp
+  - gallery/25.webp
+  - gallery/26.webp
+  - gallery/27.webp
+  - gallery/28.webp
+---
+Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
+</file>
+
+<file path="src/content/rentals/bridge-apartments/index.mdx">
+---
+title: Bridge Apartments
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 131-139 Bridge Street East
+  city: Kitchener
+  province: Ontario
+  postalCode: N2K 1K1
+coverImage: coverImage.webp
+iGuideUrl: https://iguidephotos.com/two_bedroom_suite_139_bridge_st_e_kitchener_on/
+superintendent:
+  phone: 519-742-4477
+  hours: '9AM - 4 PM '
+specs:
+  stories: '3'
+  totalUnits: '16'
+  utilities: Utilities and Parking Extra
+  pets: No Pets
+  smoking: No Smoking
+  rooms: []
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+  - gallery/21.webp
+  - gallery/22.webp
+  - gallery/23.webp
+  - gallery/24.webp
+  - gallery/25.webp
+  - gallery/26.webp
+  - gallery/27.webp
+  - gallery/28.webp
+---
+Condo style living.  Quiet building in Kitchener. Clean spacious units. Close to amenities. Excellent public transit access. Amenities include Central A/C, 5 appliances; fridge, stove, washer, dryer and microwave.
+</file>
+
+<file path="src/content/rentals/chicopee-court/index.mdx">
+---
+title: Chicopee Court
+vacancyStatus:
+  discriminant: occupied
+address:
+  street: 7 Old Chicopee Drive
+  city: Kitchener
+  province: Ontario
+  postalCode: N2A 2V4
+coverImage: coverImage.webp
+iGuideUrl: https://youriguide.com/two_bedroom_suite_7_old_chicopee_dr_kitchener_on/
+superintendent: {}
+specs:
+  stories: '7'
+  totalUnits: '55'
+  elevators: '1'
+  laundry: On Site
+  utilities: Rent includes utilities
+  pets: No Pets
+  smoking: No Smoking
+  rooms:
+    - name: 4pc Bath
+      dimensions: 7'5" x 4'11"
+      sqft: '37'
+    - name: Bedroom
+      dimensions: 9'10" x 15'6"
+      sqft: '153'
+    - name: Bedroom
+      dimensions: 10'6" x 10'10"
+      sqft: '114'
+    - name: Dining
+      dimensions: 9'6" x 7'8"
+      sqft: '73'
+    - name: Kitchen
+      dimensions: 6'9" x 7'5"
+      sqft: '51'
+    - name: Living
+      dimensions: 20'8" x 11'10"
+      sqft: '244'
+gallery:
+  - gallery/0.webp
+  - gallery/1.webp
+  - gallery/2.webp
+  - gallery/3.webp
+  - gallery/4.webp
+  - gallery/5.webp
+  - gallery/6.webp
+  - gallery/7.webp
+  - gallery/8.webp
+  - gallery/9.webp
+  - gallery/10.webp
+  - gallery/11.webp
+  - gallery/12.webp
+  - gallery/13.webp
+  - gallery/14.webp
+  - gallery/15.webp
+  - gallery/16.webp
+  - gallery/17.webp
+  - gallery/18.webp
+  - gallery/19.webp
+  - gallery/20.webp
+  - gallery/21.webp
+---
+Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access. Walking distance to Stanley Park Mall.
+
+Parking is extra.
+</file>
+
 <file path="src/pages/rentals/[id].astro">
 ---
 import { getCollection, render } from 'astro:content';
@@ -2148,8 +2703,8 @@ const propertySchema = {
         {allImages.length > 0 ? (
             <div>
               <PropertyGallery images={allImages} title={rental.data.title} />
-              <p class="text-sm italic text-gray-500 mt-3 text-center md:text-left">
-                Units may vary in appearance, and furnishings shown may not be included
+              <p class="text-xs italic text-gray-500 mt-3 text-center">
+                UNITS MAY VARY IN APPEARANCE
               </p>
             </div>
         ) : (
@@ -2263,58 +2818,6 @@ const propertySchema = {
     </div>
   </PageContainer>
 </Layout>
-</file>
-
-<file path="src/content/rentals/bluebird-apartments/index.mdx">
----
-title: Bluebird Apartments
-vacancyStatus:
-  discriminant: occupied
-address:
-  street: 195 Natchez Road
-  city: Kitchener
-  province: Ontario
-  postalCode: N2B 1W2
-coverImage: coverImage.webp
-iGuideUrl: https://youriguide.com/vEN92C3Z6V8DD1
-superintendent:
-  phone: (519) 588-0083
-  hours: 9 AM - 5 PM
-specs:
-  stories: '9'
-  totalUnits: '159'
-  elevators: '2'
-  laundry: On Each Floor
-  utilities: Hydro and Parking Extra
-  pets: No Pets
-  smoking: No Smoking
-  rooms:
-    - name: 2pc Ensuite
-      dimensions: 8'2" x 4'1"
-      sqft: 30 sq ft
-    - name: 4pc Bath
-      dimensions: 6'10" x 6'4
-      sqft: 40 sq ft
-    - name: Bedroom
-      dimensions: 12'11" x 9'8"
-      sqft: 125 sq ft
-    - name: Dining
-      dimensions: 9'7" x 8'3"
-      sqft: 79 sq ft
-    - name: Kitchen
-      dimensions: 9'9" x 7'9"
-      sqft: 72 sq ft
-    - name: Living
-      dimensions: 23'11" x 11'5"
-      sqft: 274 sq ft
-    - name: Primary
-      dimensions: 16'8" x 11'2"
-      sqft: 167 sq ft
-gallery:
-  - gallery/0.webp
-  - gallery/1.webp
----
-Quiet building nestled in Heritage Park area of Kitchener. Mature, long term tenants. Clean spacious units. Large Balconies. Close to all amenities, shops, bars and restaurants. Excellent public transit access.
 </file>
 
 <file path="keystatic.config.ts">

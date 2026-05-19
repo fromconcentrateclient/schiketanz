@@ -22,11 +22,11 @@ const rentals = allRentals.sort((a, b) => {
   <PageContainer>
     <PageHeader 
       title="Rental Properties" 
-      subtitle="Browse our residential and commercial listings. Contact our office for current availability."
+      subtitle="Browse our residential listings, and contact our office for current availability."
       breadcrumb={[{ text: 'Rentals', href: '/rentals' }]}
     />
     <!-- standardized grid gap -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {rentals.map(rental => (
         <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full @container">
           <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
