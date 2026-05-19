@@ -1,11 +1,9 @@
 ---
-export const prerender = true; // to ensure form is detected
-
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
 
-// Building Data (Group 1 vs Group 2)
+// assigning groups to each building
 const buildings =[
     { name: "Bluebird Apartments", group: 1 },
     { name: "Bridge Apts", group: 1 },
@@ -25,8 +23,7 @@ const buildings =[
     { name: "Stanley Park Apts", group: 1 },
     { name: "Traynor Avenue", group: 2 },
 ].sort((a, b) => a.name.localeCompare(b.name));
-
-// Reusable Tailwind classes for form inputs to ensure pixel-perfect consistency
+// shared input styles
 const inputClasses = "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:bg-white focus:ring-2 focus:ring-schiketanz-red/30 focus:border-schiketanz-red outline-none transition-all text-gray-800";
 const labelClasses = "block text-sm font-bold text-gray-700 mb-2";
 const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 border-b border-gray-200 pb-2 mb-5 mt-8 first:mt-0";
@@ -39,9 +36,8 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
       subtitle="Submit a work order directly to your building superintendent."
       breadcrumb={[{ text: 'Maintenance', href: '/maintenance' }]}
     />
-
     <div class="space-y-6">
-        <!-- Building Selection Card -->
+        <!-- building selection card -->
         <div class="bg-gray-50 p-6 md:p-8 rounded-lg border border-gray-200 shadow-sm">
             <label for="building-selector" class="block text-xl font-century font-bold text-gray-800 mb-3">
                 First, select your building:
@@ -55,18 +51,16 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                 </select>
             </div>
         </div>
-
-        <!-- FORM CONTAINER -->
+        <!-- form container -->
         <div class="bg-white p-6 md:p-10 rounded-lg shadow-sm border border-gray-200 min-h-[400px]">
-            <!-- Default State: No Building Selected -->
+            <!-- default: nothing selected -->
             <div id="no-selection-msg" class="text-center text-gray-400 py-16">
                 <svg class="w-16 h-16 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                 </svg>
                 <p class="text-xl font-medium">Select a building above to load your request form.</p>
             </div>
-
-            <!-- GROUP 1 FORM -->
+            <!-- group 1 -->
             <form 
                 id="form-group-1"
                 name="maintenance-group-1" 
@@ -82,8 +76,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                 <p class="hidden"><label>Bot: <input name="bot-field" /></label></p>
                 <input type="hidden" name="building_name" value="Not Selected" class="selected-building-input" />
                 <input type="hidden" name="subject" value="New Maintenance Request (Group 1)" />
-
-                <!-- 1. Contact Info -->
                 <h3 class={sectionHeaderClasses}>1. Contact Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
@@ -105,8 +97,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                         <input type="text" id="g1-unit" name="unit" required class={inputClasses} />
                     </div>
                 </div>
-
-                <!-- 2. Issue Info -->
                 <h3 class={sectionHeaderClasses}>2. Maintenance Details</h3>
                 <div class="mb-6">
                     <label for="g1-issue" class={labelClasses}>Description of Request *</label>
@@ -117,8 +107,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                     <input type="file" id="g1-photos" name="photos" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-bold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer transition-colors" />
                     <p class="mt-2 text-xs text-gray-500">Attach a picture to help us better understand the issue.</p>
                 </div>
-
-                <!-- 3. Permissions -->
                 <h3 class={sectionHeaderClasses}>3. Entry & Permissions</h3>
                 <div class="bg-gray-50 p-6 border border-gray-200 rounded-md space-y-6">
                     <div class="flex items-start">
@@ -149,7 +137,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                         </div>
                     </div>
                 </div>
-
                 <div class="pt-8">
                     <button type="submit" class="w-full text-lg px-10 py-4 bg-schiketanz-red text-white font-bold rounded-md shadow hover:bg-schiketanz-red-dark transition-all hover:-translate-y-0.5 active:translate-y-0 flex justify-center items-center">
                         Submit Maintenance Request
@@ -157,8 +144,7 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                     </button>
                 </div>
             </form>
-
-            <!-- GROUP 2 FORM (Identical UI, different form name for Netlify Routing) -->
+            <!-- group 2 -->
             <form 
                 id="form-group-2"
                 name="maintenance-group-2" 
@@ -174,8 +160,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                 <p class="hidden"><label>Bot: <input name="bot-field" /></label></p>
                 <input type="hidden" name="building_name" value="Not Selected" class="selected-building-input" />
                 <input type="hidden" name="subject" value="New Maintenance Request (Group 2)" />
-
-                <!-- 1. Contact Info -->
                 <h3 class={sectionHeaderClasses}>1. Contact Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
@@ -197,8 +181,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                         <input type="text" id="g2-unit" name="unit" required class={inputClasses} />
                     </div>
                 </div>
-
-                <!-- 2. Issue Info -->
                 <h3 class={sectionHeaderClasses}>2. Maintenance Details</h3>
                 <div class="mb-6">
                     <label for="g2-issue" class={labelClasses}>Description of Request *</label>
@@ -209,8 +191,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                     <input type="file" id="g2-photos" name="photos" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-bold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer transition-colors" />
                     <p class="mt-2 text-xs text-gray-500">Attach a picture to help us better understand the issue.</p>
                 </div>
-
-                <!-- 3. Permissions -->
                 <h3 class={sectionHeaderClasses}>3. Entry & Permissions</h3>
                 <div class="bg-gray-50 p-6 border border-gray-200 rounded-md space-y-6">
                     <div class="flex items-start">
@@ -241,7 +221,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                         </div>
                     </div>
                 </div>
-
                 <div class="pt-8">
                     <button type="submit" class="w-full text-lg px-10 py-4 bg-schiketanz-red text-white font-bold rounded-md shadow hover:bg-schiketanz-red-dark transition-all hover:-translate-y-0.5 active:translate-y-0 flex justify-center items-center">
                         Submit Maintenance Request
@@ -249,7 +228,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                     </button>
                 </div>
             </form>
-
         </div>
     </div>
   </PageContainer>
@@ -262,7 +240,6 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
         const form1 = document.getElementById('form-group-1') as HTMLFormElement;
         const form2 = document.getElementById('form-group-2') as HTMLFormElement;
         const hiddenInputs = document.querySelectorAll('.selected-building-input');
-
         const toggleForm = (form: HTMLFormElement | null, shouldShow: boolean) => {
             if (!form) return;
             if (shouldShow) {
@@ -273,11 +250,9 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                 Array.from(form.elements).forEach((el: any) => el.disabled = true);
             }
         };
-        
         // init - hide forms on load
         if (form1) toggleForm(form1, false);
         if (form2) toggleForm(form2, false);
-
         if(selector) {
             selector.addEventListener('change', (e) => {
                 const target = e.target as HTMLSelectElement;
@@ -285,9 +260,7 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
                 const group = option.dataset.group;
                 const buildingName = target.value;
                 if(msg) msg.classList.add('hidden');
-                
                 hiddenInputs.forEach((input) => { (input as HTMLInputElement).value = buildingName; });
-                
                 toggleForm(form1, group === '1');
                 toggleForm(form2, group === '2');
             });

@@ -5,7 +5,7 @@ import { Image } from 'astro:assets';
 import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
 
-// sort: vacant (1) first, then occupied (2), then alphabetical
+// sort: vacant first, then occupied, then alphabetical
 const allRentals = await getCollection('rentals');
 const rentals = allRentals.sort((a, b) => {
   const statusA = a.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
@@ -65,7 +65,7 @@ const rentals = allRentals.sort((a, b) => {
         </article>
       ))}
     </div>
-    <!-- Empty State -->
+    <!-- empty state -->
     {rentals.length === 0 && (
         <div class="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
             <p class="text-gray-400 font-medium">No rental properties found.</p>

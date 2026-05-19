@@ -1,6 +1,6 @@
 # Schiketanz Real Estate
 
-To modify the site:
+TO MODIFY:
 
 npm add astro
 npm install

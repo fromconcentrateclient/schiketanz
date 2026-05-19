@@ -1,4 +1,3 @@
-// src/content/config.ts
 import { defineCollection, z } from 'astro:content';
 
 const rentals = defineCollection({
@@ -34,10 +33,10 @@ const rentals = defineCollection({
             elevators: z.string().optional(),
             laundry: z.string().optional(),
             utilities: z.string().optional(),
-            // Locked to exact values Keystatic's select fields produce
+            // locked to exact values Keystatic's select fields produce
             pets: z.enum(['No Pets', 'Pet Friendly']).optional(),
             smoking: z.enum(['No Smoking', 'Smoking Permitted']).optional(),
-            // Structured room measurements — replaces the free-text sqft field
+            // structured room measurements — replaces free-text sqft field
             rooms: z.array(z.object({
                 name: z.string(),
                 dimensions: z.string().optional(),

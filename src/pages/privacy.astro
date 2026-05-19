@@ -10,33 +10,48 @@ import PageContainer from '../components/PageContainer.astro';
       title="Privacy Policy" 
       breadcrumb={[{ text: 'Privacy Policy', href: '/privacy' }]}
     />
-
-    <div class="prose max-w-none text-gray-700">
-      <p class="italic text-sm text-gray-500 mb-6">Last Updated: {new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-
-      <h3>1. General Policy</h3>
-      <p>
-        At M. Schiketanz Real Estate Inc., we are committed to maintaining the accuracy, confidentiality, and security of your personally identifiable information ("Personal Information"). As part of this commitment, our privacy policy governs our actions as they relate to the collection, use, and disclosure of Personal Information.
+    <div class="text-lg text-gray-700 leading-relaxed font-sans space-y-8">
+      <p class="italic text-sm text-gray-500 pb-4 border-b border-gray-200">
+        Effective: May 19th, 2026
       </p>
-
-      <h3>2. Collection of Personal Information</h3>
-      <p>
-        We collect personal information (such as names, contact details, and financial information) primarily for the purpose of evaluating rental applications, managing tenancy agreements, and processing payments. We collect only the amount of information that is necessary for the purposes identified.
-      </p>
-
-      <h3>3. Use and Disclosure</h3>
-      <p>
-        Your personal information is used only for the purposes for which it was collected or as required by law. We do not sell, trade, or rent your personal information to third parties.
-      </p>
-      
-      <h3>4. Contact Us</h3>
-      <p>
-        If you have any questions regarding this Privacy Policy or the personal information we hold about you, please contact our office at:
-      </p>
-      <ul>
-        <li><strong>Email:</strong> <a href="mailto:office@schiketanz.ca" class="text-schiketanz-red hover:underline">office@schiketanz.ca</a></li>
-        <li><strong>Phone:</strong> (519) 742-4477</li>
-      </ul>
+      <section>
+        <h3 class="font-century font-bold text-2xl text-gray-800 mb-3">1. General Policy</h3>
+        <p>
+          At M. Schiketanz Real Estate Inc., we are committed to maintaining the accuracy, confidentiality, and security of your personally identifiable information ("Personal Information"). As part of this commitment, our privacy policy governs our actions as they relate to the collection, use, and disclosure of Personal Information.
+        </p>
+      </section>
+      <section>
+        <h3 class="font-century font-bold text-2xl text-gray-800 mb-3">2. Collection of Personal Information</h3>
+        <p>
+          We collect personal information (such as names, contact details, and financial information) primarily for the purpose of evaluating rental applications, managing tenancy agreements, and processing payments. We collect only the amount of information that is necessary for the purposes identified.
+        </p>
+      </section>
+      <section>
+        <h3 class="font-century font-bold text-2xl text-gray-800 mb-3">3. Use and Disclosure</h3>
+        <p>
+          Your personal information is used only for the purposes for which it was collected or as required by law. We do not sell, trade, or rent your personal information to third parties.
+        </p>
+      </section>
+      <div class="bg-gray-50 p-6 md:p-8 border-l-4 border-schiketanz-red rounded-sm shadow-sm mt-4">
+        <h3 class="font-century font-bold text-2xl text-schiketanz-red mb-4">4. Contact Us</h3>
+        <p class="mb-5 text-base">
+          If you have any questions regarding this Privacy Policy or the personal information we hold about you, please contact our office at:
+        </p>
+        <ul class="space-y-4 text-base">
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-schiketanz-red mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <span><strong>Email:</strong> <a href="mailto:office@schiketanz.ca" class="text-schiketanz-red hover:underline font-medium">office@schiketanz.ca</a></span>
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-schiketanz-red mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+            </svg>
+            <span><strong>Phone:</strong> <a href="tel:5197424477" class="hover:text-schiketanz-red hover:underline transition-colors">(519) 742-4477</a></span>
+          </li>
+        </ul>
+      </div>
     </div>
   </PageContainer>
 </Layout>

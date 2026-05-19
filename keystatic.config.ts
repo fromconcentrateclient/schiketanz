@@ -1,4 +1,3 @@
-// keystatic.config.ts
 import { config, fields, collection } from '@keystatic/core';
 
 export default config({
@@ -100,7 +99,6 @@ export default config({
             ],
             defaultValue: 'No Smoking'
           }),
-          // Replaced free-text sqft with a structured array of room measurements
           rooms: fields.array(
             fields.object({
               name: fields.text({
@@ -132,7 +130,6 @@ export default config({
         content: fields.mdx({ label: 'Description & Amenities' }),
       },
     }),
-
     news: collection({
       label: 'News & Notices',
       slugField: 'title',

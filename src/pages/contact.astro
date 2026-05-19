@@ -1,5 +1,4 @@
 ---
-export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
@@ -14,11 +13,10 @@ import PageContainer from '../components/PageContainer.astro';
       title="Contact & Hours" 
       breadcrumb={[{ text: 'Contact', href: '/contact' }]}
     />
-    <!-- 3-column grid to make the info column 1/3 and the map 2/3 -->
+    <!-- 3-column grid, info 1/3 and map 2/3 -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-      <!-- LEFT COLUMN: Contact Info & Hours (1/3 width) -->
+      <!-- left: contact info -->
       <div class="lg:col-span-1 space-y-8">
-        <!-- Office Hours Box -->
         <div class="bg-gray-50 p-6 shadow-sm border border-gray-200 rounded-sm">
             <h3 class="font-century font-bold text-xl text-gray-800 mb-4 border-b pb-2">Office Hours</h3>
             <ul class="space-y-3 text-sm text-gray-700">
@@ -36,7 +34,6 @@ import PageContainer from '../components/PageContainer.astro';
                 </li>
             </ul>
         </div>
-        <!-- Direct Contact Details -->
         <div>
             <h3 class="font-century font-bold text-xl text-gray-800 mb-4">Get In Touch</h3>
             <div class="space-y-5 text-gray-700">
@@ -69,7 +66,7 @@ import PageContainer from '../components/PageContainer.astro';
             </div>
         </div>
       </div>
-      <!-- RIGHT COLUMN: Map (2/3 width) -->
+      <!-- right: map -->
       <div class="lg:col-span-2">
         <div class="h-[500px] bg-gray-200 rounded-sm overflow-hidden border border-gray-300 shadow-inner">
             <iframe 

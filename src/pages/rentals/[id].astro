@@ -1,8 +1,4 @@
 ---
-// src/pages/rentals/[id].astro
-
-export const prerender = true;
-
 import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import PropertyGallery from '../../components/PropertyGallery.astro';
@@ -76,9 +72,7 @@ const propertySchema = {
             </div>
         )}
     </PageHeader>
-
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
-      
       <!-- Left Column: Media and Description -->
       <div class="lg:col-span-2 space-y-8">
         {allImages.length > 0 ? (
@@ -97,11 +91,9 @@ const propertySchema = {
            <Content />
         </div>
       </div>
-
-      <!-- RIGHT SIDEBAR -->
+      <!-- right sidebar -->
       <div class="lg:col-span-1 space-y-6">
-        
-        <!-- 1. ACTION CARD -->
+        <!-- action card -->
         {isVacant ? (
             <div class="bg-green-50 border-2 border-green-600 p-6 rounded-sm shadow-sm">
                 <h3 class="font-century text-xl font-bold text-green-800 mb-4 flex items-center">
@@ -116,7 +108,6 @@ const propertySchema = {
                         </div>
                     ))}
                 </div>
-                
                 {rental.data.superintendent?.phone && (
                     <div class="bg-white/50 p-4 rounded-sm border border-green-200 mb-6">
                         <p class="text-xs font-bold text-green-800 uppercase tracking-widest mb-2">Contact to View</p>
@@ -125,7 +116,6 @@ const propertySchema = {
                         {rental.data.superintendent.hours && <p class="text-xs text-gray-600 mt-1">{rental.data.superintendent.hours}</p>}
                     </div>
                 )}
-
                 <a href="/application" class="block w-full text-center bg-green-600 text-white font-bold py-3 px-4 rounded hover:bg-green-700 transition-colors shadow-md">
                     Apply for This Unit
                 </a>
@@ -143,8 +133,7 @@ const propertySchema = {
                 </a>
             </div>
         )}
-
-        <!-- 2. TOUR -->
+        <!-- tour -->
         {rental.data.iGuideUrl && (
             <a href={rental.data.iGuideUrl} target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full bg-[#003057] hover:bg-[#002542] text-white font-century py-3 px-4 rounded shadow transition-all group">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -154,8 +143,7 @@ const propertySchema = {
                 <span>3D Virtual Tour</span>
             </a>
         )}
-
-        <!-- 3. BUILDING DETAILS -->
+        <!-- building details -->
         <div class="bg-gray-50 border border-gray-200 p-6 rounded-sm">
             <h3 class="font-century text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">Building Details</h3>
             <dl class="space-y-3 text-sm">
@@ -171,8 +159,6 @@ const propertySchema = {
                 {hasSpec(rental.data.specs?.laundry) && (
                     <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Laundry</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.laundry}</dd></div>
                 )}
-
-                {/* Room Measurements Table — only shown if rooms have been entered */}
                 {rooms.length > 0 && (
                     <div class="pt-1">
                         <dt class="text-gray-500 mb-2">Room Measurements</dt>
@@ -196,16 +182,13 @@ const propertySchema = {
                         </table>
                     </div>
                 )}
-
                 <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Pets</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.pets || 'No Pets'}</dd></div>
                 <div class="flex justify-between border-b border-gray-200 pb-1"><dt class="text-gray-500">Smoking</dt><dd class="font-bold text-gray-800 text-right">{rental.data.specs?.smoking || 'No Smoking'}</dd></div>
-
                 {hasSpec(rental.data.specs?.utilities) && (
                     <div class="pt-2 italic text-gray-600 text-xs">{rental.data.specs?.utilities}</div>
                 )}
             </dl>
         </div>
-        
       </div>
     </div>
   </PageContainer>

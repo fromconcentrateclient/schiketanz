@@ -29,6 +29,6 @@
   --font-sans: "Open Sans", ui-sans-serif, system-ui, sans-serif;
 }
 body {
-    /* ensure scrollbar doesn't shift layout on some windows */
+    /* ensure scrollbar doesn't shift layout */
     overflow-y: scroll; 
 }

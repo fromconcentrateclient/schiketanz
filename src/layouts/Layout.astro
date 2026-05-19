@@ -17,8 +17,7 @@ interface Props {
     // allow pages to inject specific schema (like ApartmentComplex)
     propertySchema?: object; 
 }
-
-// default SEO values extracted from original site
+// SEO values from original site
 const defaultDesc = "Apartment Rentals in Kitchener Waterloo Ontario. M. Schiketanz Real Estate Inc. providing quality service to tenants since 1953.";
 const siteName = "M. Schiketanz Real Estate Inc.";
 const { 
@@ -28,16 +27,16 @@ const {
     canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
     type = 'website',
     logoAs = 'div', // default to 'div' so only homepage overrides to 'h1'
-    propertySchema // extract the new prop
+    propertySchema // extract new prop
 } = Astro.props;
-// schema extracted from CURL data
+// schema values from original site
 const businessSchema = {
   "@context": "https://schema.org/",
   "@type": "LocalBusiness",
   "name": "M. Schiketanz Real Estate Inc.",
   "url": Astro.site,
   "logo": new URL('/favicon.svg', Astro.site).href,
-  "image": new URL('/images/og-default.jpg', Astro.site).href, // Use your default OG image
+  "image": new URL('/images/og-default.jpg', Astro.site).href,
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "CA",
@@ -95,10 +94,8 @@ const businessSchema = {
         {propertySchema && (
             <script type="application/ld+json" set:html={JSON.stringify(propertySchema)} />
         )}
-        
 		<ClientRouter />
 	</head>
-	
 	<body class="bg-white flex flex-col min-h-screen text-gray-800 font-sans antialiased-crisp">
         <!-- accessibility: skip to content -->
         <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] bg-white text-blue-800 p-4 border border-blue-800 rounded">Skip to main content</a>
