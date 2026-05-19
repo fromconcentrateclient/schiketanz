@@ -334,162 +334,6 @@ Allow: /
 Sitemap: https://schiketanz.ca/sitemap-index.xml
 </file>
 
-<file path="src/components/PropertyGallery.astro">
----
-import { Image } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
-
-interface Props {
-  images: ImageMetadata[];
-  title: string;
-}
-const { images, title } = Astro.props;
----
-
-<div class="relative w-full group border-2 border-schiketanz-red rounded-sm bg-gray-50" id="gallery-container">
-  <!-- scrollable container -->
-  <div 
-    id="carousel-track"
-    class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth aspect-video relative"
-  >
-    {images.map((imgObj, index) => (
-      <div class="flex-none w-full h-full snap-center relative flex items-center justify-center bg-gray-900 gallery-slide overflow-hidden">
-        <!-- background layer blurred & zoomed to fill space -->
-        <div class="absolute inset-0 w-full h-full">
-            <Image 
-              src={imgObj} 
-              alt="" 
-              class="w-full h-full object-cover opacity-50 blur-xl scale-110"
-            />
-        </div>
-        <!-- foreground layer with image fully visible -->
-        <Image 
-          src={imgObj} 
-          alt={`${title} Apartment Rentals Kitchener Waterloo - Photo ${index + 1}`}
-          class="relative z-10 w-full h-full object-contain shadow-lg"
-        />
-      </div>
-    ))}
-  </div>
-  <!-- navigation arrows & dots/counter -->
-  {images.length > 1 && (
-    <>
-      <button 
-        id="prev-btn"
-        class="absolute left-2 top-1/2 -translate-y-1/2 bg-schiketanz-red/90 hover:bg-schiketanz-red text-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 translate-x-[-10px] group-hover:translate-x-0 cursor-pointer z-10"
-        aria-label="Previous image"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-        </svg>
-      </button>
-      <button 
-        id="next-btn"
-        class="absolute right-2 top-1/2 -translate-y-1/2 bg-schiketanz-red/90 hover:bg-schiketanz-red text-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 translate-x-[10px] group-hover:translate-x-0 cursor-pointer z-10"
-        aria-label="Next image"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-      </button>
-      <!-- Mobile Counter (Visible on small screens) -->
-      <div class="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/40 text-white text-xs font-bold tracking-widest px-4 py-1.5 rounded-full backdrop-blur-[2px] z-10 shadow-sm">
-         <span id="slide-counter">1</span> / {images.length}
-      </div>
-      <!-- Desktop Dots (Hidden on small screens) -->
-      <div class="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 space-x-2 bg-black/20 px-3 py-1 rounded-full backdrop-blur-[2px] z-10">
-         {images.map((_, index) => (
-            <button 
-                class="indicator-dot flex-shrink-0 w-2 h-2 rounded-full shadow-sm transition-all duration-300 bg-white/70" 
-                data-index={index}
-                aria-label={`Go to slide ${index + 1}`}
-            ></button>
-         ))}
-      </div>
-    </>
-  )}
-</div>
-
-<style>
-  .scrollbar-hide::-webkit-scrollbar {
-      display: none;
-  }
-  .scrollbar-hide {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-  }
-</style>
-
-<script>
-  document.addEventListener('astro:page-load', () => {
-    const track = document.getElementById('carousel-track');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const slides = document.querySelectorAll('.gallery-slide');
-    const dots = document.querySelectorAll('.indicator-dot');
-    const counter = document.getElementById('slide-counter');
-    // guard clause
-    if (!track) return;
-    // update active dot and counter
-    const updateDots = (activeIndex: number) => {
-      // update text counter for mobile
-      if (counter) counter.textContent = (activeIndex + 1).toString();
-      // update dots for desktop
-      dots.forEach((dot, index) => {
-        if (index === activeIndex) {
-          // active: schiketanz red + slightly larger
-          dot.classList.remove('bg-white/70');
-          dot.classList.add('bg-schiketanz-red');
-          dot.classList.add('scale-125');
-        } else {
-          // inactive: white/70
-          dot.classList.add('bg-white/70');
-          dot.classList.remove('bg-schiketanz-red');
-          dot.classList.remove('scale-125');
-        }
-      });
-    };
-    // set up IntersectionObserver to determine visible slide
-    if (track && slides.length > 0) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // find index of slide that just appeared
-            // convert NodeList to an array to use .indexOf
-            const index = Array.from(slides).indexOf(entry.target as Element);
-            updateDots(index);
-          }
-        });
-      }, {
-        root: track,
-        threshold: 0.5 // trigger when 50% of image is visible
-      });
-      // observe every slide
-      slides.forEach(slide => observer.observe(slide));
-    }
-    // previous/next button logic
-    if (track && prevBtn && nextBtn) {
-      prevBtn.addEventListener('click', () => {
-        track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' });
-      });
-      nextBtn.addEventListener('click', () => {
-        track.scrollBy({ left: track.clientWidth, behavior: 'smooth' });
-      });
-    }
-    // dot click logic
-    dots.forEach((dot, index) => {
-      dot.addEventListener('click', () => {
-        if(track && slides[index]) {
-          slides[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-        }
-      });
-    });
-    // initialize first dot/counter as active on load
-    updateDots(0);
-  }); 
-</script>
-</file>
-
 <file path="src/content/rentals/stanley-park-apartments/index.mdx">
 ---
 title: Stanley Park Apartments
@@ -735,6 +579,162 @@ const breadcrumbSchema = breadcrumb ? {
     <slot name="after-title" />
   </div>
 </div>
+</file>
+
+<file path="src/components/PropertyGallery.astro">
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  images: ImageMetadata[];
+  title: string;
+}
+const { images, title } = Astro.props;
+---
+
+<div class="relative w-full group border-2 border-schiketanz-red rounded-sm bg-gray-50" id="gallery-container">
+  <!-- scrollable container -->
+  <div 
+    id="carousel-track"
+    class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth aspect-video relative"
+  >
+    {images.map((imgObj, index) => (
+      <div class="flex-none w-full h-full snap-center relative flex items-center justify-center bg-gray-900 gallery-slide overflow-hidden">
+        <!-- background layer blurred & zoomed to fill space -->
+        <div class="absolute inset-0 w-full h-full">
+            <Image 
+              src={imgObj} 
+              alt="" 
+              class="w-full h-full object-cover opacity-50 blur-xl scale-110"
+            />
+        </div>
+        <!-- foreground layer with image fully visible -->
+        <Image 
+          src={imgObj} 
+          alt={`${title} Apartment Rentals Kitchener Waterloo - Photo ${index + 1}`}
+          class="relative z-10 w-full h-full object-contain shadow-lg"
+        />
+      </div>
+    ))}
+  </div>
+  <!-- navigation arrows & dots/counter -->
+  {images.length > 1 && (
+    <>
+      <button 
+        id="prev-btn"
+        class="absolute left-2 top-1/2 -translate-y-1/2 bg-schiketanz-red/90 hover:bg-schiketanz-red text-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 translate-x-[-10px] group-hover:translate-x-0 cursor-pointer z-10"
+        aria-label="Previous image"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </button>
+      <button 
+        id="next-btn"
+        class="absolute right-2 top-1/2 -translate-y-1/2 bg-schiketanz-red/90 hover:bg-schiketanz-red text-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 translate-x-[10px] group-hover:translate-x-0 cursor-pointer z-10"
+        aria-label="Next image"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
+      <!-- Mobile Counter (Visible on small screens) -->
+      <div class="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/40 text-white text-xs font-bold tracking-widest px-4 py-1.5 rounded-full backdrop-blur-[2px] z-10 shadow-sm">
+         <span id="slide-counter">1</span> / {images.length}
+      </div>
+      <!-- Desktop Dots (Hidden on small screens) -->
+      <div class="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 space-x-2 bg-black/20 px-3 py-1 rounded-full backdrop-blur-[2px] z-10">
+         {images.map((_, index) => (
+            <button 
+                class="indicator-dot flex-shrink-0 w-2 h-2 rounded-full shadow-sm transition-all duration-300 bg-white/70" 
+                data-index={index}
+                aria-label={`Go to slide ${index + 1}`}
+            ></button>
+         ))}
+      </div>
+    </>
+  )}
+</div>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+  }
+  .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const track = document.getElementById('carousel-track');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const slides = document.querySelectorAll('.gallery-slide');
+    const dots = document.querySelectorAll('.indicator-dot');
+    const counter = document.getElementById('slide-counter');
+    // guard clause
+    if (!track) return;
+    // update active dot and counter
+    const updateDots = (activeIndex: number) => {
+      // update text counter for mobile
+      if (counter) counter.textContent = (activeIndex + 1).toString();
+      // update dots for desktop
+      dots.forEach((dot, index) => {
+        if (index === activeIndex) {
+          // active: schiketanz red + slightly larger
+          dot.classList.remove('bg-white/70');
+          dot.classList.add('bg-schiketanz-red');
+          dot.classList.add('scale-125');
+        } else {
+          // inactive: white/70
+          dot.classList.add('bg-white/70');
+          dot.classList.remove('bg-schiketanz-red');
+          dot.classList.remove('scale-125');
+        }
+      });
+    };
+    // set up IntersectionObserver to determine visible slide
+    if (track && slides.length > 0) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // find index of slide that just appeared
+            // convert NodeList to an array to use .indexOf
+            const index = Array.from(slides).indexOf(entry.target as Element);
+            updateDots(index);
+          }
+        });
+      }, {
+        root: track,
+        threshold: 0.5 // trigger when 50% of image is visible
+      });
+      // observe every slide
+      slides.forEach(slide => observer.observe(slide));
+    }
+    // previous/next button logic
+    if (track && prevBtn && nextBtn) {
+      prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' });
+      });
+      nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: track.clientWidth, behavior: 'smooth' });
+      });
+    }
+    // dot click logic
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        if(track && slides[index]) {
+          slides[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        }
+      });
+    });
+    // initialize first dot/counter as active on load
+    updateDots(0);
+  }); 
+</script>
 </file>
 
 <file path="src/content/news/spring-summer-newsletter.mdx">
@@ -1434,84 +1434,6 @@ import PageContainer from '../components/PageContainer.astro';
 </Layout>
 </file>
 
-<file path="src/pages/rentals.astro">
----
-import Layout from '../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
-
-// sort: vacant first, then occupied, then alphabetical
-const allRentals = await getCollection('rentals');
-const rentals = allRentals.sort((a, b) => {
-  const statusA = a.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
-  const statusB = b.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
-  // if status is same, sort alphabetically by title
-  return statusA !== statusB ? statusA - statusB : a.data.title.localeCompare(b.data.title);
-});
----
-
-<Layout 
-    title="Apartment & Commercial Rentals Kitchener-Waterloo | Schiketanz Real Estate"
-    description="Browse available residential apartments and commercial spaces for rent in Kitchener and Waterloo. Contact M. Schiketanz Real Estate for current availability."
->
-  <PageContainer>
-    <PageHeader 
-      title="Rental Properties" 
-      subtitle="Browse our residential listings, and contact our office for current availability."
-      breadcrumb={[{ text: 'Rentals', href: '/rentals' }]}
-    />
-    <!-- standardized grid gap -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {rentals.map(rental => (
-        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full @container">
-          <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
-            <span class="sr-only">View {rental.data.title}</span>
-          </a>
-          <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-sm">
-             {rental.data.coverImage ? (
-                <Image 
-                    src={rental.data.coverImage} 
-                    alt={rental.data.title} 
-                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                />
-             ) : (
-                <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50 text-[10px] font-bold uppercase tracking-widest">
-                    No Image
-                </div>
-             )}
-             <div class:list={[
-                 "absolute top-3 right-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white z-30 shadow-sm rounded-sm",
-                 {
-                    "bg-green-600": rental.data.vacancyStatus.discriminant === 'vacant',
-                    "bg-gray-700/90": rental.data.vacancyStatus.discriminant === 'occupied'
-                 }
-             ]}>
-                {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacant' : 'No Vacancy'}
-             </div>
-          </div>
-          <div class="p-5 border-t border-gray-50">
-            <h2 class="text-[clamp(1.125rem,6cqi,1.5rem)] font-bold text-gray-900 group-hover:text-schiketanz-red transition-colors duration-300 leading-tight mb-1 text-balance">
-              {rental.data.title}
-            </h2>
-            <div class="flex items-start text-gray-500">
-                <p class="text-xs font-medium">{rental.data.address.street}</p>
-            </div>
-          </div>
-        </article>
-      ))}
-    </div>
-    <!-- empty state -->
-    {rentals.length === 0 && (
-        <div class="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
-            <p class="text-gray-400 font-medium">No rental properties found.</p>
-        </div>
-    )}
-  </PageContainer>
-</Layout>
-</file>
-
 <file path="src/content/rentals/princess-apartments/index.mdx">
 ---
 title: Princess Apartments
@@ -1614,6 +1536,84 @@ import PageContainer from '../components/PageContainer.astro';
             Download PAD Form
         </a>
     </div>
+  </PageContainer>
+</Layout>
+</file>
+
+<file path="src/pages/rentals.astro">
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+
+// sort: vacant first, then occupied, then alphabetical
+const allRentals = await getCollection('rentals');
+const rentals = allRentals.sort((a, b) => {
+  const statusA = a.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
+  const statusB = b.data.vacancyStatus.discriminant === 'vacant' ? 1 : 2;
+  // if status is same, sort alphabetically by title
+  return statusA !== statusB ? statusA - statusB : a.data.title.localeCompare(b.data.title);
+});
+---
+
+<Layout 
+    title="Apartment & Commercial Rentals Kitchener-Waterloo | Schiketanz Real Estate"
+    description="Browse available residential apartments and commercial spaces for rent in Kitchener and Waterloo. Contact M. Schiketanz Real Estate for current availability."
+>
+  <PageContainer>
+    <PageHeader 
+      title="Rental Properties" 
+      subtitle="Browse our residential listings, and contact our office for current availability."
+      breadcrumb={[{ text: 'Rentals', href: '/rentals' }]}
+    />
+    <!-- standardized grid gap -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {rentals.map(rental => (
+        <article class="group relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full @container">
+          <a href={`/rentals/${rental.slug}`} class="absolute inset-0 z-20 focus:outline-none focus:ring-2 focus:ring-schiketanz-red focus:ring-offset-2 rounded-sm">
+            <span class="sr-only">View {rental.data.title}</span>
+          </a>
+          <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-sm">
+             {rental.data.coverImage ? (
+                <Image 
+                    src={rental.data.coverImage} 
+                    alt={rental.data.title} 
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                />
+             ) : (
+                <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50 text-[10px] font-bold uppercase tracking-widest">
+                    No Image
+                </div>
+             )}
+             <div class:list={[
+                 "absolute top-3 right-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white z-30 shadow-sm rounded-sm",
+                 {
+                    "bg-green-600": rental.data.vacancyStatus.discriminant === 'vacant',
+                    "bg-gray-700/90": rental.data.vacancyStatus.discriminant === 'occupied'
+                 }
+             ]}>
+                {rental.data.vacancyStatus.discriminant === 'vacant' ? 'Vacant' : 'No Vacancy'}
+             </div>
+          </div>
+          <div class="p-5 border-t border-gray-50">
+            <h2 class="text-[clamp(1.125rem,6cqi,1.5rem)] font-bold text-gray-900 group-hover:text-schiketanz-red transition-colors duration-300 leading-tight mb-1 text-balance">
+              {rental.data.title}
+            </h2>
+            <div class="flex items-start text-gray-500">
+                <p class="text-xs font-medium">{rental.data.address.street}</p>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+    <!-- empty state -->
+    {rentals.length === 0 && (
+        <div class="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
+            <p class="text-gray-400 font-medium">No rental properties found.</p>
+        </div>
+    )}
   </PageContainer>
 </Layout>
 </file>
@@ -1734,77 +1734,6 @@ import PageContainer from '../components/PageContainer.astro';
 </Layout>
 </file>
 
-<file path="src/pages/commercial.astro">
----
-import Layout from '../layouts/Layout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import PageContainer from '../components/PageContainer.astro';
-import PropertyGallery from '../components/PropertyGallery.astro';
-import type { ImageMetadata } from 'astro';
-
-// dynamically import all images from commercial folder
-const imageFiles = import.meta.glob<{ default: ImageMetadata }>(
-  '../assets/commercial/forest-hill/*.{jpeg,jpg,png,gif,webp,avif}', 
-  { eager: true }
-);
-// convert imported object into a clean array of images
-const images = Object.values(imageFiles).map((file) => file.default);
----
-
-<Layout 
-    title="Commercial Leasing & Retail Space Kitchener | Schiketanz Real Estate"
-    description="Explore commercial leasing opportunities including retail and office space at Forest Hill Shopping Centre in Kitchener, managed by Schiketanz Real Estate."
->
-  <PageContainer>
-    <PageHeader 
-      title="Commercial Properties" 
-      subtitle="Retail and office space management in the Kitchener-Waterloo region."
-      breadcrumb={[{ text: 'Commercial', href: '/commercial' }]}
-    />
-    <article class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-        <!-- gallery container -->
-        <div class="w-full flex flex-col h-fit">
-            {images.length > 0 ? (
-                <PropertyGallery images={images} title="Forest Hill Shopping Centre" />
-            ) : (
-                <div class="bg-gray-200 aspect-video w-full rounded-sm flex items-center justify-center text-gray-500 border border-gray-300">
-                    <span class="font-century">Forest Hill Shopping Centre Photos</span>
-                </div>
-            )}
-        </div>
-        <!-- content -->
-        <div class="flex flex-col justify-center">
-            <h2 class="font-century font-bold text-3xl text-gray-800 mb-2">Forest Hill Shopping Centre</h2>
-            <p class="text-gray-500 text-lg mb-6">395-421 Greenbrook Drive, Kitchener, Ontario</p>
-            <div class="prose text-gray-700 mb-4">
-                <p>
-                    Forest Hill Shopping Centre is centrally located in the Forest Hill Area of Kitchener, Ontario. This shopping centre meets everyone's needs.
-                    It includes a Giant Tiger, pharmacy, restaurant, bakery, doctors and dentists offices and so much more!
-                </p>
-                <ul class="list-disc pl-5 mt-4">
-                    <li>High traffic visibility</li>
-                    <li>Ample parking for customers</li>
-                    <li>Professional property management on-site</li>
-                </ul>
-            </div>
-            <div class="bg-gray-50 p-6 border-l-4 border-schiketanz-red max-w-md w-fit">
-                <h3 class="font-bold text-gray-800 mb-2">Leasing Inquiries</h3>
-                <p class="text-gray-600 mb-4">
-                    For more information, please contact Sue.
-                </p>
-                <div class="space-y-2">
-                    <a href="tel:5197424477" class="block font-bold text-gray-800 hover:text-schiketanz-red transition-colors">(519) 742-4477</a>
-                    <a href="mailto:sue@schiketanz.ca" class="block text-schiketanz-red font-bold hover:underline">
-                        sue@schiketanz.ca &rarr;
-                    </a>
-                </div>
-            </div>
-        </div>
-    </article>
-  </PageContainer>
-</Layout>
-</file>
-
 <file path="src/pages/index.astro">
 ---
 import Layout from '../layouts/Layout.astro';
@@ -1920,6 +1849,77 @@ const latestNews = await Promise.all(
             </div>
         </div>
     </PageContainer>
+</Layout>
+</file>
+
+<file path="src/pages/commercial.astro">
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PageContainer from '../components/PageContainer.astro';
+import PropertyGallery from '../components/PropertyGallery.astro';
+import type { ImageMetadata } from 'astro';
+
+// dynamically import all images from commercial folder
+const imageFiles = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/commercial/forest-hill/*.{jpeg,jpg,png,gif,webp,avif}', 
+  { eager: true }
+);
+// convert imported object into a clean array of images
+const images = Object.values(imageFiles).map((file) => file.default);
+---
+
+<Layout 
+    title="Commercial Leasing & Retail Space Kitchener | Schiketanz Real Estate"
+    description="Explore commercial leasing opportunities including retail and office space at Forest Hill Shopping Centre in Kitchener, managed by Schiketanz Real Estate."
+>
+  <PageContainer>
+    <PageHeader 
+      title="Commercial Properties" 
+      subtitle="Retail and office space management in the Kitchener-Waterloo region."
+      breadcrumb={[{ text: 'Commercial', href: '/commercial' }]}
+    />
+    <article class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <!-- gallery container -->
+        <div class="w-full flex flex-col h-fit">
+            {images.length > 0 ? (
+                <PropertyGallery images={images} title="Forest Hill Shopping Centre" />
+            ) : (
+                <div class="bg-gray-200 aspect-video w-full rounded-sm flex items-center justify-center text-gray-500 border border-gray-300">
+                    <span class="font-century">Forest Hill Shopping Centre Photos</span>
+                </div>
+            )}
+        </div>
+        <!-- content -->
+        <div class="flex flex-col justify-center">
+            <h2 class="font-century font-bold text-3xl text-gray-800 mb-2">Forest Hill Shopping Centre</h2>
+            <p class="text-gray-500 text-lg mb-6">395-421 Greenbrook Drive, Kitchener, Ontario</p>
+            <div class="prose text-gray-700 mb-4">
+                <p>
+                    Forest Hill Shopping Centre is centrally located in the Forest Hill Area of Kitchener, Ontario. This shopping centre meets everyone's needs.
+                    It includes a Giant Tiger, pharmacy, restaurant, bakery, doctors and dentists offices and so much more!
+                </p>
+                <ul class="list-disc pl-5 mt-4">
+                    <li>High traffic visibility</li>
+                    <li>Ample parking for customers</li>
+                    <li>Professional property management on-site</li>
+                </ul>
+            </div>
+            <div class="bg-gray-50 p-6 border-l-4 border-schiketanz-red max-w-md w-fit">
+                <h3 class="font-bold text-gray-800 mb-2">Leasing Inquiries</h3>
+                <p class="text-gray-600 mb-4">
+                    For more information, please contact Sue.
+                </p>
+                <div class="space-y-2">
+                    <a href="tel:5197424477" class="block font-bold text-gray-800 hover:text-schiketanz-red transition-colors">(519) 742-4477</a>
+                    <a href="mailto:sue@schiketanz.ca" class="block text-schiketanz-red font-bold hover:underline">
+                        sue@schiketanz.ca &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </article>
+  </PageContainer>
 </Layout>
 </file>
 
