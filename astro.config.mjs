@@ -8,7 +8,7 @@ import netlify from '@astrojs/netlify';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://schiketanz.fromconcentrate.ca',
+  site: 'https://schiketanz.ca',
   output: 'static',
   adapter: netlify(),
   integrations: [
