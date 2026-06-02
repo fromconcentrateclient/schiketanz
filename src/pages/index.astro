@@ -56,9 +56,9 @@ const latestNews = await Promise.all(
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
             <!-- Left Column -->
             <div class="lg:col-span-2">
-                <h3 class="text-2xl font-bold text-schiketanz-red mb-6 border-b-2 border-gray-200 pb-2 inline-block">
+                <h2 class="text-2xl font-bold text-schiketanz-red mb-6 border-b-2 border-gray-200 pb-2 inline-block">
                     Welcome
-                </h3>
+                </h2>
                 <div class="prose max-w-none text-gray-700 leading-relaxed font-sans text-lg text-pretty">
                     <p class="mb-4">
                         Schiketanz is a Real Estate Management Company located in the Kitchener-Waterloo area. We are dedicated to providing quality service to our tenants and ensuring our properties are maintained to the highest standards.
@@ -80,13 +80,13 @@ const latestNews = await Promise.all(
             <div class="lg:col-span-1 w-full">
                 <!-- notice board container -->
                 <div class="bg-gray-50 border border-gray-200 p-6 rounded-sm shadow-sm">
-                    <h3 class="text-xl font-bold text-gray-800 mb-5 flex items-center border-b border-gray-200 pb-3">
+                    <h2 class="text-xl font-bold text-gray-800 mb-5 flex items-center border-b border-gray-200 pb-3">
                         <!-- icon -->
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-schiketanz-red" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clip-rule="evenodd" />
                         </svg>
                         News & Notices
-                    </h3>
+                    </h2>
                     {latestNews.length > 0 ? (
                         <div class="space-y-6">
                             {latestNews.map(news => (
@@ -94,9 +94,9 @@ const latestNews = await Promise.all(
                                     <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
                                         {news.data.date.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })}
                                     </p>
-                                    <h4 class="font-century font-bold text-gray-900 leading-tight mb-2 text-lg">
+                                    <h3 class="font-century font-bold text-gray-900 leading-tight mb-2 text-lg">
                                         {news.data.title}
-                                    </h4>
+                                    </h3>
                                     <div class="text-sm text-gray-600 prose prose-sm max-w-none prose-p:my-1">
                                         <news.Content />
                                     </div>
