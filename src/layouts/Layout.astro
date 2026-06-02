@@ -16,6 +16,8 @@ interface Props {
     logoAs?: 'h1' | 'div';
     // allow pages to inject specific schema (like ApartmentComplex)
     propertySchema?: object; 
+    // allow pages to opt out of search engine indexing
+    noindex?: boolean;
 }
 // SEO values from original site
 const defaultDesc = "Apartment Rentals in Kitchener Waterloo Ontario. M. Schiketanz Real Estate Inc. providing quality service to tenants since 1953.";
@@ -27,7 +29,8 @@ const {
     canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
     type = 'website',
     logoAs = 'div', // default to 'div' so only homepage overrides to 'h1'
-    propertySchema // extract new prop
+    propertySchema,
+    noindex = false
 } = Astro.props;
 // schema values from original site
 const businessSchema = {
@@ -72,6 +75,7 @@ const businessSchema = {
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
         <link rel="canonical" href={canonicalURL} />
+        {noindex && <meta name="robots" content="noindex" />}
         <!-- primary meta tags -->
 		<title>{title}</title>
 		<meta name="description" content={description} />

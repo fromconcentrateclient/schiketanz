@@ -47,35 +47,6 @@ src/styles/global.css
 <files>
 This section contains the contents of the repository's files.
 
-<file path="astro.config.mjs">
-// @ts-check
-import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
-import keystatic from '@keystatic/astro';
-import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
-import netlify from '@astrojs/netlify';
-import tailwindcss from '@tailwindcss/vite';
-
-export default defineConfig({
-  site: 'https://schiketanz.fromconcentrate.ca',
-  output: 'static',
-  adapter: netlify(),
-  integrations: [
-    react(),
-    mdx(),
-    keystatic(),
-    sitemap(),
-  ],
-  vite: {
-    plugins: [tailwindcss()],
-    optimizeDeps: {
-      exclude: ['@keystatic/astro', '@keystatic/core']
-    }
-  },
-});
-</file>
-
 <file path="src/components/Footer.astro">
 ---
 const year = new Date().getFullYear();
@@ -146,7 +117,10 @@ const { narrow = false, class: className = "" } = Astro.props;
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Page Not Found | Schiketanz Real Estate">
+<Layout 
+  title="Page Not Found | Schiketanz Real Estate"
+  description="The page you are looking for at Schiketanz Real Estate could not be found. Browse our available rentals or contact our office for assistance."
+>
   <div class="container mx-auto px-4 h-[60vh] flex flex-col items-center justify-center text-center">
     <h1 class="font-century font-bold text-6xl text-schiketanz-red mb-4">404</h1>
     <p class="text-2xl text-gray-800 font-bold mb-4">Page Not Found</p>
@@ -157,6 +131,35 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </div>
 </Layout>
+</file>
+
+<file path="astro.config.mjs">
+// @ts-check
+import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
+import keystatic from '@keystatic/astro';
+import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
+import netlify from '@astrojs/netlify';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  site: 'https://schiketanz.ca',
+  output: 'static',
+  adapter: netlify(),
+  integrations: [
+    react(),
+    mdx(),
+    keystatic(),
+    sitemap(),
+  ],
+  vite: {
+    plugins: [tailwindcss()],
+    optimizeDeps: {
+      exclude: ['@keystatic/astro', '@keystatic/core']
+    }
+  },
+});
 </file>
 
 <file path="import-gallery.mjs">
@@ -422,7 +425,10 @@ import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
 ---
 
-<Layout title="Privacy Policy | Schiketanz Real Estate">
+<Layout 
+  title="Privacy Policy | Schiketanz Real Estate"
+  description="Read the Privacy Policy for M. Schiketanz Real Estate Inc. Learn how we collect, use, and protect your personal information."
+>
   <PageContainer narrow>
     <PageHeader 
       title="Privacy Policy" 
@@ -605,7 +611,9 @@ const { images, title } = Astro.props;
         <div class="absolute inset-0 w-full h-full">
             <Image 
               src={imgObj} 
-              alt="" 
+              alt=""
+              width={100}
+              quality={10}
               class="w-full h-full object-cover opacity-50 blur-xl scale-110"
             />
         </div>
@@ -1509,7 +1517,10 @@ import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
 ---
 
-<Layout title="Pre-Authorized Debit Form | Schiketanz Real Estate">
+<Layout 
+  title="Pre-Authorized Debit Form | Schiketanz Real Estate"
+  description="Download the Pre-Authorized Debit (PAD) form to enroll in automatic rent payments for your Schiketanz Real Estate apartment."
+>
   <PageContainer>
     <PageHeader 
       title="Pre-Authorized Debit (PAD)" 
@@ -1688,7 +1699,10 @@ import PageHeader from '../components/PageHeader.astro';
 import PageContainer from '../components/PageContainer.astro';
 ---
 
-<Layout title="Rental Application | Schiketanz Real Estate">
+<Layout 
+  title="Rental Application | Schiketanz Real Estate"
+  description="Download and submit a rental application for Schiketanz Real Estate residential apartments in the Kitchener-Waterloo region."
+>
   <PageContainer>
     <PageHeader 
       title="Rental Application" 
@@ -1955,7 +1969,10 @@ const labelClasses = "block text-sm font-bold text-gray-700 mb-2";
 const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 border-b border-gray-200 pb-2 mb-5 mt-8 first:mt-0";
 ---
 
-<Layout title="Maintenance Request | Schiketanz Real Estate">
+<Layout 
+  title="Maintenance Request | Schiketanz Real Estate"
+  description="Submit a maintenance request or work order directly to your building superintendent at Schiketanz Real Estate."
+>
   <PageContainer narrow>
     <PageHeader 
       title="Maintenance Request" 
@@ -2231,6 +2248,8 @@ interface Props {
     logoAs?: 'h1' | 'div';
     // allow pages to inject specific schema (like ApartmentComplex)
     propertySchema?: object; 
+    // allow pages to opt out of search engine indexing
+    noindex?: boolean;
 }
 // SEO values from original site
 const defaultDesc = "Apartment Rentals in Kitchener Waterloo Ontario. M. Schiketanz Real Estate Inc. providing quality service to tenants since 1953.";
@@ -2242,7 +2261,8 @@ const {
     canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
     type = 'website',
     logoAs = 'div', // default to 'div' so only homepage overrides to 'h1'
-    propertySchema // extract new prop
+    propertySchema,
+    noindex = false
 } = Astro.props;
 // schema values from original site
 const businessSchema = {
@@ -2287,6 +2307,7 @@ const businessSchema = {
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
         <link rel="canonical" href={canonicalURL} />
+        {noindex && <meta name="robots" content="noindex" />}
         <!-- primary meta tags -->
 		<title>{title}</title>
 		<meta name="description" content={description} />
@@ -2688,7 +2709,7 @@ const propertySchema = {
         subtitle={fullFormattedAddress}
         breadcrumb={[
             { text: 'Rentals', href: '/rentals' },
-            { text: rental.data.title, href: `#` }
+            { text: rental.data.title, href: `/rentals/${rental.slug}` }
         ]}
     >
         {!isVacant && (

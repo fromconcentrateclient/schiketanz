@@ -63,7 +63,7 @@ const propertySchema = {
         subtitle={fullFormattedAddress}
         breadcrumb={[
             { text: 'Rentals', href: '/rentals' },
-            { text: rental.data.title, href: `#` }
+            { text: rental.data.title, href: `/rentals/${rental.slug}` }
         ]}
     >
         {!isVacant && (
