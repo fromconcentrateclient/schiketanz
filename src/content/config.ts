@@ -41,7 +41,9 @@ const rentals = defineCollection({
                 sqft: z.string().optional(),
             })).optional(),
         }).optional(),
-        gallery: z.array(image()).optional(),
+        gallery: z.array(image().nullable())
+            .optional()
+            .transform(arr => arr ? arr.flatMap(img => img ? [img] : []) : undefined),
     }),
 });
 const news = defineCollection({
