@@ -27,11 +27,9 @@ const breadcrumbSchema = breadcrumb ? {
 } : null;
 ---
 
-<!-- breadcrumb schema -->
 {breadcrumbSchema && (
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
 )}
-
 <div class="mb-8 border-b border-gray-200 pb-4">
   {breadcrumb && (
     <nav class="flex items-center text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
