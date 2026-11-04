@@ -15,7 +15,8 @@ export default defineConfig({
     react(),
     mdx(),
     keystatic(),
-    sitemap(),
+    // keep thank-you page out of search results
+    sitemap({ filter: (page) => !page.includes('/success') }),
   ],
   vite: {
     plugins: [tailwindcss()],

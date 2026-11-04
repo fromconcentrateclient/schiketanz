@@ -6,22 +6,22 @@ import PageContainer from '../components/PageContainer.astro';
 // assigning groups to each building
 const buildings =[
     { name: "Bluebird Apartments", group: 1 },
-    { name: "Bridge Apts", group: 1 },
+    { name: "Bridge Apartments", group: 1 },
     { name: "Chicopee Court", group: 2 },
     { name: "Chicopee Terrace", group: 2 },
-    { name: "Confederation Apts", group: 1 },
-    { name: "Heritage Apts", group: 1 },
-    { name: "Hickory Apts", group: 2 },
-    { name: "Holborn Apts", group: 2 },
+    { name: "Confederation Apartments", group: 1 },
+    { name: "Heritage Apartments", group: 1 },
+    { name: "Hickory Apartments", group: 2 },
+    { name: "Holborn Apartments", group: 2 },
     { name: "Kloster Court", group: 1 },
-    { name: "Lorraine Apts", group: 1 },
-    { name: "Margaret Apartment", group: 1 },
+    { name: "Lorraine Apartments", group: 1 },
+    { name: "Margaret Apartments", group: 1 },
     { name: "Panorama Terrace", group: 1 },
     { name: "Parkview Apartments", group: 1 },
     { name: "Princess Apartments", group: 2 },
     { name: "Richelieu Apartments", group: 1 },
-    { name: "Stanley Park Apts", group: 1 },
-    { name: "Traynor Avenue", group: 2 },
+    { name: "Stanley Park Apartments", group: 1 },
+    { name: "Traynor Avenue Apartments", group: 2 },
 ].sort((a, b) => a.name.localeCompare(b.name));
 // shared input styles
 const inputClasses = "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:bg-white focus:ring-2 focus:ring-schiketanz-red/30 focus:border-schiketanz-red outline-none transition-all text-gray-800";
@@ -37,7 +37,7 @@ const sectionHeaderClasses = "text-lg font-century font-bold text-gray-800 borde
     <PageHeader 
       title="Maintenance Request" 
       subtitle="Submit a work order directly to your building superintendent."
-      breadcrumb={[{ text: 'Maintenance', href: '/maintenance' }]}
+      breadcrumb={[{ text: 'Maintenance', href: '/maintenance/' }]}
     />
     <div class="space-y-6">
         <!-- building selection card -->

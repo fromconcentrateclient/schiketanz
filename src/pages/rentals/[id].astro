@@ -52,7 +52,7 @@ const propertySchema = {
 ---
 
 <Layout 
-    title={`${rental.data.title} Apartments Kitchener-Waterloo | Schiketanz Rentals`}
+    title={`${rental.data.title} Kitchener-Waterloo | Schiketanz Rentals`}
     description={seoDescription}
     image={rental.data.coverImage?.src}
     propertySchema={propertySchema} 
@@ -62,8 +62,8 @@ const propertySchema = {
         title={rental.data.title} 
         subtitle={fullFormattedAddress}
         breadcrumb={[
-            { text: 'Rentals', href: '/rentals' },
-            { text: rental.data.title, href: `/rentals/${rental.slug}` }
+            { text: 'Rentals', href: '/rentals/' },
+            { text: rental.data.title, href: `/rentals/${rental.slug}/` }
         ]}
     >
         {!isVacant && (
@@ -116,7 +116,7 @@ const propertySchema = {
                         {rental.data.superintendent.hours && <p class="text-xs text-gray-600 mt-1">{rental.data.superintendent.hours}</p>}
                     </div>
                 )}
-                <a href="/application" class="block w-full text-center bg-green-600 text-white font-bold py-3 px-4 rounded hover:bg-green-700 transition-colors shadow-md">
+                <a href="/application/" class="block w-full text-center bg-green-600 text-white font-bold py-3 px-4 rounded hover:bg-green-700 transition-colors shadow-md">
                     Apply for This Unit
                 </a>
             </div>
@@ -128,7 +128,7 @@ const propertySchema = {
                     <p class="text-xs text-gray-500 uppercase font-bold">Main Office</p>
                     <a href="tel:5197424477" class="text-xl font-bold text-gray-800 hover:text-schiketanz-red transition-colors block underline">(519) 742-4477</a>
                 </div>
-                <a href="/application" class="block w-full text-center border-2 border-schiketanz-red text-schiketanz-red font-bold py-2 px-4 rounded hover:bg-red-50 transition-colors">
+                <a href="/application/" class="block w-full text-center border-2 border-schiketanz-red text-schiketanz-red font-bold py-2 px-4 rounded hover:bg-red-50 transition-colors">
                     Get Application
                 </a>
             </div>

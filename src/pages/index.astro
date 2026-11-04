@@ -71,7 +71,7 @@ const latestNews = await Promise.all(
                     </p>
                 </div>
                 <div class="mt-8">
-                    <a href="/rentals" class="inline-block bg-schiketanz-red text-white px-6 py-3 font-century font-bold hover:bg-schiketanz-red-dark transition-colors rounded-sm shadow-sm">
+                    <a href="/rentals/" class="inline-block bg-schiketanz-red text-white px-6 py-3 font-century font-bold hover:bg-schiketanz-red-dark transition-colors rounded-sm shadow-sm">
                         View Available Rentals &rarr;
                     </a>
                 </div>
@@ -97,7 +97,7 @@ const latestNews = await Promise.all(
                                     <h3 class="font-century font-bold text-gray-900 leading-tight mb-2 text-lg">
                                         {news.data.title}
                                     </h3>
-                                    <div class="text-sm text-gray-600 prose prose-sm max-w-none prose-p:my-1">
+                                    <div class="text-sm text-gray-600 prose prose-sm max-w-none prose-p:my-1 prose-a:text-inherit prose-a:no-underline prose-strong:text-inherit">
                                         <news.Content />
                                     </div>
                                 </article>

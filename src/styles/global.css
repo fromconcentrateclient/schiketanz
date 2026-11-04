@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* styles .prose wrappers (MDX/Keystatic content, text blocks) */
+@plugin "@tailwindcss/typography";
 
 @font-face {
   font-family: "Century Gothic";

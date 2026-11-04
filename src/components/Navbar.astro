@@ -1,15 +1,17 @@
 ---
 const navLinks = [
   { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Rentals", href: "/rentals" },
-  { name: "Commercial", href: "/commercial" },
-  { name: "Contact and Hours", href: "/contact" },
-  { name: "Maintenance Request", href: "/maintenance" },
-  { name: "PAD Form", href: "/pad-form" },
-  { name: "Application", href: "/application" },
+  { name: "About", href: "/about/" },
+  { name: "Rentals", href: "/rentals/" },
+  { name: "Commercial", href: "/commercial/" },
+  { name: "Contact and Hours", href: "/contact/" },
+  { name: "Maintenance Request", href: "/maintenance/" },
+  { name: "PAD Form", href: "/pad-form/" },
+  { name: "Application", href: "/application/" },
 ];
-const currentPath = Astro.url.pathname;
+// normalise trailing slash so '/about' and '/about/' both count as the current page
+const normalise = (path: string) => (path.length > 1 ? path.replace(/\/$/, '') : path);
+const currentPath = normalise(Astro.url.pathname);
 ---
 
 <nav class="w-full border-t border-white/20">
@@ -30,7 +32,7 @@ const currentPath = Astro.url.pathname;
         <ul class="flex justify-start space-x-6">
             {navLinks.map(link => (
                 <li>
-                    <a href={link.href} class:list={["block text-white py-3 text-[15px] font-normal hover:text-gray-200 hover:underline transition-all",{ "underline decoration-2 decoration-white underline-offset-4": currentPath === link.href }]}>{link.name}</a>
+                    <a href={link.href} class:list={["block text-white py-3 text-[15px] font-normal hover:text-gray-200 hover:underline transition-all",{ "underline decoration-2 decoration-white underline-offset-4": currentPath === normalise(link.href) }]}>{link.name}</a>
                 </li>
             ))}
         </ul>
